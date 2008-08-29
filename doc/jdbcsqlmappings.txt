@@ -1,0 +1,13 @@
+String VARCHAR                         length
+java.math.BigDecimal NUMERIC
+boolean BIT
+byte TINYINT
+short SMALLINT
+int INTEGER
+long BIGINT
+float REAL
+double DOUBLE
+byte[] VARBINARY   -> support this ?? what about FSDB ?
+java.sql.Date DATE
+java.sql.Time TIME
+java.sql.Timestamp TIMESTAMP

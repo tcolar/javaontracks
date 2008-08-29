@@ -1,0 +1,71 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>JOT Error</title>
+<style type="text/css">
+<!--
+.titlebar {
+	background-color: #2255bb;
+	border: thin solid #000000;
+	width:90%;
+	height:28px;
+}
+.title {
+	font-size: 20px;
+	font-weight: bold;
+	color:#CC9933;
+	left:40px;
+}
+.errorbar {
+	background-color: #1144aa;
+	border: thin solid #000000;
+	width:90%;
+	height:22px;
+}
+.error {
+	font-size: 16px;
+	font-weight: bold;
+	color:#CC9933;
+	left:40px;
+}
+.errorbox {
+	background-color: #002299;
+	border: thin solid #000000;
+	width:90%;
+	font-size: 12px;
+	font-weight: bold;
+	color:#CC9933;
+}
+.body {
+	background-color: #333333;
+}
+</style>
+</head>
+
+<body class="body">
+<table width="100%"><tr><td  align="center">
+<div class="titlebar">
+<div class="title">! JOT <jot:var value="version"/>: UNEXPECTED ERROR !</div>
+</div>
+<div style="height:20px"></div>
+<div class="errorbar">
+<div class="error"><jot:var value="title"/></div>
+</div>
+<div class="errorbox" align="left">
+<jot:loop over="exception.stackTrace" as="traceElement">
+&nbsp;@<jot:var value="htmlEncode(traceElement)"/><br>
+</jot:loop>
+</div>
+<jot:if eval="cause">
+<div class="errorbar">
+<div class="error">Caused By: <jot:var value="causeTitle"/> </div>
+</div>
+<div class="errorbox" align="left">
+<jot:loop over="cause.stackTrace" as="traceElement">
+&nbsp;@<jot:var value="htmlEncode(traceElement)"/><br>
+</jot:loop>
+</div>
+</jot:if>
+</td></tr></table>
+</body>
+</html>
