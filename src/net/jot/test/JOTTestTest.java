@@ -8,7 +8,7 @@ package net.jot.test;
 import net.jot.testing.JOTTester;
 
 /**
- * Test case for static method of unit testing
+ * Internal Test case for static method of unit testing
  * @author thibautc
  */
 public class JOTTestTest 

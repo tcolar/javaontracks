@@ -9,7 +9,7 @@ import net.jot.testing.JOTTestable;
 import net.jot.testing.JOTTester;
 
 /**
- * Test case for interface method of unit testing
+ * Internal Test case for interface method of unit testing
  * @author thibautc
  */
 public class JOTTestITest implements JOTTestable
