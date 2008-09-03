@@ -6,7 +6,8 @@
 package net.jot.testing;
 
 /**
- *
+ * You can implement this interface to make your class testatble
+ * (You implement the test method using JOTTEster.xyz methods)
  * @author thibautc
  */
 public interface JOTTestable 
