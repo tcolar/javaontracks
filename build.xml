@@ -36,7 +36,7 @@
     
     <target name="test" depends="compile">
         <java classname="net.jot.testing.JOTTester">
-            <classpath path="classes:/usr/share/java/postgresql-jdbc3-8.1.jar"/>
+            <classpath path="classes:/usr/share/java/postgresql-jdbc3-8.1.jar:lib/servlet-api.jar"/>
             <arg value="classes"/>
             <!--<arg value="-debug"/>-->
             <arg value="-selfTest"/>
