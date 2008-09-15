@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 public class JOTMiniWebServer
 {
     // Get, followed by some spaces, followed by a path, possibly followed by a ?, followed by parameters/values 
-    private static final Pattern RequestPattern=Pattern.compile("^GET\\s+([^\\?]*)\\??(\\S*)");
+    private static final Pattern RequestPattern=Pattern.compile("^GET\\s+([^\\?]*)\\??(\\S*).*");
     
     private Vector threads = new Vector();
     boolean stop = false;
