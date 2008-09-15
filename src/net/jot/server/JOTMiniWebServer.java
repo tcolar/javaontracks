@@ -76,7 +76,7 @@ public class JOTMiniWebServer
                     Matcher m=RequestPattern.matcher(line);
                     if (m.matches())
                     {
-                        handleGet(m.group(1));
+                        handleGet(m.group(1)+m.group(2));
                     }
                 }
 
