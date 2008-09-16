@@ -5,9 +5,12 @@
 package net.jottools;
 
 import java.net.Socket;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import net.jot.server.JOTMiniWebServer;
 import net.jot.server.JOTServerRequestHandler;
+import net.jot.utils.JOTUtilities;
+import net.jottools.actions.ConfigView;
 
 /**
  *
@@ -64,5 +67,49 @@ public class Configurator implements JOTServerRequestHandler
     public void handleGetRequest(Socket socket, String path, Hashtable Parameters)
     {
         System.out.println("Request: "+path);
-    }    
+        Enumeration e=Parameters.keys();
+        while(e.hasMoreElements())
+        {
+            String key=(String)e.nextElement();
+            System.out.println("Param: "+key+" -> "+(String)Parameters.get(key));
+        }
+        try
+        {
+            ConfigView view=getViewClass(path);
+            if(view!=null)
+            {
+                view.writePage(socket.getOutputStream(),Parameters);
+            }
+            else
+            {
+                socket.getOutputStream().write("Page Not Found !".getBytes());
+            }
+        }
+        catch(Exception e2)
+        {
+        }
+    }
+
+    private ConfigView getViewClass(String path)
+    {
+        Object view=null;
+        try
+        {
+        if(path.startsWith("/"))
+            path=path.substring(1,path.length());
+        if(path.length()==0)
+            path="home";
+        Class c=Class.forName("net.jottools.actions.Config"+JOTUtilities.upperFirst(path.toLowerCase()));
+        if(c!=null)
+        {
+            view=c.newInstance();
+            if (! (view instanceof ConfigView))
+            {
+                view=null;
+            }
+        }
+        }
+        catch(Exception e){e.printStackTrace();view=null;}
+        return (ConfigView)view;
+    }
 }
