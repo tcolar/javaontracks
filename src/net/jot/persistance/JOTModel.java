@@ -28,6 +28,10 @@ import net.jot.persistance.query.JOTQueryManager;
  * Note that if you change your model (add fields, rename fields etc.. you will have to handle changes in the upgrade() method.
  * @author Thibaut Colar http://jot.colar.net/
  *
+ * 
+ * TODO: support/use transactionnal db queries
+ * TODO: support join ?
+ * TODO: if field is transient or starts with _ then ignore as a data field
  */
 public abstract class JOTModel
 {
@@ -40,7 +44,8 @@ public abstract class JOTModel
     protected Class queryImplClass = null;
     private String storage;
     protected final static String DEFAULT_STORAGE = "default";
-    private JOTModelMapping mapping = null;
+    
+    private /*transient*/ JOTModelMapping mapping = null;
 
     /**
      * Called to get the table mapping.
