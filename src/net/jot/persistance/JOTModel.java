@@ -32,6 +32,7 @@ import net.jot.persistance.query.JOTQueryManager;
  * TODO: support/use transactionnal db queries
  * TODO: support join ?
  * TODO: if field is transient or starts with _ then ignore as a data field
+ * TODO: one has many belongTop etc ... ?
  */
 public abstract class JOTModel
 {
