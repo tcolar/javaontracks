@@ -239,7 +239,7 @@ public class JOTDBManager
      */
     public synchronized int nextVal(JOTTaggedConnection con, String id) throws Exception
     {
-
+        con.getConnection().setAutoCommit(false);
         JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.DEBUG_LEVEL, this, "Getting nextval of : " + id);
         String[] params = {id};
         ResultSet rs = query(con, "select * from jotcounters where name=?", params);
@@ -257,6 +257,8 @@ public class JOTDBManager
             String[] params3 = {"2", id};
             update(con, "insert into jotcounters (value,name) values(?,?)", params3);
         }
+        con.getConnection().commit();
+        con.getConnection().setAutoCommit(true);
         return curval;
     }
 
