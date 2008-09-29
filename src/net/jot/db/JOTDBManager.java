@@ -139,7 +139,7 @@ public class JOTDBManager
                     } catch (SQLException e)
                     {
                         JOTLogger.logException(JOTLogger.CAT_DB, JOTLogger.INFO_LEVEL, "JOTDBModel", "Error creating jotcounters", e);
-                        throw (new Exception("Error creating jotcounters",e));
+                        throw (new Exception("Error creating jotcounters", e));
                     } finally
                     {
                         releaseConnection(con);
@@ -241,24 +241,41 @@ public class JOTDBManager
     {
         con.getConnection().setAutoCommit(false);
         JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.DEBUG_LEVEL, this, "Getting nextval of : " + id);
-        String[] params = {id};
-        ResultSet rs = query(con, "select * from jotcounters where name=?", params);
         int curval = 0;
-        if (rs.next())
+        try
         {
-            curval = rs.getInt("value");
-            String nextval = "" + (curval + 1);
-            String[] params2 = {nextval, id};
-            update(con, "update jotcounters set value=? where name=?", params2);
-        } else
+            String[] params =
+            {
+                id
+            };
+            ResultSet rs = query(con, "select * from jotcounters where name=?", params);
+            if (rs.next())
+            {
+                curval = rs.getInt("value");
+                String nextval = "" + (curval + 1);
+                String[] params2 =
+                {
+                    nextval, id
+                };
+                update(con, "update jotcounters set value=? where name=?", params2);
+            } else
+            {
+                //new counter, creating it
+                curval = 1;
+                String[] params3 =
+                {
+                    "2", id
+                };
+                update(con, "insert into jotcounters (value,name) values(?,?)", params3);
+            }
+        } catch (Exception e)
         {
-            //new counter, creating it
-            curval = 1;
-            String[] params3 = {"2", id};
-            update(con, "insert into jotcounters (value,name) values(?,?)", params3);
+            throw (e);
+        } finally
+        {
+            con.getConnection().commit();
+            con.getConnection().setAutoCommit(true);
         }
-        con.getConnection().commit();
-        con.getConnection().setAutoCommit(true);
         return curval;
     }
 
@@ -349,10 +366,11 @@ public class JOTDBManager
         updateAccessTime(con);
         ResultSet rs = null;
 
-        Connection stdCon=con.getConnection();
-        if(stdCon==null)
-            throw(new Exception("Failed to get a connection !"));
-            
+        Connection stdCon = con.getConnection();
+        if (stdCon == null)
+        {
+            throw (new Exception("Failed to get a connection !"));
+        }
         Statement st = stdCon.createStatement();
 
         if (update)
@@ -401,6 +419,5 @@ public class JOTDBManager
         }
         return result;
     }
-
 }
 
