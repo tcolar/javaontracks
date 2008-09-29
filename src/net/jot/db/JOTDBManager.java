@@ -1,4 +1,4 @@
-/*
+/**
 ------------------------------------
 JavaOnTracks          Thibaut Colar
 tcolar-jot AT colar DOT net
