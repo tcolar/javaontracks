@@ -15,7 +15,7 @@ import net.jot.persistance.query.JOTQueryManager;
  * Oftentimes it's best(safer) to use PreparedStatement form:
  * Example:
  * String[] params={"john","O'hara"}; // the ' could be dangerous if not using preparesStatement
- * JOTQueryBuilder.select(User.class).where("first=?").where("last=?").withParams(first,last).execute();
+ * JOTQueryBuilder.select(User.class).where("first=?").where("last=?").withParams(params).execute();
  * 
  * Notes: 
  * - multiple "Where" are ANDED unless you use OrWhere
