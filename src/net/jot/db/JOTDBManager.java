@@ -26,7 +26,7 @@ import net.jot.logger.JOTLogger;
 public class JOTDBManager
 {
     // singleton
-    private static JOTDBManager dbManager = null;
+    private final static JOTDBManager dbManager = new JOTDBManager();
     private Hashtable dbs = new Hashtable();
 
     /**
@@ -35,10 +35,6 @@ public class JOTDBManager
      */
     public static JOTDBManager getInstance()
     {
-        if (dbManager == null)
-        {
-            dbManager = new JOTDBManager();
-        }
         return dbManager;
     }
 
@@ -404,12 +400,5 @@ public class JOTDBManager
         return result;
     }
 
-    static
-    {
-        if (dbManager == null)
-        {
-            dbManager = new JOTDBManager();
-        }
-    }
 }
 
