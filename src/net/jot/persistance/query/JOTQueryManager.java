@@ -25,6 +25,9 @@ import net.jot.utils.JOTUtilities;
  * Ie: Vector users=JOTQueryManager.findUsingSQL(User.class, "SELECT * FROM mytable", null);
  * 
  * @author thibautc
+ * 
+ * TODO: search usimg query builder ?
+ * Ex: (JOTModel)JOTQueryManager.Query(model.class).where("name>a").where("name<x").orderBy('toto').limit(5).execute());
  *
  */
 public class JOTQueryManager

@@ -14,13 +14,15 @@ import net.jot.logger.JOTLogger;
 import net.jot.web.JOTFlowRequest;
 import net.jot.web.ajax.JOTAjaxHelper;
 import net.jot.web.ajax.JOTAjaxProvider;
-import net.jot.web.ctrl.JOTController;
+import net.jot.web.view.JOTView;
 
 /**
  * Widget Base (Ajax enabled).
+ * A widget is implemented as a view, even though it might have a bit of logic to it, 
+ * it's main job is to render data.
  * @author thibautc
  */
-public abstract class JOTWidgetBase  extends JOTController implements JOTAjaxProvider
+public abstract class JOTWidgetBase  extends JOTView implements JOTAjaxProvider
 {
 
     protected static final Pattern ARG_PATTERN = Pattern.compile("\\s*(\\S+)\\s*=\\s*'([^']*)'\\s*");
@@ -211,10 +213,9 @@ public abstract class JOTWidgetBase  extends JOTController implements JOTAjaxPro
      * @return
      * @throws java.lang.Exception
      */
-    public String process() throws Exception
+    public void prepareViewData() throws Exception
     {
         executeAjaxCall(request, response);
-        return RESULT_SUCCESS;
     }
 
     public int getId()

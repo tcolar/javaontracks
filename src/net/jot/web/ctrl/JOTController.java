@@ -20,7 +20,6 @@ import net.jot.web.JOTFlowClassCache;
 import net.jot.web.JOTFlowConfig;
 import net.jot.web.JOTFlowRequest;
 import net.jot.web.forms.JOTForm;
-import net.jot.web.view.JOTView;
 
 /**
  * Extends this generic class to implement a Controller
@@ -101,23 +100,6 @@ public abstract class JOTController
     session = request.getSession();
     data = JOTDataHolderHelper.getDataHolder(session);
   }
-
-  /**
-   * "Hack" controller to be initialized from a view.
-   * Used by widgets
-   * @param view
-   */
-  public void init(JOTView view)
-  {
-    JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTFlowClassCache.class, "Initializing controller.");
-    filterChain = view.filterChain;
-    filterConfig = view.filterConfig;
-    request = view.request;
-    response = view.response;
-    session = view.session;
-    data = JOTDataHolderHelper.getDataHolder(session);
-  }
-
 
   /**
   * This is the implementaion of the "meat" of your controller, where the controller does it's stuff (logic)
