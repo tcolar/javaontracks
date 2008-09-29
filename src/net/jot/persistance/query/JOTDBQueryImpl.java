@@ -449,7 +449,7 @@ public class JOTDBQueryImpl implements JOTQueryInterface
           JOTDBManager.getInstance().releaseConnection(con);
           throw (e);
         }
-      // if failure revert the dataId to -1 ?	
+      // TODO: rollback if -1 ?	
       }
       else
       {
