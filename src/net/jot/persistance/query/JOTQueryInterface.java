@@ -23,13 +23,13 @@ import net.jot.persistance.JOTSQLQueryParams;
  */
 public interface JOTQueryInterface
 {
-        
+
 	/**
 	 * Returns the record whith the given ID <br>
 	 * @param dataId
 	 * @return
 	 */
-	public JOTModel findByID(JOTModelMapping mapping, Class objectClass, long id) throws Exception;
+	public JOTModel findByID(JOTTransaction transaction, JOTModelMapping mapping, Class objectClass, long id) throws Exception;
 		
 	/**
 	 * This is here, if you want to make manual custom SQL calls not covered by the other methods<br>
@@ -41,19 +41,19 @@ public interface JOTQueryInterface
 	 * @param params ie: ['John','Doe']
 	 * @return
 	 */
-	public Vector findUsingSQL(JOTModelMapping mapping, Class objectClass,String sql, Object[] params) throws Exception;
+	public Vector findUsingSQL(JOTTransaction transaction, JOTModelMapping mapping, Class objectClass,String sql, Object[] params) throws Exception;
 	
 	/**
 	 * Returns the first records matching the parameters<br>
 	 * @return
 	 */
-	public JOTModel findOne(JOTModelMapping mapping, Class objectClass,JOTSQLQueryParams params) throws Exception;
+	public JOTModel findOne(JOTTransaction transaction, JOTModelMapping mapping, Class objectClass,JOTSQLQueryParams params) throws Exception;
 
 	/**
 	 * Returns all the records matching the parameters<br>
 	 * @return
 	 */
-	public Vector find(JOTModelMapping mapping, Class objectClass,JOTSQLQueryParams params) throws Exception;
+	public Vector find(JOTTransaction transaction, JOTModelMapping mapping, Class objectClass,JOTSQLQueryParams params) throws Exception;
 
 	public void createTable(JOTModelMapping mapping) throws Exception; 
 
@@ -62,7 +62,7 @@ public interface JOTQueryInterface
          * @param model
          * @throws java.lang.Exception
          */
-	public void save(JOTModel model) throws Exception;
+	public void save(JOTTransaction transaction, JOTModel model) throws Exception;
 
         /**
          * Delete the WHOLE TABLE in backend
@@ -76,7 +76,7 @@ public interface JOTQueryInterface
          * @param model
          * @throws java.lang.Exception
          */
-	public void delete(JOTModel model) throws Exception;
+	public void delete(JOTTransaction transaction, JOTModel model) throws Exception;
 
         /**
          * Add a new Field to a table
@@ -85,48 +85,5 @@ public interface JOTQueryInterface
          */
         public void alterAddField(JOTModelMapping mapping, JOTDBField field, Object defaultValue) throws Exception;
         
-        
-        /**
-         * Removed a field from a table
-         * THAT FIELD/Column DATA WILL BE LOST.
-         * @throws java.lang.Exception
-         */
-        //public void alterRemoveField(String fieldName) throws Exception;
-
-        
-   /*
-   * Following methods do not have simple standard/Ansi SQL implementation
-   * To make those happend without using non standard SQL, iw will requitre create a new
-   * table and copying over all the data...
-   * TODO: implement those later
-   */
-        /**
-         * Renames an existing table
-         * @throws java.lang.Exception
-         */
-        //public void renameTable(String oldName, String newName) throws Exception;
-
-        
-        /**
-         * Rename an existing field in the table.
-         * @throws java.lang.Exception
-         */
-        //public void alterRenameField(String oldName, String newName) throws Exception;
-
-        /**
-         * Change the field type to something else, for example:
-         * A limited type of conversion are available, since it makes no sense to for example convert an INT field into a Date etc...
-         * Use the ALTER_** types provided in JOTDBUpdater as alteration type: ie: ALTER_TYPE_TINYINT_TO_SMALLINT
-         * Call in succession if neded, ie: to go from tinyInt to int: 
-         * ALTER_TYPE_TINYINT_TO_SMALLINT ALTER_TYPE_SMALLINT_TO_INT
-         * @throws java.lang.Exception
-         */
-        //public void alterFieldType(String fieldName, int alterType) throws Exception;
-        
-        /**
-         * Change the size of a varchar(text) field
-         * NOTE THAT IF THE NEW SIZE IS SMALLER, SOME OF THE EXISTING STRINGS MIGHT GET TRONCATED to the new smaller size.
-         * @throws java.lang.Exception
-         */
-        //public void alterVarcharLength(String fieldName, int newLength) throws Exception;
+  
 }

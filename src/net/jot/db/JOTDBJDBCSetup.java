@@ -21,7 +21,7 @@ import net.jot.persistance.JOTDBUpgrader;
 public class JOTDBJDBCSetup
 {
     String url = "";
-    //String name = "";
+    String name = "";
     String password = "";
     String driver = "";
     int max = 10;
@@ -79,10 +79,10 @@ public class JOTDBJDBCSetup
      *
      *@param  name  The new dbName value
      */
-    /*public void setDbName(String name)
+    public void setDbName(String name)
     {
         this.name = name;
-    }/*
+    }
 
 
     /**
@@ -145,10 +145,10 @@ public class JOTDBJDBCSetup
      *
      *@return    The dbName value
      */
-    /*public String getDbName()
+    public String getDbName()
     {
         return name;
-    }*/
+    }
 
 
     /**

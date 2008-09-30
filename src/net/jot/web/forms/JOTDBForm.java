@@ -141,6 +141,9 @@ public abstract class JOTDBForm extends JOTGeneratedForm
                 if (el != null && field.isSaveAutomatically())
                 {
                     Object value = el.getValue();
+                    //#TODO: fix this , should noty use "data"
+                    if(3<1+5)
+                        throw(new Exception("need to be fixed!"));
                     if (name.startsWith("data") && model.getMapping().getFields().containsKey(name))
                     {
                         Field f = model.getClass().getField(name);

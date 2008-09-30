@@ -31,22 +31,30 @@ public class JOTInitializer
     private static boolean destroyed = false;
     public static final String VERSION = "0.1.2";
 
+    // singleton
+    private static final JOTInitializer initializer = new JOTInitializer();
+
+    public static JOTInitializer getInstance()
+    {
+        return initializer;
+    }
+    private boolean testMode = false;
+
     /**
      * Initializes JOT
      *
      */
-    public static void init() throws Exception
+    public void init() throws Exception
     {
         // give time to debugger to start
-        Thread.sleep(5000);
-        
+        //Thread.sleep(5000);        
         destroyed = false;
         // Initializing the prefs (we need the prefs to initialized the logger)
         JOTPreferenceInterface prefs = JOTPreferences.getInstance();
         // Initializing the Logger
         JOTLogger.init(prefs, "jot.log");
         // Initialize the persistance / databases(s).
-        JOTPersistanceManager.init(prefs);
+        JOTPersistanceManager.getInstance().init(prefs);
     }
 
     /**
@@ -54,7 +62,7 @@ public class JOTInitializer
      * Cleans up all resources (close open files, stop threads etc ...)
      *
      */
-    public static void destroy()
+    public void destroy()
     {
         if (!destroyed)
         {
@@ -63,7 +71,7 @@ public class JOTInitializer
             try
             {
                 JOTLogger.log(JOTLogger.CAT_MAIN, JOTLogger.DEBUG_LEVEL, JOTInitializer.class, "Stopping PersistanceManager");
-                JOTPersistanceManager.destroy();
+                JOTPersistanceManager.getInstance().destroy();
                 JOTLogger.log(JOTLogger.CAT_MAIN, JOTLogger.DEBUG_LEVEL, JOTInitializer.class, "Stopping FSIndexManager");
                 JOTFSIndexManager.destroy();
                 JOTLogger.log(JOTLogger.CAT_MAIN, JOTLogger.DEBUG_LEVEL, JOTInitializer.class, "Stopping Logger");
@@ -86,9 +94,13 @@ public class JOTInitializer
         super.finalize();
     }
 
-    public static void testMethod()
+    public void setTestMode(boolean b)
     {
-        JOTLogger.log(JOTLogger.CAT_MAIN, JOTLogger.ERROR_LEVEL, JOTInitializer.class, "########## test method #######");
+        testMode = b;
+    }
 
+    public boolean isTestMode()
+    {
+        return testMode;
     }
 }

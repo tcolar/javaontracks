@@ -82,7 +82,7 @@ public class JOTMainFilter extends HttpServlet implements Filter
             confPath = filterConfig.getServletContext().getRealPath("/jotconf");
             JOTPreferences.setWebConfPath(confPath);
             // initialize JOT (and the prefs)
-            JOTInitializer.init();
+            JOTInitializer.getInstance().init();
             // load the flow config ...
             flowConfig = JOTFlowManager.init(confPath);
             if (flowConfig.getTemplateRoots() == null)
@@ -178,7 +178,7 @@ public class JOTMainFilter extends HttpServlet implements Filter
     public void destroy()
     {
         filterConfig = null;
-        JOTInitializer.destroy();
+        JOTInitializer.getInstance().destroy();
     }
 
     /**

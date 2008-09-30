@@ -9,10 +9,12 @@ http://www.javaontracks.net
 package net.jot.persistance;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import net.jot.JOTInitializer;
 import net.jot.db.JOTDBField;
 import net.jot.db.JOTDBJDBCSetup;
 import net.jot.logger.JOTLogger;
@@ -20,6 +22,7 @@ import net.jot.persistance.query.JOTDBQueryImpl;
 import net.jot.persistance.query.JOTFSQueryImpl;
 import net.jot.persistance.query.JOTQueryInterface;
 import net.jot.persistance.query.JOTQueryManager;
+import net.jot.persistance.query.JOTTransaction;
 
 /**
  * Generic Persistance model<br>
@@ -36,17 +39,17 @@ import net.jot.persistance.query.JOTQueryManager;
  */
 public abstract class JOTModel
 {
-    // lowercase -> actual field name mapping
-    private Hashtable fieldNames;
     /**
-     *  The "dataId" of the object in the database (ie: primary key)
+     *  The "id" of the object in the database (ie: primary key)
      */
-    protected long dataId = -1;
-    protected Class queryImplClass = null;
-    private String storage;
-    protected final static String DEFAULT_STORAGE = "default";
-    
-    private /*transient*/ JOTModelMapping mapping = null;
+    protected long id = -1;
+
+    // lowercase -> actual field name mapping
+    private transient Hashtable fieldNames;
+    protected transient Class queryImplClass = null;
+    private transient String storage;
+    protected transient final static String DEFAULT_STORAGE = "default";
+    private transient JOTModelMapping mapping = null;
 
     /**
      * Called to get the table mapping.
@@ -69,7 +72,7 @@ public abstract class JOTModel
                 loadFields(mapping);
                 customize(mapping);
                 createTableIfNecessary(mapping);
-                if (!JOTPersistanceManager.isDBUpgradeRunning())
+                if (!JOTPersistanceManager.getInstance().isDBUpgradeRunning())
                 {
                     // during an upgrade this would fail.
                     validateMetadata(mapping);
@@ -113,7 +116,11 @@ public abstract class JOTModel
                 type = "VARCHAR";
             }
             String field = fields[i].getName();
-            if (field.startsWith("data"))
+            
+            boolean skip=Modifier.isTransient(fields[i].getModifiers());
+            skip=skip || field.startsWith("__");
+            
+            if (!skip)
             {
                 boolean ignore = false;
                 for (int j = 0; j != ignoredFields.length; j++)
@@ -160,7 +167,7 @@ public abstract class JOTModel
     public Object[] getFieldValues(JOTModelMapping mapping, JOTSQLCondition[] conds)
     {
         Vector results = new Vector();
-        results.add(new Long(dataId));
+        results.add(new Long(id));
         Enumeration e = mapping.getFields().keys();
         while (e.hasMoreElements())
         {
@@ -171,7 +178,7 @@ public abstract class JOTModel
                 results.add(value);
             } catch (Exception ex)
             {
-                JOTLogger.logException(JOTLogger.CAT_DB, JOTLogger.ERROR_LEVEL, this, "Could not get the value of " + fieldName , ex);
+                JOTLogger.logException(JOTLogger.CAT_DB, JOTLogger.ERROR_LEVEL, this, "Could not get the value of " + fieldName, ex);
             }
         }
         if (conds != null && conds.length > 0)
@@ -189,62 +196,68 @@ public abstract class JOTModel
 
     public Object getFieldValue(String fieldName)
     {
-        if(fieldNames==null)
+        if (fieldNames == null)
         {
-            synchronized(this)
+            synchronized (this)
             {
-                fieldNames=new Hashtable();
-                Field[] fields=getClass().getFields();
-                for(int i=0;i!=fields.length;i++)
+                fieldNames = new Hashtable();
+                Field[] fields = getClass().getFields();
+                for (int i = 0; i != fields.length; i++)
                 {
-                    fieldNames.put(fields[i].getName().toLowerCase(),fields[i].getName());
+                    fieldNames.put(fields[i].getName().toLowerCase(), fields[i].getName());
                 }
             }
         }
         Object value = null;
         try
         {
-            String realName=(String)fieldNames.get(fieldName.toLowerCase());
-            if(realName==null)
+            String realName = (String) fieldNames.get(fieldName.toLowerCase());
+            if (realName == null)
             {
-                throw new Exception("Could not find real name of field: "+fieldName+"!!");
+                throw new Exception("Could not find real name of field: " + fieldName + "!!");
             }
             value = getClass().getField(realName).get(this);
         } catch (Exception ex)
         {
-            JOTLogger.logException(JOTLogger.CAT_DB, JOTLogger.INFO_LEVEL, this, "Could not get the value of " + fieldName , ex);
+            JOTLogger.logException(JOTLogger.CAT_DB, JOTLogger.INFO_LEVEL, this, "Could not get the value of " + fieldName, ex);
         }
         return value;
     }
 
     public long getId()
     {
-        return dataId;
+        return id;
     }
 
     public void setId(int id)
     {
-        this.dataId = id;
+        this.id = id;
     }
 
     /**
      * Deletes the coresponding record from the database
      */
+    public void delete(JOTTransaction transaction) throws Exception
+    {
+        JOTQueryManager.delete(transaction, this);
+    }
+
     public void delete() throws Exception
     {
-        JOTModelMapping mapping = JOTQueryManager.getMapping(getClass());
-        JOTQueryInterface impl = JOTQueryManager.getImplementation(mapping.getQueryClassName());
-        impl.delete(this);
+        delete(null);
     }
 
     /**
      * Save/update the table in teh database.
      */
+    public void save(JOTTransaction transaction) throws Exception
+    {
+        JOTQueryManager.save(transaction, this);
+    }
+
     public void save() throws Exception
     {
-        JOTModelMapping mapping = JOTQueryManager.getMapping(getClass());
-        JOTQueryInterface impl = JOTQueryManager.getImplementation(mapping.getQueryClassName());
-        impl.save(this);
+        save(null);
     }
 
     /**
@@ -258,7 +271,7 @@ public abstract class JOTModel
 
     public boolean isNew()
     {
-        return dataId == -1;
+        return id == -1;
     }
 
     /**
@@ -274,7 +287,7 @@ public abstract class JOTModel
     public void initQueryImplClass() throws Exception
     {
         storage = defineStorage();
-        Object db = JOTPersistanceManager.databases.get(storage);
+        Object db = JOTPersistanceManager.getInstance().getDatabases().get(storage);
         if (db != null)
         {
             if (db instanceof JOTDBFSSetup)
@@ -285,8 +298,12 @@ public abstract class JOTModel
                 queryImplClass = JOTDBQueryImpl.class;
             } else
             {
-                throw new Exception("Storage: " + storage + " is undefined !!");
+                throw new Exception("DB type unsuppported: " + storage + " !");
             }
+        } else
+        {
+            String name=JOTInitializer.getInstance().isTestMode()?"test":storage;
+            throw new Exception("Storage(DB): '" + name + "' is not defined in jot.properties!!");
         }
     }
 

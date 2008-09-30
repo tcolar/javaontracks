@@ -12,7 +12,7 @@ import net.jot.testing.JOTTester;
  * Internal Test case for interface method of unit testing
  * @author thibautc
  */
-public class JOTTestITest implements JOTTestable
+public class InterfaceTestTest implements JOTTestable
 {
     private static int add(int i1,int i2)
     {
@@ -21,7 +21,7 @@ public class JOTTestITest implements JOTTestable
     
     public void jotTest() throws Throwable
     {
-        JOTTestTest test=new JOTTestTest();
+        TestTest test=new TestTest();
         JOTTester.checkIf("Silly math Test(I)", add(1,3)==4);
     }
 }

@@ -14,6 +14,7 @@ import java.io.FileOutputStream;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+import net.jot.JOTInitializer;
 import net.jot.db.JOTDBJDBCSetup;
 import net.jot.db.JOTDBManager;
 import net.jot.logger.JOTLogger;
@@ -29,39 +30,65 @@ import net.jot.utils.JOTUtilities;
  */
 public class JOTPersistanceManager
 {
-  // true while a db upgrade is in process
-  private static boolean upgradeRunning;
-
   public final static String DBTYPE_JOTDB = "jotdb";
   public final static String DBTYPE_JDBC = "jdbc";
-  public static String jotdbFolder = null;
-  public static String versionFile = "versions.properties";
+  // true while a db upgrade is in process
+  private boolean upgradeRunning;
+
+  public String jotdbFolder = null;
+  public String versionFile = "versions.properties";
   //public static loglevels=null;
 
-  public static Hashtable databases = new Hashtable();
+  public Hashtable databases = new Hashtable();
+
+  // singleton
+  private static final JOTPersistanceManager instance=new JOTPersistanceManager();
+
+  public static JOTPersistanceManager getInstance()
+  {
+      return instance;
+  }
 
   /**
          * Initializes from the db property file
          * @param prefs
          */
-  public static void init(JOTPreferenceInterface prefs) throws Exception
+  public void init(JOTPreferenceInterface prefs) throws Exception
   {
-    databases = new Hashtable();
     loadFromPrefs(prefs);
     upgradeDbs();
   }
 
-  public static Hashtable getDatabases()
+  public Hashtable getDatabases()
   {
     return databases;
   }
 
-  public static void destroy()
+  public void destroy()
   {
     JOTDBManager.getInstance().shutdown();
   }
 
-  static boolean isDBUpgradeRunning()
+  /**
+   * return the database name for a storage
+   * @param storageName
+   * @return
+   */
+    public String getDbName(String storageName)
+    {
+        Object o=getDatabases().get(storageName);
+        if(o instanceof JOTDBFSSetup)
+        {
+            return ((JOTDBFSSetup)o).getName();
+        }
+        else if(o instanceof JOTDBJDBCSetup)
+        {
+            return ((JOTDBJDBCSetup)o).getDbName();
+        }
+        return null;
+    }
+
+  boolean isDBUpgradeRunning()
   {
     return upgradeRunning;
   }
@@ -70,8 +97,9 @@ public class JOTPersistanceManager
          * loads the db property file
          * @param prefs
          */
-  private static void loadFromPrefs(JOTPreferenceInterface prefs) throws Exception
+  private void loadFromPrefs(JOTPreferenceInterface prefs) throws Exception
   {
+    databases = new Hashtable();
     // Parses the prefs and load the DB list.
     String databaseList = prefs.getString("jot.db.properties_files");
 
@@ -88,10 +116,10 @@ public class JOTPersistanceManager
 
     if (databaseList != null)
     {
-      String[] databases = databaseList.split(",");
-      for (int i = 0; i != databases.length; i++)
+      String[] dbs = databaseList.split(",");
+      for (int i = 0; i != dbs.length; i++)
       {
-        String dbProps = databases[i];
+        String dbProps = dbs[i];
         File props = ((JOTPreferences) prefs).findAssociatedPropsFile(dbProps);
         if (props != null)
         {
@@ -110,10 +138,9 @@ public class JOTPersistanceManager
          * Loads the databases according to the property file
          * @param props
          */
-  private static void loadDbs(File props) throws Exception
+  private void loadDbs(File props) throws Exception
   {
     String dbHandle = null;
-    databases = new Hashtable();
     JOTPropertiesPreferences dbPrefs = new JOTPropertiesPreferences();
     try
     {
@@ -132,10 +159,20 @@ public class JOTPersistanceManager
         }
         else
         {
+          // during test we want only the "test" db loaded as "default"
+          String dbKey=dbHandle;
+          if(JOTInitializer.getInstance().isTestMode())
+          {
+              if(! dbHandle.equalsIgnoreCase("test"))
+                  return;
+              else
+                  dbKey="default";
+          }
           // load db
           if (type.equalsIgnoreCase(DBTYPE_JDBC))
           {
             JOTDBJDBCSetup setup = new JOTDBJDBCSetup();
+            setup.setDbName(dbHandle);
             String upgrader = dbPrefs.getString("db.upgrader.class");
             setup.setUpgraderClass(upgrader);
             String url = dbPrefs.getString("db.jdbc.url");
@@ -178,10 +215,11 @@ public class JOTPersistanceManager
               if(! new File(getDbBackupFolder(dbHandle)).exists())
                       new File(getDbBackupFolder(dbHandle)).mkdirs();
               JOTDBFSSetup setup = new JOTDBFSSetup();
+              setup.setName(dbHandle);
               String upgrader = dbPrefs.getString("db.upgrader.class");
               setup.setUpgraderClass(upgrader);
               //	other options to read ??
-              databases.put(dbHandle, setup);
+              databases.put(dbKey, setup);
               JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.INFO_LEVEL, "DBManager", "Added jotdb Database: " + dbHandle);
             }
           }
@@ -201,7 +239,7 @@ public class JOTPersistanceManager
     }
   }
 
-  public static int getDbVersion(String db)
+  public int getDbVersion(String db)
   {
     int version = 1;
     JOTDBUpgrader upgrader=getUpgrader(db);
@@ -213,7 +251,7 @@ public class JOTPersistanceManager
   }
 
   
-  public static JOTDBUpgrader getUpgrader(String db)
+  public JOTDBUpgrader getUpgrader(String db)
   {
     Object o = databases.get(db);
     Class upgrader = null;
@@ -237,7 +275,7 @@ public class JOTPersistanceManager
   /**
    * Whole method is synchronized to ensure the DB's are untouched during upgrade.
    */
-  private synchronized static void upgradeDbs() throws Exception
+  private synchronized void upgradeDbs() throws Exception
   {
     Enumeration keys = databases.keys();
     while (keys.hasMoreElements())
@@ -315,7 +353,7 @@ public class JOTPersistanceManager
     }
   }
 
-  private static int getCurrentDBVersion(String dbName)
+  private int getCurrentDBVersion(String dbName)
   {
     // if the db does not exist yet, then it will be created with the current version #
     int version = getUpgrader(dbName).getLatestVersion();
@@ -347,7 +385,7 @@ public class JOTPersistanceManager
     return version;
   }
 
-  private static void setCurrentDBVersion(String dbName, int version)
+  private void setCurrentDBVersion(String dbName, int version)
   {
     File f = new File(jotdbFolder, versionFile);
     JOTPropertiesPreferences versions = new JOTPropertiesPreferences();
@@ -369,17 +407,17 @@ public class JOTPersistanceManager
     }
   }
 
-  public static String getDbFolder(String dbName)
+  public String getDbFolder(String dbName)
   {
     return JOTUtilities.endWithSlash(JOTUtilities.endWithSlash(jotdbFolder)+dbName);
   }
   
-  public static String getDbBackupFolder(String dbName)
+  public String getDbBackupFolder(String dbName)
   {
     return JOTUtilities.endWithSlash(getDbFolder(dbName)+"__BACKUPS__");
   }
   
-  public static String backupDb(String dbName) throws Exception
+  public String backupDb(String dbName) throws Exception
   {
      JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.INFO_LEVEL, "DBManager", "Starting backup of DB: " + dbName);
      String dbFolder=getDbFolder(dbName);
@@ -392,12 +430,27 @@ public class JOTPersistanceManager
      return backupFolder;
   }
   
-  private static void restoreDb(String dbName, String backupFolder) throws Exception
+  private void restoreDb(String dbName, String backupFolder) throws Exception
   {
     JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.INFO_LEVEL, "DBManager", "Starting restore of DB: " + dbName+" from"+backupFolder);
     JOTUtilities.copyFolderContent(new File(getDbFolder(dbName)), new File(backupFolder), false);
     JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.INFO_LEVEL, "DBManager", "Completed restore of DB: " + dbName);    
   }
-  
-  
+
+  /**
+   * Used by test module to temporarely set the "test" db as the default one.
+   */
+  public void setTestDbAsDefault() throws Exception
+  {
+      Hashtable dbs=getDatabases();
+      if(dbs.containsKey("test"))
+      {
+          dbs.remove("default");
+          dbs.put("default",dbs.get("test"));
+      }
+      else
+      {
+          throw new Exception("no DB called 'test' defined in jot.properties, only found"+dbs.keys());
+      }
+  }
 }

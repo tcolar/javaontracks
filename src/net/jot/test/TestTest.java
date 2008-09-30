@@ -11,7 +11,7 @@ import net.jot.testing.JOTTester;
  * Internal Test case for static method of unit testing
  * @author thibautc
  */
-public class JOTTestTest 
+public class TestTest
 {
     private static int add(int i1,int i2)
     {
@@ -20,7 +20,7 @@ public class JOTTestTest
     
     public static void jotTest() throws Throwable
     {
-        JOTTestTest test=new JOTTestTest();
+        TestTest test=new TestTest();
         JOTTester.checkIf("Silly math Test", test.add(1,3)==4);
     }
 }

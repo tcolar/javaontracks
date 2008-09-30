@@ -17,6 +17,7 @@ import java.lang.reflect.Method;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
+import net.jot.JOTInitializer;
 import net.jot.utils.JOTUtilities;
 
 /**
@@ -39,11 +40,11 @@ public class JOTTester
     /**
      * The name of the test method
      */
-    public static final String TEST_METHOD_NAME = "jotTest";
+    protected static final String TEST_METHOD_NAME = "jotTest";
     /**
      * The Regular Expression to split classpathentries [:;]
      */
-    public static final String SPLIT_REGEXP = "[:;]";
+    private static final String SPLIT_REGEXP = "[:;]";
     private static final String OPTION_INCL_PK = "-includePackages=";
     private static final String OPTION_EXCL_PK = "-excludePackages=";
     private static final String OPTION_SOF = "-stopOnFailure=";
@@ -59,8 +60,6 @@ public class JOTTester
     private static final int OUTPUT_TYPE_NONE = 0;
     private static final int OUTPUT_TYPE_SUCCESS = 1;
     private static final int OUTPUT_TYPE_ERROR = 2;    // variables
-    //singleton
-    private static JOTTester tester = null;
     private String currentClass = "";
     private int numberOfTests = 0;
     private int numberOfFailures = 0;
@@ -75,23 +74,15 @@ public class JOTTester
     private String includePkgs = ".*";
     private String excludePkgs = null;
 
+        //singleton
+    private static JOTTester tester = new JOTTester();
+
     private JOTTester()
     {
-        // use getInstance() to create.
     }
 
     public static JOTTester getInstance()
     {
-        if (tester == null)
-        {
-            synchronized (JOTTester.class)
-            {
-                if (tester == null)
-                {
-                    tester = new JOTTester();
-                }
-            }
-        }
         return tester;
     }
 
@@ -284,7 +275,7 @@ public class JOTTester
                 // this is not a testable method .. ignore.
                 debug(className + "is not testable");
             }
-        } catch (Throwable t)
+        }catch (Throwable t)
         {
             // unexpected Exception thrown by test code
             output("An unexpected Exception was Thrown !" + t.getMessage(), OUTPUT_TYPE_ERROR);
@@ -313,7 +304,6 @@ public class JOTTester
      */
     public static boolean checkIf(String message, boolean test, String failureInfos) throws JOTTestException
     {
-        JOTTester tester = getInstance();
         tester.numberOfTests++;
         if (!test)
         {
@@ -413,11 +403,8 @@ public class JOTTester
      */
     public static boolean checkThrowsException(Class exceptionType, String method, Object[] args) throws JOTTestException
     {
-        JOTTester tester = getInstance();
-
         boolean result = false;
         tester.numberOfTests++;
-
         try
         {
             Class[] types = null;
@@ -464,8 +451,6 @@ public class JOTTester
      */
     public static void main(String[] args)
     {
-        JOTTester tester = getInstance();
-
         if (args.length < 1)
         {
             tester.displayHelp();
@@ -552,7 +537,21 @@ public class JOTTester
             }
         }
 
-        tester.runTests(classpath);
+        try
+        {
+            tag("--- Initializing JOT env.---");
+            JOTInitializer initializer=JOTInitializer.getInstance();
+            initializer.setTestMode(true);
+            initializer.init();
+            tag("--- Starting tests.---");
+            tester.runTests(classpath);
+            tag("--- Shutting down JOT env.---");
+            JOTInitializer.getInstance().destroy();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
     private void displayHelp()

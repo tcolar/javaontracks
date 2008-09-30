@@ -36,7 +36,7 @@ public class JOTModelMapping
     private static final String TABLE_DATA_ROW_LENGTH = "Row-Length:";
     public boolean createMissingTables = JOTPreferences.getInstance().getDefaultedBoolean("jot.db.create_missing_tables", Boolean.TRUE).booleanValue();
     private String storageName = "default";
-    private String primaryKey = "dataid";
+    private String primaryKey = "id";
     private String tableName = null;
     private Hashtable mappedFields = new Hashtable();
     private String[] ignoredFields =
@@ -83,6 +83,11 @@ public class JOTModelMapping
         {
             f.setMinLength(value);
         }
+    }
+
+    public String getDBName()
+    {
+        return JOTPersistanceManager.getInstance().getDbName(storageName);
     }
 
     public String getInsertString()
@@ -218,6 +223,11 @@ public class JOTModelMapping
         this.primaryKey = primaryKey;
     }
 
+    /**
+     * Storage name is the name of the storage definition
+     * can be different than the db name defined in the prop file itself.
+     * @return
+     */
     public String getStorageName()
     {
         return storageName;
@@ -358,12 +368,12 @@ public class JOTModelMapping
     public static synchronized void writeMetaFile(JOTModelMapping mapping) throws Exception
     {
         // create the meta file.
-        File dbFolder = new File(JOTPersistanceManager.getDbFolder(mapping.getStorageName()));
+        File dbFolder = new File(JOTPersistanceManager.getInstance().getDbFolder(mapping.getDBName()));
         dbFolder.mkdirs();
         File metaFile = new File(dbFolder, mapping.getTableName() + META_FILE_EXTENSION);
         String header = mapping.getMeta();
         PrintWriter writer = new PrintWriter(new FileWriter(metaFile));
-        writer.println(TABLE_VERSION_STRING + JOTPersistanceManager.getDbVersion(mapping.getStorageName()));
+        writer.println(TABLE_VERSION_STRING + JOTPersistanceManager.getInstance().getDbVersion(mapping.getStorageName()));
         writer.println(TABLE_DATA_ROW_LENGTH + mapping.getDataSize());
         writer.println(header);
         writer.flush();
@@ -373,7 +383,7 @@ public class JOTModelMapping
     public static synchronized JOTModelMeta readMetaFile(JOTModelMapping mapping) throws Exception
     {
         // create the meta file.
-        File metaFile = new File(JOTPersistanceManager.getDbFolder(mapping.getStorageName()), mapping.getTableName() + META_FILE_EXTENSION);
+        File metaFile = new File(JOTPersistanceManager.getInstance().getDbFolder(mapping.getDBName()), mapping.getTableName() + META_FILE_EXTENSION);
         BufferedReader reader = new BufferedReader(new FileReader(metaFile));
         String s = null;
         JOTModelMeta meta = new JOTModelMeta();
@@ -398,7 +408,7 @@ public class JOTModelMapping
     public static void deleteMetaFile(JOTModelMapping mapping)
     {
         String meta = mapping.getTableName() + META_FILE_EXTENSION;
-        File f = new File(JOTPersistanceManager.getDbFolder(mapping.getStorageName()), meta);
+        File f = new File(JOTPersistanceManager.getInstance().getDbFolder(mapping.getStorageName()), meta);
         if (f.exists())
         {
             f.delete();

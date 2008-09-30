@@ -18,11 +18,22 @@ public class JOTDBFSSetup
 {
 
   private Class upgrader=null;
+  private String name=null;
 
   public Class getUpgraderClass()
   {
     return upgrader;
   }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
+    }
   
   public void setUpgraderClass(String updaterClass)
   {

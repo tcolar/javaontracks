@@ -43,6 +43,8 @@ import net.jot.utils.JOTUtilities;
  * 
  * We use an "index" file to speed up things and cleanup data file during vacuum
  *
+ * Does not support transactions.
+ *
  * @author thibautc
  *
  */
@@ -62,8 +64,9 @@ public class JOTFSQueryImpl implements JOTQueryInterface
   private Hashtable tableFiles = new Hashtable();
   private Hashtable indexFiles = new Hashtable();
 
-  public JOTModel findByID(JOTModelMapping mapping, Class objectClass, long id) throws Exception
+  public JOTModel findByID(JOTTransaction transaction, JOTModelMapping mapping, Class objectClass, long id) throws Exception
   {
+    warnTransaction(transaction);
     JOTFSIndex index = JOTFSIndexManager.getIndex(mapping);
     long ptr = index.getIndexValue((long) id);
 
@@ -78,8 +81,9 @@ public class JOTFSQueryImpl implements JOTQueryInterface
     return null;
   }
 
-  public Vector find(JOTModelMapping mapping, Class objectClass, JOTSQLQueryParams params) throws Exception
+  public Vector find(JOTTransaction transaction, JOTModelMapping mapping, Class objectClass, JOTSQLQueryParams params) throws Exception
   {
+    warnTransaction(transaction);
     Vector results = new Vector();
     int ptr = 0;
     RandomAccessFile dataFile = getTableFile(mapping);
@@ -245,14 +249,15 @@ public class JOTFSQueryImpl implements JOTQueryInterface
     }
   }
 
-  public JOTModel findOne(JOTModelMapping mapping, Class objectClass, JOTSQLQueryParams params) throws Exception
+  public JOTModel findOne(JOTTransaction transaction, JOTModelMapping mapping, Class objectClass, JOTSQLQueryParams params) throws Exception
   {
+    warnTransaction(transaction);
     if (params == null)
     {
       params = new JOTSQLQueryParams();
     }
     params.setLimit(1);
-    Vector result = find(mapping, objectClass, params);
+    Vector result = find(transaction, mapping, objectClass, params);
     if (result == null || result.size() < 1)
     {
       return null;
@@ -422,7 +427,7 @@ public class JOTFSQueryImpl implements JOTQueryInterface
 
   public void createTable(JOTModelMapping mapping) throws Exception
   {
-    String dbFolder = JOTPersistanceManager.getDbFolder(mapping.getStorageName());
+    String dbFolder = JOTPersistanceManager.getInstance().getDbFolder(mapping.getDBName());
     String table = mapping.getTableName() + TABLE_FILE_EXTENSION;
     File f = new File(dbFolder, table);
 
@@ -436,7 +441,7 @@ public class JOTFSQueryImpl implements JOTQueryInterface
 
   public void deleteTable(JOTModelMapping mapping) throws Exception
   {
-    String dbFolder = JOTPersistanceManager.getDbFolder(mapping.getStorageName());
+    String dbFolder = JOTPersistanceManager.getInstance().getDbFolder(mapping.getDBName());
     String table = mapping.getTableName() + TABLE_FILE_EXTENSION;
     File f = new File(dbFolder, table);
     if (f.exists())
@@ -460,7 +465,7 @@ public class JOTFSQueryImpl implements JOTQueryInterface
       {
         if (tableFiles.get(mapping.getTableName()) == null)
         {
-          String dbFolder = JOTPersistanceManager.getDbFolder(mapping.getStorageName());
+          String dbFolder = JOTPersistanceManager.getInstance().getDbFolder(mapping.getDBName());
           String table = mapping.getTableName() + TABLE_FILE_EXTENSION;
           File f = new File(dbFolder, table);
           RandomAccessFile rf = new RandomAccessFile(f, "rwd");
@@ -479,7 +484,7 @@ public class JOTFSQueryImpl implements JOTQueryInterface
       {
         if (indexFiles.get(mapping.getTableName()) == null)
         {
-          String dbFolder = JOTPersistanceManager.getDbFolder(mapping.getStorageName());
+          String dbFolder = JOTPersistanceManager.getInstance().getDbFolder(mapping.getDBName());
           String table = mapping.getTableName() + INDEX_FILE_EXTENSION;
           File f = new File(dbFolder, table);
           // rwd means read and write synchronously
@@ -491,8 +496,9 @@ public class JOTFSQueryImpl implements JOTQueryInterface
     return (RandomAccessFile) indexFiles.get(mapping.getTableName());
   }
 
-  public synchronized void delete(JOTModel model) throws Exception
+  public synchronized void delete(JOTTransaction transaction, JOTModel model) throws Exception
   {
+    warnTransaction(transaction);
     JOTModelMapping mapping = model.getMapping();
     JOTFSIndex index = JOTFSIndexManager.getIndex(mapping);
     long dataPtr = index.getIndexValue(model.getId());
@@ -519,8 +525,9 @@ public class JOTFSQueryImpl implements JOTQueryInterface
   /**
 	 * Save/update the table in the database.
 	 */
-  public void save(JOTModel model) throws Exception
+  public void save(JOTTransaction transaction, JOTModel model) throws Exception
   {
+    warnTransaction(transaction);
     JOTModelMapping mapping = model.getMapping();
     if (model.getId() == -1)
     {
@@ -537,7 +544,7 @@ public class JOTFSQueryImpl implements JOTQueryInterface
         dataFile.write(data);
         index.addEntry(/*indexFile,*/(long) model.getId(), value);
       }
-      JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.DEBUG_LEVEL, this, "Saved " + mapping.getTableName() + " : " + model.getId() + " into " + JOTPersistanceManager.getDbFolder(mapping.getStorageName()) + "/" + mapping.getTableName() + TABLE_FILE_EXTENSION);
+      JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.DEBUG_LEVEL, this, "Saved " + mapping.getTableName() + " : " + model.getId() + " into " + JOTPersistanceManager.getInstance().getDbFolder(mapping.getDBName()) + "/" + mapping.getTableName() + TABLE_FILE_EXTENSION);
     }
     else
     {
@@ -700,7 +707,7 @@ public class JOTFSQueryImpl implements JOTQueryInterface
     return buf.array();
   }
 
-  public void buildFieldData(ByteBuffer buf, JOTDBField field, Object object)
+  private void buildFieldData(ByteBuffer buf, JOTDBField field, Object object)
   {
     if (object instanceof Boolean)
     {
@@ -811,10 +818,10 @@ public class JOTFSQueryImpl implements JOTQueryInterface
 
   }
 
-  public Vector findUsingSQL(JOTModelMapping mapping, Class objectClass, String sql, Object[] params) throws Exception
+  public Vector findUsingSQL(JOTTransaction transaction, JOTModelMapping mapping, Class objectClass, String sql, Object[] params) throws Exception
   {
-    JOTLogger.logException(JOTLogger.CAT_DB, JOTLogger.ERROR_LEVEL, this, "FindUsingSQL is not supported by jotfs !", new Exception("FindUsingSQL is not supported by jotfs !"));
-    return null;
+    throw(new Exception("FindUsingSQL is not supported by jotfs !"));
+    //return null;
   }
 
   // TODO: + provide a config entry to vacuum dbs dusing startup ie: db.fs.vacuum=user,toto,dada
@@ -835,7 +842,7 @@ public class JOTFSQueryImpl implements JOTQueryInterface
     // remove empty data entries and create new data file
     int keptData = 0;
     int droppedData = 0;
-    String dbFolder = JOTPersistanceManager.getDbFolder(mapping.getStorageName());
+    String dbFolder = JOTPersistanceManager.getInstance().getDbFolder(mapping.getDBName());
     String table = mapping.getTableName() + TABLE_FILE_EXTENSION;
     File dataF = new File(dbFolder, table);
     RandomAccessFile dataFile = new RandomAccessFile(dataF, "rwd");
@@ -947,7 +954,7 @@ public class JOTFSQueryImpl implements JOTQueryInterface
     byte[] append = getSingleFieldData(mapping, field, defaultValue);
 
     // Same code as vacuum() except we add the extra field (and use the old rowSize)
-    String dbFolder = JOTPersistanceManager.getDbFolder(mapping.getStorageName());
+    String dbFolder = JOTPersistanceManager.getInstance().getDbFolder(mapping.getDBName());
     String table = mapping.getTableName() + TABLE_FILE_EXTENSION;
     File dataF = new File(dbFolder, table);
     RandomAccessFile dataFile = new RandomAccessFile(dataF, "rwd");
@@ -1007,7 +1014,12 @@ public class JOTFSQueryImpl implements JOTQueryInterface
     JOTFSQueryImpl impl = (JOTFSQueryImpl) JOTQueryManager.getImplementation(JOTFSQueryImpl.class.getName());
     impl.reset();
   }
-  
+
+  private void warnTransaction(JOTTransaction transaction)
+  {
+      if(transaction!=null)
+          JOTLogger.info(this, "WARNING: Transactions not supported by JOTDB, will be ignored !");
+  }
 
 /*public void alterRemoveField(String fieldName) throws Exception
   {
