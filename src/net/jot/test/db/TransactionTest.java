@@ -3,13 +3,12 @@
  * and open the template in the editor.
  */
 
-package net.jot.test;
+package net.jot.test.db;
 
 import net.jot.testing.JOTTestable;
-import net.jot.testing.JOTTester;
 
 /**
- *
+ * Test DB transactions
  * @author thibautc
  */
 public class TransactionTest implements JOTTestable
@@ -18,7 +17,6 @@ public class TransactionTest implements JOTTestable
     public void jotTest() throws Throwable
     {
         //TODO: transaction tests
-        JOTTester.tag("Test1");
     }
 
 }

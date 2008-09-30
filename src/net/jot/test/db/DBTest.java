@@ -6,7 +6,7 @@ Artistic Licence 2.0
 http://www.javaontracks.net
 ------------------------------------
  */
-package net.jot.test;
+package net.jot.test.db;
 
 import java.util.Vector;
 
@@ -18,14 +18,57 @@ import net.jot.testing.JOTTestable;
 import net.jot.testing.JOTTester;
 
 /**
- * Internal JOT class for self-test
- * This is the main selftest for JOT
- * It is used to test that JOT itself is working properly
+ * Test standard ORM / DB model crud operations
  * @author thibautc
  *
  */
 public class DBTest implements JOTTestable
 {
+    public static TestUser[] _users=new TestUser[4];
+
+    /**
+     * DO NOT CHANGE the TEST DATA or TESTS WILL FAIL !!!
+     * @throws java.lang.Exception
+     */
+    public static void populateUserTestData() throws Exception
+    {
+        // create 3 test users and saves them
+        TestUser user = new TestUser();
+        // we should empty the table first and check it's empty after
+
+        user.resetTable();
+
+        JOTTester.checkIf("Testing that flushing the table worked", JOTQueryManager.findOne(TestUser.class, null) == null);
+
+        user.firstName = "John";
+        user.lastName = "Doe";
+        user.age = 25;
+        user.save();
+        _users[0]=user;
+
+        user = new TestUser();
+        user.firstName = "Jane";
+        user.lastName = "Doe";
+        user.age = 33;
+        user.save();
+        _users[1]=user;
+
+        user = new TestUser();
+        user.firstName = "Billy";
+        user.lastName = "Bob";
+        user.age = 58;
+        user.save();
+        _users[2]=user;
+
+        user = new TestUser();
+        user.firstName = "Wayne";
+        user.lastName = "Gretzky";
+        user.age = 48;
+        user.save();
+        _users[3]=user;
+
+    }
+    
     /**
      * will be called by ant test task
      * @throws Throwable
@@ -38,45 +81,16 @@ public class DBTest implements JOTTestable
 
     private static void testModel() throws Throwable
     {
-        // create 3 test users and saves them
-        TestUser user = new TestUser();
-
-        // we should empty the table first and check it's empty after
-
-        user.resetTable();
-
-        JOTTester.checkIf("Testing that flushing the table worked", JOTQueryManager.findOne(TestUser.class, null) == null);
-
-        user.firstName = "John";
-        user.lastName = "Doe";
-        user.age = 25;
-        user.save();
-
-        user = new TestUser();
-        user.firstName = "Jane";
-        user.lastName = "Doe";
-        user.age = 33;
-        user.save();
-
-        user = new TestUser();
-        user.firstName = "Billy";
-        user.lastName = "Bob";
-        user.age = 58;
-        user.save();
-
-        user = new TestUser();
-        user.firstName = "Wayne";
-        user.lastName = "Gretzky";
-        user.age = 48;
-        user.save();
-
         //JOTQueryManager.dumpToCSV(System.out, TestUser.class);
+        populateUserTestData();
 
-        Vector users = JOTQueryManager.find(user.getClass(), null);
+        TestUser user=_users[3];
+
+        Vector users = JOTQueryManager.find(TestUser.class, null);
         //System.out.println("users: "+users);
         JOTTester.checkIf("Checking that 4 users where created (using find)", users != null && users.size() == 4);
 
-        TestUser readUser = (TestUser) JOTQueryManager.findByID(user.getClass(), (int) user.getId());
+        TestUser readUser = (TestUser) JOTQueryManager.findByID(TestUser.class, (int) user.getId());
         JOTTester.checkIf("Checking reading user 4 back (find by ID)", readUser != null);
         JOTTester.checkIf("Checking user firstname", readUser.firstName.equals(user.firstName));
         JOTTester.checkIf("Checking user lastname", readUser.lastName.equals(user.lastName));
@@ -119,26 +133,13 @@ public class DBTest implements JOTTestable
         users = JOTQueryManager.find(TestUser.class, params);
         JOTTester.checkIf("Checking find() with 'like' condition", users.size() == 2);
 
-        // findBySQL - should fell when using jotdb
-        JOTTester.checkThrowsException(Exception.class, "findUsingSQL",null);
-
+        Vector v=JOTQueryManager.findUsingSQL(TestUser.class, "SELECT * FROM \"TestUser\" ORDER BY id Desc", null);
+        JOTTester.checkIf("checking plain SQL query",v.size()==4);
+        JOTTester.checkIf("checking plain SQL query 2",((TestUser)v.get(0)).firstName.equals("Wayne"));
     }
 
     public static void findUsingSQL() throws Throwable
     {
-        JOTQueryManager.findUsingSQL(TestUser.class, "SELECT * FROM \"JOT_TEMP_TEST_USER\" ORDER BY dataid", null);
     }
-    /**
-     * For debugging JOTTester
-     * @param args
-     */
-    public static void main(String[] args)
-    {
-        String[] args2 =
-        {
-            "classes", "-selfTest"
-        };
-        int breakpoint = 1;
-        JOTTester.main(args2);
-    }
+    
 }

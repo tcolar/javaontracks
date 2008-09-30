@@ -5,6 +5,7 @@
 
 package net.jot.persistance;
 
+import java.util.Vector;
 import net.jot.persistance.query.JOTQueryManager;
 /**
  * This allow to build an SQL query manually.
@@ -51,20 +52,22 @@ public final class JOTQueryBuilder
      * If several where, we will be using AND
      * @param where
      */
-    public void where(String where)
+    public JOTQueryBuilder where(String where)
     {
         appendToSQL((nbWhere==0?"":"AND ")+"WHERE "+where);
         nbWhere++;
+        return this;
     }
 
     /**
      * If you want to do a OR where instead of and.
      * @param where
      */
-    public void orWhere(String where)
+    public JOTQueryBuilder orWhere(String where)
     {
         appendToSQL((nbWhere==0?"":"OR ")+"WHERE "+where);
         nbWhere++;
+        return this;
     }
 
     /**
@@ -72,9 +75,10 @@ public final class JOTQueryBuilder
      * should only be  called once
      * @param limit
      */
-    public void limit(int limit)
+    public JOTQueryBuilder limit(int limit)
     {
         appendToSQL("LIMIT "+limit);
+        return this;
     }
 
     /**
@@ -82,9 +86,10 @@ public final class JOTQueryBuilder
      * should only be called once
      * @param orderBy EX: "date"    "date,price" etc...
      */
-    public void orderBy(String orderBy)
+    public JOTQueryBuilder orderBy(String orderBy)
     {
         orderBy(orderBy,true);
+        return this;
     }
     
     /**
@@ -93,9 +98,10 @@ public final class JOTQueryBuilder
      * @param orderBy EX: "date"    "date,price" etc...
      * @param ascending
      */
-    public void orderBy(String orderBy, boolean ascending)
+    public JOTQueryBuilder orderBy(String orderBy, boolean ascending)
     {
         appendToSQL("ORDER BY "+orderBy+" "+(ascending?"":"DESC"));
+        return this;
     }
 
     private void appendToSQL(String append)
@@ -112,17 +118,18 @@ public final class JOTQueryBuilder
      * Provide PreparedStement params (optional)
      * @param params
      */
-    public void withParams(String[] params)
+    public JOTQueryBuilder withParams(String[] params)
     {
         this.params=params;
+        return this;
     }
     
     /**
      * Execute the query and return a Vector of "modelClass"(JOTModel).
      * @throws java.lang.Exception
      */
-    public void execute() throws Exception
+    public Vector execute() throws Exception
     {
-        JOTQueryManager.findUsingSQL(modelClass, sql, null);
+        return JOTQueryManager.findUsingSQL(modelClass, sql, null);
     }
 }

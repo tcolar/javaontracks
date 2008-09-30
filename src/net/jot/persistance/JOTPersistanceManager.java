@@ -194,7 +194,7 @@ public class JOTPersistanceManager
             }
             setup.setEncoding(encoding);
 
-            databases.put(dbHandle, setup);
+            databases.put(dbKey, setup);
             JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.INFO_LEVEL, "JOTPersistanceManager", "Added jdbc Database: " + dbHandle);
             JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.DEBUG_LEVEL, "JOTPersistanceManager", "Jdbc Database setup: " + setup);
 

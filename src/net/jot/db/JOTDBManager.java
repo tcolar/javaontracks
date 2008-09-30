@@ -135,7 +135,7 @@ public class JOTDBManager
                     {
                         JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.INFO_LEVEL, this, "Creating jotcounters table.");
                         update(con, "CREATE TABLE jotcounters(\"name\" varchar(40), \"value\" varchar(10))");
-                        update(con, "ALTER TABLE \"jotcounters\" ADD PRIMARY KEY (\"name\")");
+                        //update(con, "ALTER TABLE \"jotcounters\" ADD PRIMARY KEY (\"name\")");
                     } catch (SQLException e)
                     {
                         JOTLogger.logException(JOTLogger.CAT_DB, JOTLogger.INFO_LEVEL, "JOTDBModel", "Error creating jotcounters", e);

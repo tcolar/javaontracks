@@ -304,7 +304,7 @@ public class JOTDBQueryImpl implements JOTQueryInterface
 
     public void createTable(JOTModelMapping mapping) throws Exception
     {
-        JOTTaggedConnection con = JOTDBManager.getInstance().getConnection(mapping.getStorageName());
+        JOTTaggedConnection con = JOTDBManager.getInstance().getConnection(mapping.getDBName());
         try
         {
             if (!JOTDBManager.getInstance().tableExists(mapping.getDBName(), mapping.getTableName()))
@@ -326,7 +326,7 @@ public class JOTDBQueryImpl implements JOTQueryInterface
 
     public void deleteTable(JOTModelMapping mapping) throws Exception
     {
-        JOTTaggedConnection con = JOTDBManager.getInstance().getConnection(mapping.getStorageName());
+        JOTTaggedConnection con = JOTDBManager.getInstance().getConnection(mapping.getDBName());
         try
         {
             if (JOTDBManager.getInstance().tableExists(mapping.getDBName(), mapping.getTableName()))
@@ -498,7 +498,7 @@ public class JOTDBQueryImpl implements JOTQueryInterface
     {
         if (transaction == null)
         {
-            return JOTDBManager.getInstance().getConnection(mapping.getStorageName());
+            return JOTDBManager.getInstance().getConnection(mapping.getDBName());
         } else
         {
             return transaction.getConnection();
@@ -507,7 +507,7 @@ public class JOTDBQueryImpl implements JOTQueryInterface
 
     private void sqlExecute(JOTModelMapping mapping, String sql, Object[] params) throws Exception
     {
-        JOTTaggedConnection con = JOTDBManager.getInstance().getConnection(mapping.getStorageName());
+        JOTTaggedConnection con = JOTDBManager.getInstance().getConnection(mapping.getDBName());
         try
         {
             JOTDBManager.getInstance().update(con, sql, params);

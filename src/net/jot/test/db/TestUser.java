@@ -6,7 +6,7 @@ Artistic Licence 2.0
 http://www.javaontracks.net
 ------------------------------------
  */
-package net.jot.test;
+package net.jot.test.db;
 
 import net.jot.persistance.JOTModel;
 import net.jot.persistance.JOTModelMapping;
