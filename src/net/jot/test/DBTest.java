@@ -24,7 +24,7 @@ import net.jot.testing.JOTTester;
  * @author thibautc
  *
  */
-public class ApplicationTest implements JOTTestable
+public class DBTest implements JOTTestable
 {
     /**
      * will be called by ant test task
