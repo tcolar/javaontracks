@@ -26,7 +26,9 @@ import net.jot.logger.JOTLogger;
  */
 public class JOTScheduler extends Thread
 {
-	private static JOTScheduler instance=null;
+        // singleton
+	private static JOTScheduler instance=new JOTScheduler();
+        
 	private int lastMinute=-1;
 	private boolean stop=false;
 	private boolean done=false;
@@ -43,13 +45,6 @@ public class JOTScheduler extends Thread
 	
 	public static JOTScheduler getInstance()
 	{
-		synchronized(JOTScheduler.class)
-		{
-			if(instance==null)
-			{
-				instance=new JOTScheduler();
-			}
-		}
 		return instance;
 	}
 	

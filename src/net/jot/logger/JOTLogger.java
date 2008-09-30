@@ -35,7 +35,7 @@ import net.jot.utils.JOTUtilities;
  * @author thibautc
  *
  */
-public class JOTLogger
+public final class JOTLogger
 {
     // regexp to be used by JOTLoggerApp
     private static final String regexp = "^(\\S+)\\s+(\\d)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(.*)$";

@@ -49,7 +49,6 @@ public class JOTPersistanceManager
     databases = new Hashtable();
     loadFromPrefs(prefs);
     upgradeDbs();
-    int breakpoint = 1;
   }
 
   public static Hashtable getDatabases()

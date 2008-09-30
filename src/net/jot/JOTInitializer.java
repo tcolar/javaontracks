@@ -78,7 +78,7 @@ public class JOTInitializer
     }
 
     /**
-     * On dinalize we call destroy so that even if the user forgot to call it, we cleanup the resources anyhow.
+     * On finalize we call destroy so that even if the user forgot to call it, we try to cleanup the resources anyhow.
      */
     protected void finalize() throws Throwable
     {
