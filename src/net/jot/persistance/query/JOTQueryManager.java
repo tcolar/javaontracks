@@ -19,6 +19,7 @@ import net.jot.persistance.JOTModel;
 import net.jot.persistance.JOTModelMapping;
 import net.jot.persistance.JOTQueryBuilder;
 import net.jot.persistance.JOTSQLQueryParams;
+import net.jot.persistance.JOTStatementFlags;
 import net.jot.utils.JOTUtilities;
 
 /**
@@ -155,15 +156,19 @@ public final class JOTQueryManager
      * @param params ie: ['John','Doe']
      * @return a Vector of JOTModel objects 
      */
-    public static Vector findUsingSQL(JOTTransaction transaction, Class modelClass, String sql, String[] params) throws Exception
+    public static Vector findUsingSQL(JOTTransaction transaction, Class modelClass, String sql, String[] params, JOTStatementFlags flags) throws Exception
     {
         JOTModelMapping mapping = getMapping(modelClass);
         JOTQueryInterface impl = getImplementation(mapping.getQueryClassName());
-        return impl.findUsingSQL(transaction,mapping, modelClass, sql, params);
+        return impl.findUsingSQL(transaction,mapping, modelClass, sql, params, flags);
+    }
+    public static Vector findUsingSQL(JOTTransaction transaction, Class modelClass, String sql, String[] params) throws Exception
+    {
+        return findUsingSQL(transaction, modelClass, sql, params, null);
     }
     public static Vector findUsingSQL(Class modelClass, String sql, String[] params) throws Exception
     {
-        return findUsingSQL(null, modelClass, sql, params);
+        return findUsingSQL(null, modelClass, sql, params, null);
     }
     /**
      * Returns all the records matching the parameters<br>

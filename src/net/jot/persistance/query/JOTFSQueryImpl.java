@@ -33,6 +33,7 @@ import net.jot.persistance.JOTPersistanceManager;
 import net.jot.persistance.JOTSQLCondition;
 import net.jot.persistance.JOTSQLOrderBy;
 import net.jot.persistance.JOTSQLQueryParams;
+import net.jot.persistance.JOTStatementFlags;
 import net.jot.utils.JOTUtilities;
 
 //TODO: +++ make sure db files permissions are safe: ie: 600 ?
@@ -106,10 +107,10 @@ public class JOTFSQueryImpl implements JOTQueryInterface
     //if we found 'limit' items, we are done.
     }
     model = null;
-    if (params != null && params.getLimit() > 0 && results.size() >= params.getLimit())
+    /*if (params != null && params.getLimit() > 0 && results.size() >= params.getLimit())
     {
       results = new Vector(results.subList(0, params.getLimit()));
-    }
+    }*/
     return results;
   }
 
@@ -256,7 +257,6 @@ public class JOTFSQueryImpl implements JOTQueryInterface
     {
       params = new JOTSQLQueryParams();
     }
-    params.setLimit(1);
     Vector result = find(transaction, mapping, objectClass, params);
     if (result == null || result.size() < 1)
     {
@@ -818,7 +818,7 @@ public class JOTFSQueryImpl implements JOTQueryInterface
 
   }
 
-  public Vector findUsingSQL(JOTTransaction transaction, JOTModelMapping mapping, Class objectClass, String sql, Object[] params) throws Exception
+  public Vector findUsingSQL(JOTTransaction transaction, JOTModelMapping mapping, Class objectClass, String sql, Object[] params, JOTStatementFlags flags) throws Exception
   {
     throw(new Exception("FindUsingSQL is not supported by jotfs !"));
     //return null;

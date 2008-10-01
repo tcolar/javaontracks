@@ -117,7 +117,6 @@ public class DBTest implements JOTTestable
         params.addCondition(new JOTSQLCondition("age", JOTSQLCondition.IS_GREATER, new Integer(28)));
         params.addCondition(new JOTSQLCondition("age", JOTSQLCondition.IS_LOWER_OR_EQUAL, new Integer(48)));
         params.addOrderBy(new JOTSQLOrderBy("age", JOTSQLOrderBy.DESCENDING));
-        params.setLimit(1);
         users = JOTQueryManager.find(TestUser.class, params);
         JOTTester.checkIf("Checking find() with mutliple conds, orderBy, [limit]", users.size() == 1, "" + users);
         JOTTester.checkIf("Checking find() with mutliple conds, [orderBy], limit", ((TestUser) users.get(0)).age == 48, ((TestUser) users.get(0)).toString());

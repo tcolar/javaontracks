@@ -16,6 +16,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import net.jot.captcha.generators.JOTSTDCaptchaGenerator;
 import net.jot.db.JOTDBField;
 import net.jot.db.JOTDBManager;
 import net.jot.db.JOTTaggedConnection;
@@ -25,6 +26,7 @@ import net.jot.persistance.JOTModelMapping;
 import net.jot.persistance.JOTSQLCondition;
 import net.jot.persistance.JOTSQLOrderBy;
 import net.jot.persistance.JOTSQLQueryParams;
+import net.jot.persistance.JOTStatementFlags;
 
 /**
  * Implementation of The Query Interface for an SQL database.<br>
@@ -50,11 +52,15 @@ public class JOTDBQueryImpl implements JOTQueryInterface
 
     public Vector findUsingSQL(JOTTransaction transaction, JOTModelMapping mapping, Class objectClass, String sql, Object[] params) throws Exception
     {
+        return findUsingSQL(transaction, mapping, objectClass, sql, params, null);
+    }
+    public Vector findUsingSQL(JOTTransaction transaction, JOTModelMapping mapping, Class objectClass, String sql, Object[] params,JOTStatementFlags flags) throws Exception
+    {
         ResultSet rs = null;
         JOTTaggedConnection con = getConnection(transaction, mapping);
         try
         {
-            rs = JOTDBManager.getInstance().query(con, sql, params);
+            rs = JOTDBManager.getInstance().query(con, sql, params, flags);
         } catch (SQLException e)
         {
             JOTLogger.logException(JOTLogger.CAT_DB, JOTLogger.ERROR_LEVEL, "JOTDBModel", "Error", e);
@@ -92,7 +98,8 @@ public class JOTDBQueryImpl implements JOTQueryInterface
         {
             params = new JOTSQLQueryParams();
         }
-        params.setLimit(1);
+        JOTStatementFlags flags=new JOTStatementFlags();
+        flags.setMaxRows(1);
         Vector v = find(transaction, mapping, objectClass, params);
         if (v != null && v.size() > 0)
         {
@@ -168,7 +175,7 @@ public class JOTDBQueryImpl implements JOTQueryInterface
         {
             query += getConditionsString(params.getConditions());
             query += getOrderByString(params.getOrderBys());
-            query += getLimitString(params.getLimit());
+            //query += getLimitString(params.getLimit());
         }
         return query;
     }

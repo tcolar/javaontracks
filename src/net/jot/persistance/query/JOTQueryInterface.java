@@ -14,6 +14,7 @@ import net.jot.db.JOTDBField;
 import net.jot.persistance.JOTModel;
 import net.jot.persistance.JOTModelMapping;
 import net.jot.persistance.JOTSQLQueryParams;
+import net.jot.persistance.JOTStatementFlags;
 
 /**
  * Interface to query implementations<br>
@@ -41,7 +42,7 @@ public interface JOTQueryInterface
 	 * @param params ie: ['John','Doe']
 	 * @return
 	 */
-	public Vector findUsingSQL(JOTTransaction transaction, JOTModelMapping mapping, Class objectClass,String sql, Object[] params) throws Exception;
+	public Vector findUsingSQL(JOTTransaction transaction, JOTModelMapping mapping, Class objectClass,String sql, Object[] params, JOTStatementFlags flags) throws Exception;
 	
 	/**
 	 * Returns the first records matching the parameters<br>

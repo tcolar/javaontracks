@@ -48,16 +48,16 @@ public class JOTSQLQueryParams
 		return (JOTSQLOrderBy[]) orderBys.toArray(new JOTSQLOrderBy[0]);		
 	}
 	
-	public int getLimit()
+	/*public int getLimit()
 	{
 		return limit;
-	}
+	}*/
         /**
          * Specify a limit to the number of rows returned by the query.
          * @param limit
          */
-	public void setLimit(int limit)
+	/*public void setLimit(int limit)
 	{
 		this.limit = limit;
-	}
+	}*/
 }

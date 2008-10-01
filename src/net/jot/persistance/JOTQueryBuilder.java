@@ -33,6 +33,7 @@ public final class JOTQueryBuilder
     private String sql = "";
     private Class modelClass;
     private String[] params = null;
+    JOTStatementFlags flags=null;
     private int nbWhere = 0;
 
     private JOTQueryBuilder()
@@ -77,11 +78,13 @@ public final class JOTQueryBuilder
     /**
      * add a "limit" to the number of returned results
      * should only be  called once
+     * NOTE: if does not use the SQL limit synatx has this is not the same on all DB's
+     * Instead it's gonna call setMaxRows() on the statement
      * @param limit
      */
     public JOTQueryBuilder limit(int limit)
     {
-        appendToSQL("LIMIT " + limit);
+        flags.setMaxRows(limit);
         return this;
     }
 
@@ -139,7 +142,20 @@ public final class JOTQueryBuilder
 
     public Vector execute(JOTTransaction transaction) throws Exception
     {
-        return JOTQueryManager.findUsingSQL(transaction,modelClass, sql, null);
+        return JOTQueryManager.findUsingSQL(transaction,modelClass, sql, params, flags);
     }
 
+    public String showSQL()
+    {
+       return sql; 
+    }
+    
+    /**
+     * Show special statement flags (if any)
+     * @return
+     */
+    public String showFlags()
+    {
+       return flags.toString();
+    }
 }

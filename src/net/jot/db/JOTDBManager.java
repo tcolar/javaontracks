@@ -17,6 +17,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 
 import net.jot.logger.JOTLogger;
+import net.jot.persistance.JOTStatementFlags;
 
 /**
  * Main database manager object. Gives simple access to the loaded pooled databases.
@@ -135,7 +136,7 @@ public class JOTDBManager
                     {
                         JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.INFO_LEVEL, this, "Creating jotcounters table.");
                         update(con, "CREATE TABLE jotcounters(\"name\" varchar(40), \"value\" varchar(10))");
-                        //update(con, "ALTER TABLE \"jotcounters\" ADD PRIMARY KEY (\"name\")");
+                        update(con, "ALTER TABLE \"jotcounters\" ADD PRIMARY KEY (\"name\")");
                     } catch (SQLException e)
                     {
                         JOTLogger.logException(JOTLogger.CAT_DB, JOTLogger.INFO_LEVEL, "JOTDBModel", "Error creating jotcounters", e);
@@ -171,10 +172,10 @@ public class JOTDBManager
      *@return                Description of the Returned Value
      *@exception  Exception  Description of Exception
      */
-    public ResultSet query(JOTTaggedConnection con, String query, Object[] params) throws
+    public ResultSet query(JOTTaggedConnection con, String query, Object[] params, JOTStatementFlags flags) throws
             Exception
     {
-        return execute(con, query, params, false);
+        return execute(con, query, params, false, flags);
     }
 
     /**
@@ -187,10 +188,10 @@ public class JOTDBManager
      *@return                Description of the Returned Value
      *@exception  Exception  Description of Exception
      */
-    public ResultSet query(JOTTaggedConnection con, String query) throws
+    public ResultSet query(JOTTaggedConnection con, String query, JOTStatementFlags flags) throws
             Exception
     {
-        return execute(con, query, false);
+        return execute(con, query, false, flags);
     }
 
     /**
@@ -206,10 +207,16 @@ public class JOTDBManager
      *@return                Description of the Returned Value
      *@exception  Exception  Description of Exception
      */
+    public ResultSet update(JOTTaggedConnection con, String query, Object[] params, JOTStatementFlags flags) throws
+            Exception
+    {
+        return execute(con, query, params, true, flags);
+    }
+
     public ResultSet update(JOTTaggedConnection con, String query, Object[] params) throws
             Exception
     {
-        return execute(con, query, params, true);
+        return execute(con, query, params, true, null);
     }
 
     /**
@@ -220,10 +227,15 @@ public class JOTDBManager
      *@return                Description of the Returned Value
      *@exception  Exception  Description of Exception
      */
-    public ResultSet update(JOTTaggedConnection con, String query) throws
+    public ResultSet update(JOTTaggedConnection con, String query, JOTStatementFlags flags) throws
             Exception
     {
-        return execute(con, query, true);
+        return execute(con, query, true, flags);
+    }
+
+    public ResultSet update(JOTTaggedConnection con, String query) throws Exception
+    {
+        return execute(con, query, true, null);
     }
 
     /**
@@ -245,28 +257,28 @@ public class JOTDBManager
         try
         {
             String[] params =
-            {
+                    {
                 id
             };
-            ResultSet rs = query(con, "select * from jotcounters where name=?", params);
+            ResultSet rs = query(con, "select * from jotcounters where name=?", params, null);
             if (rs.next())
             {
                 curval = rs.getInt("value");
                 String nextval = "" + (curval + 1);
                 String[] params2 =
-                {
+                        {
                     nextval, id
                 };
-                update(con, "update jotcounters set value=? where name=?", params2);
+                update(con, "update jotcounters set value=? where name=?", params2, null);
             } else
             {
                 //new counter, creating it
                 curval = 1;
                 String[] params3 =
-                {
+                        {
                     "2", id
                 };
-                update(con, "insert into jotcounters (value,name) values(?,?)", params3);
+                update(con, "insert into jotcounters (value,name) values(?,?)", params3, null);
             }
         } catch (Exception e)
         {
@@ -306,13 +318,13 @@ public class JOTDBManager
      *@return                Description of the Returned Value
      *@exception  Exception  Description of Exception
      */
-    private ResultSet execute(JOTTaggedConnection con, String squeleton, Object[] params, boolean update) throws Exception
+    private ResultSet execute(JOTTaggedConnection con, String squeleton, Object[] params, boolean update, JOTStatementFlags flags) throws Exception
     {
 
         // empty args list causes an sql exception
         if (params == null || params.length == 0)
         {
-            return execute(con, squeleton, update);
+            return execute(con, squeleton, update, flags);
         }
 
         JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.DEBUG_LEVEL, this, "Executing query: " + squeleton);
@@ -329,6 +341,13 @@ public class JOTDBManager
         updateAccessTime(con);
         ResultSet rs = null;
         PreparedStatement st = con.getConnection().prepareStatement(squeleton);
+        if (flags != null)
+        {
+            if (flags.getMaxRows() != -1)
+            {
+                st.setMaxRows(flags.getMaxRows());
+            }
+        }
         if (params != null)
         {
             for (int i = 0; i != params.length; i++)
@@ -359,7 +378,7 @@ public class JOTDBManager
      *@return                Description of the Returned Value
      *@exception  Exception  Description of Exception
      */
-    private ResultSet execute(JOTTaggedConnection con, String query, boolean update) throws Exception
+    private ResultSet execute(JOTTaggedConnection con, String query, boolean update, JOTStatementFlags flags) throws Exception
     {
         JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.DEBUG_LEVEL, this, "Executing query: " + query);
 
@@ -372,6 +391,13 @@ public class JOTDBManager
             throw (new Exception("Failed to get a connection !"));
         }
         Statement st = stdCon.createStatement();
+        if (flags != null)
+        {
+            if (flags.getMaxRows() != -1)
+            {
+                st.setMaxRows(flags.getMaxRows());
+            }
+        }
 
         if (update)
         {
@@ -409,7 +435,7 @@ public class JOTDBManager
         boolean result = true;
         try
         {
-            JOTDBManager.getInstance().query(con, "SELECT COUNT(0) from \"" + table + "\"");
+            JOTDBManager.getInstance().query(con, "SELECT COUNT(0) from \"" + table + "\"", null);
         } catch (Exception e)
         {
             result = false;
