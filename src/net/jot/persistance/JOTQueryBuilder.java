@@ -49,7 +49,7 @@ public final class JOTQueryBuilder
     {
         JOTQueryBuilder builder = new JOTQueryBuilder();
         builder.setModelClass(modelClass);
-        builder.appendToSQL("select * from '" + modelClass + "'");
+        builder.appendToSQL("select * from \"" + modelClass.getSimpleName().toLowerCase() + "\"");
         return builder;
     }
 
