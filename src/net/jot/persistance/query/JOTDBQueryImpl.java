@@ -16,7 +16,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import net.jot.captcha.generators.JOTSTDCaptchaGenerator;
 import net.jot.db.JOTDBField;
 import net.jot.db.JOTDBManager;
 import net.jot.db.JOTTaggedConnection;
@@ -89,7 +88,8 @@ public class JOTDBQueryImpl implements JOTQueryInterface
         {
             sqlParams[i] = conds[i].getValue();
         }
-        return findUsingSQL(transaction, mapping, objectClass, sql, sqlParams);
+        JOTStatementFlags flags=buildFlags(params);
+        return findUsingSQL(transaction, mapping, objectClass, sql, sqlParams, flags);
     }
 
     public JOTModel findOne(JOTTransaction transaction, JOTModelMapping mapping, Class objectClass, JOTSQLQueryParams params) throws Exception
@@ -98,8 +98,6 @@ public class JOTDBQueryImpl implements JOTQueryInterface
         {
             params = new JOTSQLQueryParams();
         }
-        JOTStatementFlags flags=new JOTStatementFlags();
-        flags.setMaxRows(1);
         Vector v = find(transaction, mapping, objectClass, params);
         if (v != null && v.size() > 0)
         {
@@ -499,6 +497,20 @@ public class JOTDBQueryImpl implements JOTQueryInterface
             mapping.getTableName()
         };
         sqlExecute(mapping, "ALTER TABLE ? ADD " + getColumnDefinition(field), params);
+    }
+
+    private JOTStatementFlags buildFlags(JOTSQLQueryParams params)
+    {
+        JOTStatementFlags flags=null;
+        if(params!=null)
+        {
+            if(params.getLimit()!=-1)
+            {
+                flags=new JOTStatementFlags();
+                flags.setMaxRows(params.getLimit());
+            }
+        }
+        return flags;
     }
 
     private JOTTaggedConnection getConnection(JOTTransaction transaction, JOTModelMapping mapping) throws Exception

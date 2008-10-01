@@ -65,6 +65,17 @@ public final class JOTQueryBuilder
     }
 
     /**
+     * Manullay append whatever you like to the query.
+     * @param where
+     * @return
+     */
+    public JOTQueryBuilder append(String sqlText)
+    {
+        appendToSQL(sqlText);
+        return this;
+    }
+
+    /**
      * If you want to do a OR where instead of and.
      * @param where
      */

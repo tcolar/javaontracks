@@ -21,7 +21,9 @@ public class QueryBuilderTest implements JOTTestable
     public void jotTest() throws Throwable
     {
         // add some user data to the DB
-        DBTest.populateUserTestData();
+        JOTTester.tag("DB Test Data");
+        DBTestData.populateUserTestData();
+        
         JOTQueryManager.dumpToCSV(System.out, TestUser.class);
 
         JOTTester.tag("testing prepared Statements");
@@ -44,6 +46,10 @@ public class QueryBuilderTest implements JOTTestable
         String[] params6={"Doe","Wayne"};
         v=JOTQueryBuilder.findAll(TestUser.class).where("LAST_NAME=?").orWhere("FIRST_NAME=?").withParams(params6).execute();
         JOTTester.checkIf("Checking simple manual dual where query", v.size()==3);
+
+        String[] params7={"Doe","33"};
+        v=JOTQueryBuilder.findAll(TestUser.class).where("LAST_NAME=?").append("AND AGE=?").withParams(params7).execute();
+        JOTTester.checkIf("Checking manual append", v.size()==1 && ((TestUser)v.get(0)).firstName.equals("Jane"));
 
         // not prepared statement style
         

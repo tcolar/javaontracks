@@ -37,6 +37,11 @@ public final class JOTQueryManager
     private static Hashtable modelMappings = new Hashtable();
     private static Hashtable implementations = new Hashtable();
 
+    public static void delete(JOTModel model) throws Exception
+    {
+        delete(null,model);
+    }
+
     public static void delete(JOTTransaction transaction,JOTModel model) throws Exception
     {
         JOTModelMapping mapping = getMapping(model.getClass());
