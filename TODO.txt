@@ -12,3 +12,6 @@ showFlags()
 in .execute call findBySQL but add a new hashtable for special flags etc.. such as limit / setmax 
 
 result.set.maxresukts() instead of limit
+
+method to provide good db names and use it everywhere
+firstName  -> first_name
