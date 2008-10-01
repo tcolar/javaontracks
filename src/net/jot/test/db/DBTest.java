@@ -95,6 +95,8 @@ public class DBTest implements JOTTestable
         JOTTester.checkIf("checking delete worked",users.size()==3);
         users = JOTQueryManager.findUsingSQL(TestUser.class,"SELECT * FROM TEST_USER WHERE AGE="+user.age,null);
         JOTTester.checkIf("checking delete worked 2",users.size()==0);
+        
+        //TODO: check custom field names(mapping), constraints etc....
     }
 
 }
