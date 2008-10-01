@@ -103,7 +103,7 @@ public abstract class JOTController
 
   /**
   * This is the implementaion of the "meat" of your controller, where the controller does it's stuff (logic)
-   *Thta should return a result code, either a standard one. ie: RESULT_SUCCESS) or your custom one: "ie: goToHomePage"
+   *That should return a result code, either a standard one. ie: RESULT_SUCCESS) or your custom one: "ie: goToHomePage"
   * @return The result of the process (possibly tested in flow.conf)
   * @throws Exception
   */

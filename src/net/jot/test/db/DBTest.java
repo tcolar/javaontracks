@@ -27,18 +27,16 @@ public class DBTest implements JOTTestable
     public static TestUser[] _users=new TestUser[4];
 
     /**
-     * DO NOT CHANGE the TEST DATA or TESTS WILL FAIL !!!
+     * DO NOT CHANGE this TEST DATA or TESTS WILL FAIL !!!
+     * Used by most DB tests
      * @throws java.lang.Exception
      */
     public static void populateUserTestData() throws Exception
     {
         // create 3 test users and saves them
         TestUser user = new TestUser();
-        // we should empty the table first and check it's empty after
-
+        // we empty the table first
         user.resetTable();
-
-        JOTTester.checkIf("Testing that flushing the table worked", JOTQueryManager.findOne(TestUser.class, null) == null);
 
         user.firstName = "John";
         user.lastName = "Doe";
@@ -70,19 +68,13 @@ public class DBTest implements JOTTestable
     }
     
     /**
-     * will be called by ant test task
-     * @throws Throwable
+     * 
+     * Testing JOTMOdel / CRUD
      */
     public void jotTest() throws Throwable
     {
-        JOTTester.tag("Starting JDBC Test");
-        testModel();
-    }
-
-    private static void testModel() throws Throwable
-    {
-        //JOTQueryManager.dumpToCSV(System.out, TestUser.class);
         populateUserTestData();
+        //JOTQueryManager.dumpToCSV(System.out, TestUser.class);
 
         TestUser user=_users[3];
 
@@ -102,6 +94,9 @@ public class DBTest implements JOTTestable
         user.save();
         readUser = (TestUser) JOTQueryManager.findByID(user.getClass(), (int) user.getId());
         JOTTester.checkIf("Checking update worked and ID didn't change", readUser.firstName.equals(user.firstName) && id == readUser.getId());
+        //revert
+        user.firstName = "Wayne";
+        user.save();
 
         // findOne
         JOTSQLQueryParams params = new JOTSQLQueryParams();
@@ -136,10 +131,8 @@ public class DBTest implements JOTTestable
         Vector v=JOTQueryManager.findUsingSQL(TestUser.class, "SELECT * FROM \"TestUser\" ORDER BY id Desc", null);
         JOTTester.checkIf("checking plain SQL query",v.size()==4);
         JOTTester.checkIf("checking plain SQL query 2",((TestUser)v.get(0)).firstName.equals("Wayne"));
+        
+        //TODO: test delete
     }
 
-    public static void findUsingSQL() throws Throwable
-    {
-    }
-    
 }

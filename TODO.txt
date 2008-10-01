@@ -3,3 +3,12 @@ write tests for:
 - transaction.
 - querybuilder
 etc... 
+
+-> builder.distinct().append("limit 3 offset 5")  .rowcount()?
+between() in()
+.insert(). ....
+.update(). ....
+
+in .execute call findBySQL but add a new hashtable for special flags etc.. such as limit / setmax 
+
+result.set.maxresukts() instead of limit

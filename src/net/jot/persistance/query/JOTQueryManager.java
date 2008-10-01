@@ -17,6 +17,7 @@ import java.util.Vector;
 import net.jot.logger.JOTLogger;
 import net.jot.persistance.JOTModel;
 import net.jot.persistance.JOTModelMapping;
+import net.jot.persistance.JOTQueryBuilder;
 import net.jot.persistance.JOTSQLQueryParams;
 import net.jot.utils.JOTUtilities;
 
@@ -111,6 +112,25 @@ public final class JOTQueryManager
         return (JOTQueryInterface) implementations.get(className);
     }
 
+    /**
+     * Simply use a manually built query (JOTQueryBuilder)
+     * In my be simpler to directly call JOTQueryBuilder, which is what this does anyhow.
+     * JOTQueryBuilder.findAll(User.class).where("name>'a'").exeute();
+     * @param transaction
+     * @param queryBuilder
+     * @return
+     * @throws java.lang.Exception
+     */
+    public static Vector findByQuery(JOTTransaction transaction, JOTQueryBuilder queryBuilder) throws Exception
+    {
+        return queryBuilder.execute(transaction);
+    }
+    public static Vector findByQuery(JOTQueryBuilder queryBuilder) throws Exception
+    {
+        return findByQuery(null, queryBuilder);
+        //TODO
+    }
+    
     /**
      * Returns the record whith the given ID <br>
      * @param dataId

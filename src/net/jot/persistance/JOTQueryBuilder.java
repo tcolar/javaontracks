@@ -2,11 +2,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package net.jot.persistance;
 
 import java.util.Vector;
 import net.jot.persistance.query.JOTQueryManager;
+import net.jot.persistance.query.JOTTransaction;
+
 /**
  * This allow to build an SQL query manually.
  * It uses a builder pattern to make it more readable, failry close to ruby activeRecord's syntax
@@ -26,25 +27,28 @@ import net.jot.persistance.query.JOTQueryManager;
  * 
  * TODO: test JOTQueryBuilder
  */
-public final class JOTQueryBuilder 
+public final class JOTQueryBuilder
 {
-    private String sql="";
+
+    private String sql = "";
     private Class modelClass;
-    private String[] params=null;
-    private int nbWhere=0;
-    
-    private JOTQueryBuilder(){}
-    
+    private String[] params = null;
+    private int nbWhere = 0;
+
+    private JOTQueryBuilder()
+    {
+    }
+
     /**
      * Factory method to create the queryBuilder
      * @param modelClass
      * @return
      */
-    public static JOTQueryBuilder select(Class modelClass)
+    public static JOTQueryBuilder findAll(Class modelClass)
     {
-        JOTQueryBuilder builder=new JOTQueryBuilder();
+        JOTQueryBuilder builder = new JOTQueryBuilder();
         builder.setModelClass(modelClass);
-        builder.appendToSQL("select * from '"+modelClass+"'");
+        builder.appendToSQL("select * from '" + modelClass + "'");
         return builder;
     }
 
@@ -54,7 +58,7 @@ public final class JOTQueryBuilder
      */
     public JOTQueryBuilder where(String where)
     {
-        appendToSQL((nbWhere==0?"":"AND ")+"WHERE "+where);
+        appendToSQL((nbWhere == 0 ? "" : "AND ") + "WHERE " + where);
         nbWhere++;
         return this;
     }
@@ -65,7 +69,7 @@ public final class JOTQueryBuilder
      */
     public JOTQueryBuilder orWhere(String where)
     {
-        appendToSQL((nbWhere==0?"":"OR ")+"WHERE "+where);
+        appendToSQL((nbWhere == 0 ? "" : "OR ") + "WHERE " + where);
         nbWhere++;
         return this;
     }
@@ -77,7 +81,7 @@ public final class JOTQueryBuilder
      */
     public JOTQueryBuilder limit(int limit)
     {
-        appendToSQL("LIMIT "+limit);
+        appendToSQL("LIMIT " + limit);
         return this;
     }
 
@@ -88,10 +92,10 @@ public final class JOTQueryBuilder
      */
     public JOTQueryBuilder orderBy(String orderBy)
     {
-        orderBy(orderBy,true);
+        orderBy(orderBy, true);
         return this;
     }
-    
+
     /**
      * Add a orderBy to the query
      * should only be called once
@@ -100,36 +104,42 @@ public final class JOTQueryBuilder
      */
     public JOTQueryBuilder orderBy(String orderBy, boolean ascending)
     {
-        appendToSQL("ORDER BY "+orderBy+" "+(ascending?"":"DESC"));
+        appendToSQL("ORDER BY " + orderBy + " " + (ascending ? "" : "DESC"));
         return this;
     }
 
     private void appendToSQL(String append)
     {
-        sql+=append+" ";
+        sql += append + " ";
     }
-    
+
     private void setModelClass(Class modelClass)
     {
         this.modelClass = modelClass;
     }
-    
+
     /**
      * Provide PreparedStement params (optional)
      * @param params
      */
     public JOTQueryBuilder withParams(String[] params)
     {
-        this.params=params;
+        this.params = params;
         return this;
     }
-    
+
     /**
      * Execute the query and return a Vector of "modelClass"(JOTModel).
      * @throws java.lang.Exception
      */
     public Vector execute() throws Exception
     {
-        return JOTQueryManager.findUsingSQL(modelClass, sql, null);
+        return execute(null);
     }
+
+    public Vector execute(JOTTransaction transaction) throws Exception
+    {
+        return JOTQueryManager.findUsingSQL(transaction,modelClass, sql, null);
+    }
+
 }
