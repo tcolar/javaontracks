@@ -9,9 +9,6 @@ between() in()
 showSQL()
 showFlags()
 
-in .execute call findBySQL but add a new hashtable for special flags etc.. such as limit / setmax 
-
-result.set.maxresukts() instead of limit
-
-method to provide good db names and use it everywhere
-firstName  -> first_name
+- Make table name work firstName  -> first_name
+- Review net.jot.persistance.JOTSQLQueyParam and see if can have limit work in there or not
+- See wether querybuilder/query manager etc.. can be integarted better, and number of params lowered.

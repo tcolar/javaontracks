@@ -130,7 +130,7 @@ public class JOTDBQueryImpl implements JOTQueryInterface
             {
                 JOTModel model = (JOTModel) objectClass.newInstance();
                 // dealing with the 'dataId' first
-                if (columns.contains(mapping.getPrimaryKey()))
+                if (columns.contains(mapping.getPrimaryKey().toUpperCase()))
                 {
                     model.setId((int) rs.getLong(mapping.getPrimaryKey()));
                 } else
@@ -170,7 +170,7 @@ public class JOTDBQueryImpl implements JOTQueryInterface
      */
     public String buildSelectString(JOTModelMapping mapping, JOTSQLQueryParams params)
     {
-        String query = "SELECT * FROM \"" + mapping.getTableName() + "\"";
+        String query = "SELECT * FROM " + mapping.getTableName();
         if (params != null)
         {
             query += getConditionsString(params.getConditions());
@@ -204,7 +204,7 @@ public class JOTDBQueryImpl implements JOTQueryInterface
         }
         for (int i = 0; i != orderBys.length; i++)
         {
-            orderByString += "\"" + orderBys[i].getField() + "\"";
+            orderByString += "" + orderBys[i].getField();
             if (orderBys[i].getDirection() == JOTSQLOrderBy.DESCENDING)
             {
                 orderByString += " DESC";
@@ -231,7 +231,7 @@ public class JOTDBQueryImpl implements JOTQueryInterface
             for (int i = 0; i != conds.length; i++)
             {
                 JOTSQLCondition cond = conds[i];
-                condString += "\"" + cond.getField() + "\" " + cond.getSQLComparator();
+                condString += cond.getField() + " " + cond.getSQLComparator();
                 if (conds.length > i + 1)
                 {
                     condString += " AND ";
@@ -249,7 +249,7 @@ public class JOTDBQueryImpl implements JOTQueryInterface
     public String buildInsertString(JOTModelMapping mapping)
     {
         // no conditions on an insert
-        return "INSERT INTO \"" + mapping.getTableName() + "\" (" + getInsertString(mapping) + ") VALUES(" + buildQmarksString(mapping) + ")";
+        return "INSERT INTO  "+ mapping.getTableName() +  "(" + getInsertString(mapping) + ") VALUES(" + buildQmarksString(mapping) + ")";
     }
 
     /**
@@ -260,7 +260,7 @@ public class JOTDBQueryImpl implements JOTQueryInterface
      */
     public String buildUpdateString(JOTModelMapping mapping, JOTSQLCondition[] conds)
     {
-        String query = "UPDATE \"" + mapping.getTableName() + "\" SET " + getUpdateString(mapping);
+        String query = "UPDATE " + mapping.getTableName() + " SET " + getUpdateString(mapping);
         query += getConditionsString(conds);
         return query;
     }
@@ -273,7 +273,7 @@ public class JOTDBQueryImpl implements JOTQueryInterface
      */
     public String buildDeleteString(JOTModelMapping mapping, JOTSQLCondition[] conds)
     {
-        String query = "DELETE FROM \"" + mapping.getTableName() + "\"";
+        String query = "DELETE FROM " + mapping.getTableName();
         query += getConditionsString(conds);
         return query;
     }
@@ -318,8 +318,8 @@ public class JOTDBQueryImpl implements JOTQueryInterface
             {
                 String columns = getColumnsDefinition(mapping);
                 JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.INFO_LEVEL, this, "Trying to create the table in the DB if missing)");
-                JOTDBManager.getInstance().update(con, "CREATE TABLE \"" + mapping.getTableName() + "\"(" + columns + ")");
-                JOTDBManager.getInstance().update(con, "ALTER TABLE \"" + mapping.getTableName() + "\" ADD PRIMARY KEY (\"" + mapping.getPrimaryKey() + "\")");
+                JOTDBManager.getInstance().update(con, "CREATE TABLE " + mapping.getTableName() + "(" + columns + ")");
+                JOTDBManager.getInstance().update(con, "ALTER TABLE " + mapping.getTableName() + " ADD PRIMARY KEY (" + mapping.getPrimaryKey() + ")");
                 JOTModelMapping.writeMetaFile(mapping);
             }
         } catch (Exception e)
@@ -339,7 +339,7 @@ public class JOTDBQueryImpl implements JOTQueryInterface
             if (JOTDBManager.getInstance().tableExists(mapping.getDBName(), mapping.getTableName()))
             {
                 JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.INFO_LEVEL, this, "Trying to delete the table in the DB)");
-                JOTDBManager.getInstance().update(con, "DROP TABLE \"" + mapping.getTableName() + "\"");
+                JOTDBManager.getInstance().update(con, "DROP TABLE " + mapping.getTableName());
                 JOTModelMapping.deleteMetaFile(mapping);
             }
         } catch (Exception e)
@@ -369,7 +369,7 @@ public class JOTDBQueryImpl implements JOTQueryInterface
      */
     public String getColumnsDefinition(JOTModelMapping mapping)
     {
-        String columns = "\"" + mapping.getPrimaryKey() + "\" BIGINT";
+        String columns = "" + mapping.getPrimaryKey() + " BIGINT";
         Enumeration e = mapping.getFields().elements();
         while (e.hasMoreElements())
         {
@@ -383,7 +383,7 @@ public class JOTDBQueryImpl implements JOTQueryInterface
 
     public String getColumnDefinition(JOTDBField field)
     {
-        String column = "\"" + field.getFieldName() + "\"";
+        String column = "" + field.getFieldName() + "";
         column += " ";
         column += field.getFieldType();
         if (field.getSize() > -1)

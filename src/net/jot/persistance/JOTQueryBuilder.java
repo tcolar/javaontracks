@@ -33,7 +33,7 @@ public final class JOTQueryBuilder
     private String sql = "";
     private Class modelClass;
     private String[] params = null;
-    JOTStatementFlags flags=null;
+    JOTStatementFlags flags=new JOTStatementFlags();
     private int nbWhere = 0;
 
     private JOTQueryBuilder()
@@ -49,7 +49,7 @@ public final class JOTQueryBuilder
     {
         JOTQueryBuilder builder = new JOTQueryBuilder();
         builder.setModelClass(modelClass);
-        builder.appendToSQL("select * from \"" + modelClass.getSimpleName().toLowerCase() + "\"");
+        builder.appendToSQL("select * from " + JOTQueryManager.getTableName(modelClass));
         return builder;
     }
 
@@ -59,7 +59,7 @@ public final class JOTQueryBuilder
      */
     public JOTQueryBuilder where(String where)
     {
-        appendToSQL((nbWhere == 0 ? "" : "AND ") + "WHERE " + where);
+        appendToSQL((nbWhere == 0 ? "WHERE " : "AND ") + where);
         nbWhere++;
         return this;
     }
@@ -70,7 +70,7 @@ public final class JOTQueryBuilder
      */
     public JOTQueryBuilder orWhere(String where)
     {
-        appendToSQL((nbWhere == 0 ? "" : "OR ") + "WHERE " + where);
+        appendToSQL((nbWhere == 0 ? "WHERE " : "OR ") + where);
         nbWhere++;
         return this;
     }
@@ -107,7 +107,7 @@ public final class JOTQueryBuilder
      */
     public JOTQueryBuilder orderBy(String orderBy, boolean ascending)
     {
-        appendToSQL("ORDER BY " + orderBy + " " + (ascending ? "" : "DESC"));
+        appendToSQL("ORDER BY " + orderBy + (ascending ? "" : " DESC"));
         return this;
     }
 
@@ -158,4 +158,5 @@ public final class JOTQueryBuilder
     {
        return flags.toString();
     }
+    
 }

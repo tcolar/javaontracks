@@ -135,7 +135,7 @@ public class JOTDBManager
                     try
                     {
                         JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.INFO_LEVEL, this, "Creating jotcounters table.");
-                        update(con, "CREATE TABLE jotcounters(name varchar(40), \"value\" varchar(10))");
+                        update(con, "CREATE TABLE jotcounters(name varchar(40), val varchar(10))");
                         update(con, "ALTER TABLE jotcounters ADD PRIMARY KEY (name)");
                     } catch (SQLException e)
                     {
@@ -263,13 +263,13 @@ public class JOTDBManager
             ResultSet rs = query(con, "select * from jotcounters where name=?", params, null);
             if (rs.next())
             {
-                curval = rs.getInt("value");
+                curval = rs.getInt("val");
                 String nextval = "" + (curval + 1);
                 String[] params2 =
                         {
                     nextval, id
                 };
-                update(con, "update jotcounters set \"value\"=? where name=?", params2, null);
+                update(con, "update jotcounters set val=? where name=?", params2, null);
             } else
             {
                 //new counter, creating it
@@ -278,7 +278,7 @@ public class JOTDBManager
                         {
                     "2", id
                 };
-                update(con, "insert into jotcounters (\"value\",name) values(?,?)", params3, null);
+                update(con, "insert into jotcounters (val, name) values(?,?)", params3, null);
             }
         } catch (Exception e)
         {
@@ -435,7 +435,7 @@ public class JOTDBManager
         boolean result = true;
         try
         {
-            JOTDBManager.getInstance().query(con, "SELECT COUNT(0) from \"" + table + "\"", null);
+            JOTDBManager.getInstance().query(con, "SELECT COUNT(0) from " + table, null);
         } catch (Exception e)
         {
             result = false;

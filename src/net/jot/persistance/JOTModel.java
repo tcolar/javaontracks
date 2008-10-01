@@ -66,7 +66,7 @@ public abstract class JOTModel
             {
                 initQueryImplClass();
                 mapping = new JOTModelMapping();
-                mapping.defineTableName(getSimpleClassName(getClass().getName()));
+                mapping.defineTableName(getClass().getSimpleName());
                 mapping.setStorageName(storage);
                 mapping.setQueryClassName(queryImplClass.getName());
                 loadFields(mapping);
@@ -95,6 +95,7 @@ public abstract class JOTModel
      */
     public abstract String defineStorage();
 
+    
     /**
      * get the list of fields from the class 
      */
@@ -145,7 +146,7 @@ public abstract class JOTModel
                     }
                     if (mappedValue == null)
                     {
-                        mappedValue = field.toLowerCase();
+                        mappedValue = field;
                     }
                     JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.DEBUG_LEVEL, this, "Adding field: " + field + " mapped as: " + mappedValue);
                     JOTDBField dbField = new JOTDBField(type, mappedValue);
@@ -204,14 +205,14 @@ public abstract class JOTModel
                 Field[] fields = getClass().getFields();
                 for (int i = 0; i != fields.length; i++)
                 {
-                    fieldNames.put(fields[i].getName().toLowerCase(), fields[i].getName());
+                    fieldNames.put(fields[i].getName(), fields[i].getName());
                 }
             }
         }
         Object value = null;
         try
         {
-            String realName = (String) fieldNames.get(fieldName.toLowerCase());
+            String realName = (String) fieldNames.get(fieldName);
             if (realName == null)
             {
                 throw new Exception("Could not find real name of field: " + fieldName + "!!");
@@ -310,19 +311,6 @@ public abstract class JOTModel
     public Class getQueryImplClass()
     {
         return queryImplClass;
-    }
-
-    private String getSimpleClassName(String fullname)
-    {
-        String name = null;
-        if (fullname.lastIndexOf(".") != -1)
-        {
-            name = fullname.substring(fullname.lastIndexOf(".") + 1, fullname.length());
-        } else
-        {
-            name = fullname;
-        }
-        return name.toLowerCase();
     }
 
     private void validateMetadata(JOTModelMapping mapping) throws Exception

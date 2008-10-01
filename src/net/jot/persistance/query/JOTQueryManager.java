@@ -14,6 +14,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import net.jot.db.JOTDBField;
 import net.jot.logger.JOTLogger;
 import net.jot.persistance.JOTModel;
 import net.jot.persistance.JOTModelMapping;
@@ -240,10 +241,11 @@ public final class JOTQueryManager
         // write the meata on the first line
         Hashtable fields = mapping.getFields();
         Enumeration fieldNames = fields.keys();
-        String header = "\"" + mapping.getPrimaryKey() + "\",";
+        String header = mapping.getPrimaryKey() + ",";
         while (fieldNames.hasMoreElements())
         {
-            header += JOTUtilities.encodeCSVEntry((String) fieldNames.nextElement()) + ",";
+            String name=((JOTDBField)fields.get(fieldNames.nextElement())).getFieldName();
+            header += JOTUtilities.encodeCSVEntry(name) + ",";
         }
         header = header.substring(0, header.length() - 1);
         p.println(header);
@@ -252,7 +254,7 @@ public final class JOTQueryManager
         {
             // handle a line of data
             JOTModel model = (JOTModel) results.get(i);
-            String line = "\"" + model.getId() + "\",";
+            String line = model.getId() + ",";
             fieldNames = fields.keys();
             while (fieldNames.hasMoreElements())
             {
@@ -263,6 +265,21 @@ public final class JOTQueryManager
             p.println(line);
         }
         p.flush();
+    }
+
+    public static String getTableName(Class modelClass)
+    {
+        String name=null;
+        try
+        {
+            JOTModelMapping mapping = getMapping(modelClass);
+            name=mapping.getTableName();
+        }
+        catch(Exception e)
+        {
+            JOTLogger.logException(JOTLogger.CAT_DB, JOTQueryManager.class, "SQL Safe Table name is missing ??",e);
+        }
+        return name;
     }
 
 }

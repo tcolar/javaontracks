@@ -18,6 +18,7 @@ import java.util.Hashtable;
 
 import net.jot.db.JOTDBField;
 import net.jot.logger.JOTLogger;
+import net.jot.persistance.query.JOTQueryManager;
 import net.jot.prefs.JOTPreferences;
 
 
@@ -96,11 +97,11 @@ public class JOTModelMapping
         //we only need to compute this once.
         if (insertString == null)
         {
-            String result = "\"" + getPrimaryKey() + "\"";
+            String result = getPrimaryKey();
             Enumeration e = fields.elements();
             while (e.hasMoreElements())
             {
-                result += ", \"" + ((JOTDBField) e.nextElement()).getFieldName() + "\"";
+                result += ", " + ((JOTDBField) e.nextElement()).getFieldName() ;
             }
             insertString = result;
             JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.TRACE_LEVEL, this, "Request params: " + insertString);
@@ -113,12 +114,12 @@ public class JOTModelMapping
         Hashtable fields = getFields();
         if (updateString == null)
         {
-            String result = "\"" + getPrimaryKey() + "\"=?";
+            String result = getPrimaryKey() + "=?";
             Enumeration e = fields.elements();
             while (e.hasMoreElements())
             {
                 JOTDBField field = (JOTDBField) e.nextElement();
-                result += ", \"" + field.getFieldName() + "\"=?";
+                result += ", " + field.getFieldName() + "=?";
             }
             updateString = result;
             JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.TRACE_LEVEL, this, "Request params: " + updateString);
@@ -136,10 +137,10 @@ public class JOTModelMapping
         this.storageName = storageName;
     }
 
-    public void setTableName(String tableName)
+    /*public void setTableName(String tableName)
     {
         this.tableName = tableName;
-    }
+    }*/
 
     public void defineFieldMaxlength(String field, int value)
     {
@@ -152,7 +153,7 @@ public class JOTModelMapping
 
     public void defineFieldType(String field, String type)
     {
-        field = field.toLowerCase();
+        //field = field.toLowerCase();
         JOTDBField f = (JOTDBField) fields.get(field);
         if (f != null)
         {
@@ -241,9 +242,43 @@ public class JOTModelMapping
         return tableName;
     }
 
+    /**
+     * will convert the name to db friendly format if needed
+     * @param tableName
+     */
     public void defineTableName(String tableName)
     {
-        this.tableName = tableName;
+        this.tableName = createCleanTableName(tableName);
+    }
+/**
+     * Create a clean SQL table name from a real name (typically model class name)
+     * @param name
+     * @return
+     */
+    public static String createCleanTableName(String name)
+    {
+        StringBuffer newName=new StringBuffer();
+        for(int i=0;i!=name.length();i++)
+        {
+            char c=name.charAt(i);
+            if(c>='a' && c<='z')
+                newName.append(c);
+            else if(c>='A' && c<='Z')
+            {
+                // Camel case transaformed to _  EX: userTable -> user_table
+                String lower=(""+new Character(c)).toLowerCase();
+                if(i!=0)
+                    newName.append("_");
+                newName.append(lower);
+            }
+            else
+            {
+                // everyhting not letters is gonna be _
+                newName.append("_");
+            }
+        }
+        JOTLogger.debug(JOTLogger.CAT_DB, JOTModelMapping.class, "Table name for: '"+name+"' : '"+newName.toString().toUpperCase()+"'");
+        return newName.toString().toUpperCase();
     }
 
     public String getQueryClassName()
@@ -414,4 +449,6 @@ public class JOTModelMapping
             f.delete();
         }
     }
+    
+
 }

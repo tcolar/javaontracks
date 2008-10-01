@@ -59,7 +59,7 @@ public class TestUser extends JOTModel
         //Optional definitions examples
 
         // Field(column) name in DB, if different than fieldname.tolowercase()
-        mapping.defineFieldDBName("firstName", "firstname");
+        //mapping.defineFieldDBName("firstName", "firstname");
 
         // Define validation values
         mapping.defineFieldMaxlength("firstName", 20);
