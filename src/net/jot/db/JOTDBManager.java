@@ -251,6 +251,7 @@ public class JOTDBManager
      */
     public synchronized int nextVal(JOTTaggedConnection con, String id) throws Exception
     {
+        // doing this in a transaction ans synchronized should be safe
         con.getConnection().setAutoCommit(false);
         JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.DEBUG_LEVEL, this, "Getting nextval of : " + id);
         int curval = 0;

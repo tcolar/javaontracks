@@ -6,7 +6,7 @@ package net.jot.persistance;
 
 import java.util.Vector;
 import net.jot.persistance.query.JOTQueryManager;
-import net.jot.persistance.query.JOTTransaction;
+import net.jot.persistance.JOTTransaction;
 
 /**
  * This allow to build an SQL query manually.

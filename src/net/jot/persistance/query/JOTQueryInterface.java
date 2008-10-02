@@ -8,6 +8,7 @@ http://www.javaontracks.net
  */
 package net.jot.persistance.query;
 
+import net.jot.persistance.JOTTransaction;
 import java.util.Vector;
 
 import net.jot.db.JOTDBField;

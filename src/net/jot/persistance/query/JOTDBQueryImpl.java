@@ -8,6 +8,7 @@ http://www.javaontracks.net
  */
 package net.jot.persistance.query;
 
+import net.jot.persistance.JOTTransaction;
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;

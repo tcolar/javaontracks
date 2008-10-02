@@ -2,8 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.jot.persistance.query;
+package net.jot.persistance;
 
+import net.jot.persistance.query.*;
 import java.sql.Savepoint;
 import net.jot.db.JOTDBManager;
 import net.jot.db.JOTTaggedConnection;
@@ -22,10 +23,12 @@ public final class JOTTransaction
     private JOTTaggedConnection con;
     private boolean completed = false;
 
-    // do not use
-    private JOTTransaction()
+    /**
+     * use default storage
+     */
+    public JOTTransaction() throws Exception
     {
-        con = null;
+        this(JOTModel.DEFAULT_STORAGE);
     }
 
     public JOTTransaction(String storageName) throws Exception
@@ -50,7 +53,7 @@ public final class JOTTransaction
         terminate();
     }
 
-    public void rollBack(Savepoint savept) throws Exception
+    /*public void rollBack(Savepoint savept) throws Exception
     {
         if (completed)
         {
@@ -59,9 +62,9 @@ public final class JOTTransaction
         con.getConnection().rollback(savept);
         // if no exception, this tranmsaction is completed
         terminate();
-    }
+    }*/
 
-    public Savepoint setSavepoint() throws Exception
+    /*public Savepoint setSavepoint() throws Exception
     {
         if (completed)
         {
@@ -77,7 +80,7 @@ public final class JOTTransaction
             throw new JOTTransactionCompletedException();
         }
         return con.getConnection().setSavepoint(savept);
-    }
+    }*/
 
     public void setTransactionIsolation(int isolation) throws Exception
     {

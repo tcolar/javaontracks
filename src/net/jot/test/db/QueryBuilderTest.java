@@ -24,7 +24,7 @@ public class QueryBuilderTest implements JOTTestable
         JOTTester.tag("DB Test Data");
         DBTestData.populateUserTestData();
         
-        JOTQueryManager.dumpToCSV(System.out, TestUser.class);
+        //JOTQueryManager.dumpToCSV(System.out, TestUser.class);
 
         JOTTester.tag("testing prepared Statements");
         String[] params={"Doe"};

@@ -22,7 +22,7 @@ import net.jot.persistance.query.JOTDBQueryImpl;
 import net.jot.persistance.query.JOTFSQueryImpl;
 import net.jot.persistance.query.JOTQueryInterface;
 import net.jot.persistance.query.JOTQueryManager;
-import net.jot.persistance.query.JOTTransaction;
+import net.jot.persistance.JOTTransaction;
 
 /**
  * Generic Persistance model<br>
@@ -48,7 +48,7 @@ public abstract class JOTModel
     private transient Hashtable fieldNames;
     protected transient Class queryImplClass = null;
     private transient String storage;
-    protected transient final static String DEFAULT_STORAGE = "default";
+    public transient final static String DEFAULT_STORAGE = "default";
     private transient JOTModelMapping mapping = null;
 
     /**

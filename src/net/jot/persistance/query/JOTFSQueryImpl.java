@@ -8,6 +8,7 @@ http://www.javaontracks.net
  */
 package net.jot.persistance.query;
 
+import net.jot.persistance.JOTTransaction;
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.lang.reflect.Field;
