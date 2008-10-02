@@ -23,12 +23,10 @@ public final class JOTTransaction
     private JOTTaggedConnection con;
     private boolean completed = false;
 
-    /**
-     * use default storage
-     */
-    public JOTTransaction() throws Exception
+    // do not use
+    private JOTTransaction()
     {
-        this(JOTModel.DEFAULT_STORAGE);
+        con = null;
     }
 
     public JOTTransaction(String storageName) throws Exception
