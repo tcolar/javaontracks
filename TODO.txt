@@ -1,3 +1,7 @@
-write tests for:
 
-- transaction.
+Model
+Author hasmNany books
+
+1) tool to "instrument" Author with getBooks*() methods ?
+2) Dynamic (runtime )methods ?? Author.x(getBooks*())
+3) methods like author.findPart(bookField,...query);
