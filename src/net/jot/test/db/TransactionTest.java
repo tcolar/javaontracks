@@ -33,16 +33,52 @@ public class TransactionTest implements JOTTestable
         tx=new JOTTransaction("test");
         user.firstName="xyz";
         user.save(tx);
-        user=(TestUser)JOTQueryManager.findByID(TestUser.class,1);
+        user=(TestUser)JOTQueryManager.findByID(tx,TestUser.class,1);
         JOTTester.checkIf("rollback before", user.firstName.equals("xyz"));
         tx.rollBack();
         user=(TestUser)JOTQueryManager.findByID(TestUser.class,1);
         JOTTester.checkIf("rollback after", user.firstName.equals("toto"));
         
-        /* multithread test - test trnsaction was atomic
-         transaction (some add 1 remove 1, some 3 remove 3)x 10 threads ?*/
+        /* multithread test - test atomic transactions, some commit, some rolled back*/
+        String saved=user.firstName;
+        for(int i=0;i!=7;i++)
+            new TransactionTestThread(i%2==1).start();
+        user=(TestUser)JOTQueryManager.findByID(TestUser.class,1);
+        JOTTester.warnIf("7 concurrent transactions (might fail on some DB's)", user.firstName.equals(saved));        
+    }   
 
-        //multithread with rollbacks
+    class TransactionTestThread extends Thread
+    {
+        private boolean rollBack;
+
+        public TransactionTestThread(boolean rollBack)
+        {
+            this.rollBack=rollBack;
+        }
+        public void run()
+        {
+            try
+            {
+            // this changes firstname but then fix it back in a transaction
+            JOTTransaction tx=new JOTTransaction("test");
+            TestUser user=(TestUser)JOTQueryManager.findByID(tx,TestUser.class,1);
+            user.firstName=user.firstName+"x";
+            user.save(tx);
+            user=(TestUser)JOTQueryManager.findByID(tx,TestUser.class,1);
+            //System.out.println(user.firstName);
+            user.firstName=user.firstName.substring(0,user.firstName.length()-1);
+            user.save(tx);
+            if(!rollBack)
+                tx.commit();
+            else
+                tx.rollBack();
+            }
+            catch(Exception e)
+            {
+                // should use it in test result ..
+                e.printStackTrace();
+            }
+        }
+        
     }
-
 }

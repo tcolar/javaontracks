@@ -63,6 +63,16 @@ public class JOTTester
     private String currentClass = "";
     private int numberOfTests = 0;
     private int numberOfFailures = 0;
+
+    public int getNumberOfWarnings()
+    {
+        return numberOfWarnings;
+    }
+
+    public void setNumberOfWarnings(int numberOfWarnings)
+    {
+        this.numberOfWarnings = numberOfWarnings;
+    }
     private boolean enableDisplay = true;
     private boolean sof = true;
     private boolean selfTestMode = false;
@@ -76,6 +86,7 @@ public class JOTTester
 
         //singleton
     private static JOTTester tester = new JOTTester();
+    private int numberOfWarnings=0;
 
     private JOTTester()
     {
@@ -126,7 +137,7 @@ public class JOTTester
                 failure = true;
             }
         }
-        output("\n##### TESTS RAN: " + numberOfTests + " FAILURES:" + numberOfFailures + " #####", OUTPUT_TYPE_NONE);
+        output("\n##### TESTS RAN: " + numberOfTests + " FAILURES:" + numberOfFailures + " WARNINGS:"+numberOfWarnings+" #####", OUTPUT_TYPE_NONE);
 
         output("##### All Tests Completed.#####", OUTPUT_TYPE_NONE);
 
@@ -284,7 +295,7 @@ public class JOTTester
             // Hard failure, cannot continue
             sof = true;
         }
-        debug("Nb Failures:" + numberOfFailures);
+        debug("Nb Failures:" + numberOfFailures+" Warnings:"+numberOfWarnings);
         return numberOfFailures == 0;
     }
 
@@ -315,6 +326,19 @@ public class JOTTester
         }
         return test;
     }
+    public static boolean warnIf(String message, boolean test) throws JOTTestException
+    {
+        tester.numberOfTests++;
+        if (!test)
+        {
+            tester.numberOfWarnings++;
+            tester.displayResult(message, test,true);
+        } else
+        {
+            tester.displayResult(message, test,true);
+        }
+        return test;
+    }
 
     /**
      * Ouputs a test result (system.out)<br>
@@ -326,6 +350,10 @@ public class JOTTester
      */
     private void displayResult(String message, boolean result) throws JOTTestException
     {
+        displayResult(message, result, false);
+    }
+    private void displayResult(String message, boolean result, boolean warnOnly) throws JOTTestException
+    {
         if (result)
         {
             if (enableDisplay)
@@ -336,13 +364,13 @@ public class JOTTester
         {
             if (enableDisplay)
             {
-                output("!! " + message + " -> FAILED !!", OUTPUT_TYPE_ERROR);
+                output("!! " + message + (warnOnly?" -> FAILED(WARNING) !":" -> FAILED !!"), OUTPUT_TYPE_ERROR);
             }
-            if (sof)
+            if (sof && ! warnOnly)
             {
                 throw new JOTTestException("Test '" + message + "' failed");
             }
-        }
+        }   
     }
 
     protected void output(String s, int outputType)
