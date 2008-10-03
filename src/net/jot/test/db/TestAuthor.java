@@ -6,6 +6,7 @@
 package net.jot.test.db;
 
 import java.lang.reflect.TypeVariable;
+import net.jot.persistance.HasMany;
 import net.jot.persistance.JOTModel;
 import net.jot.persistance.JOTModelMapping;
 
@@ -15,7 +16,8 @@ import net.jot.persistance.JOTModelMapping;
  */
 public class TestAuthor extends JOTModel
 {
-    HasMany books=new HasMany(TestBook.class);
+    // would need to pass an id so books.find can search only books by this author
+    public HasMany books=new HasMany(id,TestBook.class);
     
     public TypeVariable[] getTypeParameters()
     {

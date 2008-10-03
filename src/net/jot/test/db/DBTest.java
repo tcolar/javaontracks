@@ -30,6 +30,8 @@ public class DBTest implements JOTTestable
      */
     public void jotTest() throws Throwable
     {
+        new TestAuthor().books.find(null);
+        
         DBTestData.populateUserTestData();
         //JOTQueryManager.dumpToCSV(System.out, TestUser.class);
         TestUser user=DBTestData._users[3];

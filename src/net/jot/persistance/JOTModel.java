@@ -37,7 +37,7 @@ import net.jot.persistance.JOTTransaction;
  * TODO: if field is transient or starts with __ then ignore as a data field
  * TODO: hasOne hasMany belongTo etc ... ?
  */
-public abstract class JOTModel extends JOTStaticModelQueries
+public abstract class JOTModel extends JOTModelAddons
 {
     /**
      *  The "id" of the object in the database (ie: primary key)
