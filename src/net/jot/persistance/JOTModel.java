@@ -236,6 +236,8 @@ public abstract class JOTModel extends JOTModelAddons
 
     public void setId(int id)
     {
+        //TODO
+        allMany.init(id);
         this.id = id;
     }
 

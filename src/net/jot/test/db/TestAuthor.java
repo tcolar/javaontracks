@@ -17,7 +17,7 @@ import net.jot.persistance.JOTModelMapping;
 public class TestAuthor extends JOTModel
 {
     // would need to pass an id so books.find can search only books by this author
-    public HasMany books=new HasMany(id,TestBook.class);
+    public HasMany books=new HasMany(TestBook.class);
     
     public TypeVariable[] getTypeParameters()
     {
