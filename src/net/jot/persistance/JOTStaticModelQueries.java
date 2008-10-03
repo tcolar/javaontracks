@@ -149,4 +149,13 @@ abstract class JOTStaticModelQueries
         impl.createTable(mapping);
     }
 
+    protected class HasMany
+    {
+        private Class modelClass=null;
+        public HasMany(Class clazz) 
+        { 
+            this.modelClass = (Class)clazz; 
+            System.out.println("Created a hasmany for class: "+modelClass.getName());
+        }
+    }
 }

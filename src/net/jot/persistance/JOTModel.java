@@ -90,10 +90,14 @@ public abstract class JOTModel extends JOTStaticModelQueries
 
     /**
      * Returns the "storage" to be used by this Model.
-     * default is to return JOTModel.DEFAULT_STORAGE (to use the "default" storage). 
+     * default is to return JOTModel.DEFAULT_STORAGE (to use the "default" storage).
+     * Ovveride if needed 
      * @param storageName
      */
-    protected abstract String defineStorage();
+    public String defineStorage()
+    {
+        return DEFAULT_STORAGE;
+    }
 
     
     /**

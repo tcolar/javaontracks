@@ -26,11 +26,6 @@ public class TestUser extends JOTModel
     public int age;
     //private String fieldToIgnore=null;
 
-    public String defineStorage()
-    {
-        return DEFAULT_STORAGE;
-    }
-
     // Required (A model version MUST be defined)
     protected int defineVersion()
     {
