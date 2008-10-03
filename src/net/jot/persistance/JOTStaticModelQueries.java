@@ -142,12 +142,11 @@ abstract class JOTStaticModelQueries
         /**
      * Creates the table in the DB, if it doesn't exists yet
      */
-    protected void createTableIfNecessary(Class modelClass) throws Exception
+    protected static void createTableIfNecessary(Class modelClass) throws Exception
     {
         JOTModelMapping mapping = JOTQueryManager.getMapping(modelClass);
         JOTQueryInterface impl = JOTQueryManager.getImplementation(mapping.getQueryClassName());
         impl.createTable(mapping);
     }
-
 
 }
