@@ -37,7 +37,7 @@ import net.jot.persistance.JOTTransaction;
  * TODO: if field is transient or starts with __ then ignore as a data field
  * TODO: hasOne hasMany belongTo etc ... ?
  */
-public abstract class JOTModel
+public abstract class JOTModel extends JOTStaticModelQueries
 {
     /**
      *  The "id" of the object in the database (ie: primary key)
@@ -86,14 +86,14 @@ public abstract class JOTModel
      * Implements the customization (User defined tables modifications, ie: fields mappings, etc ...)
      * @param mapping
      */
-    public abstract void customize(JOTModelMapping mapping);
+    protected abstract void customize(JOTModelMapping mapping);
 
     /**
      * Returns the "storage" to be used by this Model.
      * default is to return JOTModel.DEFAULT_STORAGE (to use the "default" storage). 
      * @param storageName
      */
-    public abstract String defineStorage();
+    protected abstract String defineStorage();
 
     
     /**
@@ -264,7 +264,7 @@ public abstract class JOTModel
     /**
      * Creates the table in the DB, if it doesn't exists yet
      */
-    protected void createTableIfNecessary(JOTModelMapping mapping) throws Exception
+    private void createTableIfNecessary(JOTModelMapping mapping) throws Exception
     {
         JOTQueryInterface impl = JOTQueryManager.getImplementation(mapping.getQueryClassName());
         impl.createTable(mapping);
@@ -278,12 +278,12 @@ public abstract class JOTModel
     /**
      * Deletes the table in the DB
      */
-    protected void deleteTable() throws Exception
+    /*protected void deleteTable() throws Exception
     {
         JOTModelMapping mapping = JOTQueryManager.getMapping(getClass());
         JOTQueryInterface impl = JOTQueryManager.getImplementation(mapping.getQueryClassName());
         impl.deleteTable(mapping);
-    }
+    }*/
 
     public void initQueryImplClass() throws Exception
     {
@@ -323,4 +323,5 @@ public abstract class JOTModel
             throw new Exception("Model mapping does not match metdata for table: " + mapping.getTableName());
         }
     }
+ 
 }

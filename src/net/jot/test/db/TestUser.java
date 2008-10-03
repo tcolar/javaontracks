@@ -77,8 +77,7 @@ public class TestUser extends JOTModel
 //	 for testing purpose we want to reset the table before each run
     public void resetTable() throws Exception
     {
-        deleteTable();
-        createTableIfNecessary(getMapping());
+        deleteWholeTable(TestUser.class);
     }
 
     public String toString()
@@ -86,5 +85,5 @@ public class TestUser extends JOTModel
         return "Age: " + age + " ID:" + id + " first:" + firstName + " last:" + lastName;
     }
 
- 
+    
 }

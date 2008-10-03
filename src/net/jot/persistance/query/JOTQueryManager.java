@@ -233,7 +233,7 @@ public final class JOTQueryManager
     }
 
     /**
-     * Dump a table (model) data into a stream(ie file) in CSV format
+     * Dump a whole table (model) data into a stream(ie file) in CSV format
      * @param out
      * @param modelClass
      * @param params

@@ -32,7 +32,6 @@ public class DBTest implements JOTTestable
     {
         DBTestData.populateUserTestData();
         //JOTQueryManager.dumpToCSV(System.out, TestUser.class);
-
         TestUser user=DBTestData._users[3];
 
         Vector users = JOTQueryManager.find(TestUser.class, null);
