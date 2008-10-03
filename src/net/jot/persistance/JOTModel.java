@@ -99,6 +99,23 @@ public abstract class JOTModel extends JOTModelAddons
         return DEFAULT_STORAGE;
     }
 
+    private void injectHasManys()
+    {
+        Field[] fields=getClass().getFields();
+        for(int i=0;i!=fields.length;i++)
+        {
+            if(fields[i].getType().equals(HasMany.class))
+            {
+                Object hasMany=fields[i].get(this);
+                if(hasMany==null)
+                    hasMany=new HasMany(getClass());
+                //TODO: set id or where close etc...
+                hasMany.init(this);
+                fields[i].set(this, hasMany);
+            }
+        }
+    }
+
     
     /**
      * get the list of fields from the class 
@@ -234,11 +251,10 @@ public abstract class JOTModel extends JOTModelAddons
         return id;
     }
 
-    public void setId(int id)
+    public final void setId(int id)
     {
-        //TODO
-        allMany.init(id);
         this.id = id;
+        injectHasManys();
     }
 
     /**
