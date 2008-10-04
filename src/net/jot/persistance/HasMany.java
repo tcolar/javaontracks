@@ -13,8 +13,9 @@ import net.jot.persistance.query.JOTQueryManager;
  */
 public class HasMany
 {
-
     private static Class modelClass = null;
+
+    private long parentId=-1;
 
     public HasMany(Class clazz)
     {
@@ -22,6 +23,10 @@ public class HasMany
         System.out.println("Created a hasmany for class: " + modelClass.getName());
     }
 
+    public void init(JOTModel parent)
+    {
+        parentId=parent.getId();
+    }
     /**
      * Simply use a manually built query (JOTQueryBuilder)
      * In my be simpler to directly call JOTQueryBuilder, which is what this does anyhow.

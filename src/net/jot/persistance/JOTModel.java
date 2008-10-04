@@ -106,7 +106,7 @@ public abstract class JOTModel extends JOTModelAddons
         {
             if(fields[i].getType().equals(HasMany.class))
             {
-                Object hasMany=fields[i].get(this);
+                HasMany hasMany=(HasMany)fields[i].get(this);
                 if(hasMany==null)
                     hasMany=new HasMany(getClass());
                 //TODO: set id or where close etc...
