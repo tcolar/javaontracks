@@ -38,14 +38,14 @@ public class JOTPreferences extends JOTPropertiesPreferences
         webConfPath = path;
     }
 
-    public static JOTPreferences getInstance()
+    public final static JOTPreferences getInstance()
     {
         if (prefs == null)
         {
             synchronized (JOTPreferences.class)
             {
-                prefs = new JOTPreferences();
-                prefs.initPrefs();
+                    prefs = new JOTPreferences();
+                    prefs.initPrefs();
             }
         }
         return prefs;

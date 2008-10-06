@@ -85,14 +85,14 @@ public class JOTTester
     private String excludePkgs = null;
 
         //singleton
-    private static JOTTester tester = new JOTTester();
+    private static final JOTTester tester = new JOTTester();
     private int numberOfWarnings=0;
 
     private JOTTester()
     {
     }
 
-    public static JOTTester getInstance()
+    public static final JOTTester getInstance()
     {
         return tester;
     }

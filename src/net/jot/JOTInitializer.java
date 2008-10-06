@@ -34,10 +34,12 @@ public class JOTInitializer
     // singleton
     private static final JOTInitializer initializer = new JOTInitializer();
 
-    public static JOTInitializer getInstance()
+    public final static JOTInitializer getInstance()
     {
         return initializer;
     }
+    private JOTInitializer(){}
+    
     private boolean testMode = false;
 
     /**

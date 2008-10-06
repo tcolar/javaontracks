@@ -43,7 +43,7 @@ public class JOTScheduler extends Thread
 	{
 	}
 	
-	public static JOTScheduler getInstance()
+	public final static JOTScheduler getInstance()
 	{
 		return instance;
 	}

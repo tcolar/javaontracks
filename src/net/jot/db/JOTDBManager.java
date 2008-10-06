@@ -34,11 +34,11 @@ public class JOTDBManager
      *
      *@return    The instance value
      */
-    public static JOTDBManager getInstance()
+    public static final JOTDBManager getInstance()
     {
         return dbManager;
     }
-
+    private JOTDBManager(){}
     /**
      * returns a connection to the 'default' database
      * @return

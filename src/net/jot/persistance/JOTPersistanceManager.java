@@ -44,11 +44,11 @@ public class JOTPersistanceManager
   // singleton
   private static final JOTPersistanceManager instance=new JOTPersistanceManager();
 
-  public static JOTPersistanceManager getInstance()
+  public final static JOTPersistanceManager getInstance()
   {
       return instance;
   }
-
+  private JOTPersistanceManager(){}
   /**
          * Initializes from the db property file
          * @param prefs
