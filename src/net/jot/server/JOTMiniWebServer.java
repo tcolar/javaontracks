@@ -24,8 +24,9 @@ public class JOTMiniWebServer
 {
     // Get, followed by some spaces, followed by a path, possibly followed by a ?, followed by parameters/values 
     private static final Pattern RequestPattern = Pattern.compile("^GET\\s+([^\\? ]*)\\??(\\S*).*");
+    // Vector is synchronized.
     private Vector threads = new Vector();
-    boolean stop = false;
+    volatile boolean stop = false;
     ServerSocket socket = null;
 
     public JOTMiniWebServer()

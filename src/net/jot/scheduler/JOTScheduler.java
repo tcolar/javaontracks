@@ -30,8 +30,8 @@ public class JOTScheduler extends Thread
 	private static JOTScheduler instance=new JOTScheduler();
         
 	private int lastMinute=-1;
-	private boolean stop=false;
-	private boolean done=false;
+	private volatile boolean stop=false;
+	private volatile boolean done=false;
 	
 	// Hashtables are synchronized so they are good here.
 	private Hashtable items=new Hashtable();

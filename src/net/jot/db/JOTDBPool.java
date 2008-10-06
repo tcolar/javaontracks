@@ -28,7 +28,7 @@ import net.jot.logger.JOTLogger;
  */
 public class JOTDBPool extends Thread
 {
-    boolean shutdown = false;
+    volatile boolean shutdown = false;
     int statusGap = 15 * 60 * 1000;
     //15 mn
 
@@ -366,9 +366,10 @@ public class JOTDBPool extends Thread
     /**
      *  will automatically call shutdown when java app is terminated, to avoid hung DB connections.
      */
-    public void finalize()
+    public void finalize() throws Throwable
     {
         shutdown();
+        super.finalize();
     }
 
 

@@ -5,3 +5,7 @@ Author hasmNany books
 1) tool to "instrument" Author with getBooks*() methods ?
 2) Dynamic (runtime )methods ?? Author.x(getBooks*())
 3) methods like author.findPart(bookField,...query);
+
+fix threads: bloch48-53
+work on exceptions (JOTException): runtime vs regular exceptions etc... bloch57-65
+SQLParameters builder.
