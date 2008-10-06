@@ -122,8 +122,8 @@ public final class JOTQueryManager
 
     /**
      * Simply use a manually built query (JOTQueryBuilder)
-     * In my be simpler to directly call JOTQueryBuilder, which is what this does anyhow.
-     * JOTQueryBuilder.findAll(User.class).where("name>'a'").exeute();
+     * In might be simpler to directly call JOTQueryBuilder, which is what this does anyhow.
+     * JOTQueryBuilder.findAll(User.class).where("name>'a'").execute();
      * @param transaction
      * @param queryBuilder
      * @return
@@ -136,7 +136,6 @@ public final class JOTQueryManager
     public static Vector findByQuery(JOTQueryBuilder queryBuilder) throws Exception
     {
         return findByQuery(null, queryBuilder);
-        //TODO
     }
     
     /**
