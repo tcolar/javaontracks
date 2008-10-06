@@ -30,7 +30,7 @@ import net.jot.persistance.JOTTransaction;
 public final class JOTQueryBuilder
 {
 
-    private String sql = "";
+    private StringBuffer sql = new StringBuffer();
     private Class modelClass;
     private String[] params = null;
     JOTStatementFlags flags=new JOTStatementFlags();
@@ -124,7 +124,7 @@ public final class JOTQueryBuilder
 
     private void appendToSQL(String append)
     {
-        sql += append + " ";
+        sql.append(append).append(" ");
     }
 
     private void setModelClass(Class modelClass)
@@ -153,12 +153,12 @@ public final class JOTQueryBuilder
 
     public Vector execute(JOTTransaction transaction) throws Exception
     {
-        return JOTQueryManager.findUsingSQL(transaction,modelClass, sql, params, flags);
+        return JOTQueryManager.findUsingSQL(transaction,modelClass, sql.toString(), params, flags);
     }
 
     public String showSQL()
     {
-       return sql; 
+       return sql.toString(); 
     }
     
     /**

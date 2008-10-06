@@ -84,7 +84,7 @@ public class JOTTester
     private String includePkgs = ".*";
     private String excludePkgs = null;
 
-        //singleton
+    //singleton
     private static final JOTTester tester = new JOTTester();
     private int numberOfWarnings=0;
 
