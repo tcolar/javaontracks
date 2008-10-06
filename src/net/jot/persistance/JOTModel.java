@@ -14,6 +14,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import java.util.logging.LogManager;
 import net.jot.JOTInitializer;
 import net.jot.db.JOTDBField;
 import net.jot.db.JOTDBJDBCSetup;
@@ -106,12 +107,19 @@ public abstract class JOTModel extends JOTModelAddons
         {
             if(fields[i].getType().equals(HasMany.class))
             {
+                try
+                {
                 HasMany hasMany=(HasMany)fields[i].get(this);
                 if(hasMany==null)
                     hasMany=new HasMany(getClass());
                 //TODO: set id or where close etc...
                 hasMany.init(this);
                 fields[i].set(this, hasMany);
+                }
+                catch(IllegalAccessException e)
+                {
+                    JOTLogger.logException(this, "Failed to 'inject' hasMany !", e);
+                }
             }
         }
     }

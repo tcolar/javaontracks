@@ -85,12 +85,13 @@ public class HasMany
      */
     public static Vector find(JOTTransaction transaction, JOTSQLQueryParams params) throws Exception
     {
+        TODO: where modelClass."parentname"_id == parentId;
         return JOTQueryManager.find(transaction, modelClass, params);
     }
 
     public static Vector find(JOTSQLQueryParams params) throws Exception
     {
-        return JOTQueryManager.find(modelClass, params);
+        return find(null,params);
     }
     /**
      * Returns the first records matching the parameters<br>
