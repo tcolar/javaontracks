@@ -20,8 +20,6 @@ import net.jot.db.JOTDBField;
 import net.jot.logger.JOTLogger;
 import net.jot.persistance.query.JOTQueryManager;
 import net.jot.prefs.JOTPreferences;
-
-
 // TODO: ++ if the mapping in the class does not match the mapping in the database/FS we should probably crash with a severe error, rather that risquing messing up the data !
 /**
  * Handles the mapping of a DB representaion (java object) to a DB table
@@ -41,12 +39,11 @@ public class JOTModelMapping
     private String tableName = null;
     private Hashtable mappedFields = new Hashtable();
     private String[] ignoredFields =
-            {};
+    {
+    };
     private Hashtable fields = new Hashtable();
     private String queryClassName = null;
-    private int dataSize = -1;
-
-    // we cache those for speed
+    private int dataSize = -1;    // we cache those for speed
     private String updateString = null;
     private String insertString = null;
 
@@ -91,42 +88,53 @@ public class JOTModelMapping
         return JOTPersistanceManager.getInstance().getDbName(storageName);
     }
 
-    public String getInsertString()
+    /*public String getInsertString()
     {
-        Hashtable fields = getFields();
-        //we only need to compute this once.
-        if (insertString == null)
+    Hashtable fields = getFields();
+    //we only need to compute this once.
+    if (insertString == null)
+    {
+    String result = getPrimaryKey();
+    Enumeration e = fields.elements();
+    while (e.hasMoreElements())
+    {
+    result += ", " + ((JOTDBField) e.nextElement()).getFieldName() ;
+    }
+    insertString = result;
+    JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.TRACE_LEVEL, this, "Request params: " + insertString);
+    }
+    return insertString;
+    }*/
+    public String[] getInsertFields()
+    {
+        String[] iFields = new String[getFields().size()];
+        Enumeration e = getFields().elements();
+        int cpt=0;
+        while (e.hasMoreElements())
         {
-            String result = getPrimaryKey();
-            Enumeration e = fields.elements();
-            while (e.hasMoreElements())
-            {
-                result += ", " + ((JOTDBField) e.nextElement()).getFieldName() ;
-            }
-            insertString = result;
-            JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.TRACE_LEVEL, this, "Request params: " + insertString);
+            iFields[cpt] = (String) e.nextElement();
+            cpt++;
         }
-        return insertString;
+        return iFields;
     }
 
-    public String getUpdateString()
+    /*public String getUpdateString()
     {
-        Hashtable fields = getFields();
-        if (updateString == null)
-        {
-            String result = getPrimaryKey() + "=?";
-            Enumeration e = fields.elements();
-            while (e.hasMoreElements())
-            {
-                JOTDBField field = (JOTDBField) e.nextElement();
-                result += ", " + field.getFieldName() + "=?";
-            }
-            updateString = result;
-            JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.TRACE_LEVEL, this, "Request params: " + updateString);
-        }
-        return updateString;
+    Hashtable fields = getFields();
+    if (updateString == null)
+    {
+    String result = getPrimaryKey() + "=?";
+    Enumeration e = fields.elements();
+    while (e.hasMoreElements())
+    {
+    JOTDBField field = (JOTDBField) e.nextElement();
+    result += ", " + field.getFieldName() + "=?";
     }
-
+    updateString = result;
+    JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.TRACE_LEVEL, this, "Request params: " + updateString);
+    }
+    return updateString;
+    }*/
     public void setPrimaryKey(String primaryKey)
     {
         this.primaryKey = primaryKey;
@@ -139,9 +147,8 @@ public class JOTModelMapping
 
     /*public void setTableName(String tableName)
     {
-        this.tableName = tableName;
+    this.tableName = tableName;
     }*/
-
     public void defineFieldMaxlength(String field, int value)
     {
         JOTDBField f = (JOTDBField) fields.get(field);
@@ -250,34 +257,37 @@ public class JOTModelMapping
     {
         this.tableName = createCleanTableName(tableName);
     }
-/**
+
+    /**
      * Create a clean SQL table name from a real name (typically model class name)
      * @param name
      * @return
      */
     public static String createCleanTableName(String name)
     {
-        StringBuffer newName=new StringBuffer();
-        for(int i=0;i!=name.length();i++)
+        StringBuffer newName = new StringBuffer();
+        for (int i = 0; i != name.length(); i++)
         {
-            char c=name.charAt(i);
-            if(c>='a' && c<='z')
+            char c = name.charAt(i);
+            if (c >= 'a' && c <= 'z')
+            {
                 newName.append(c);
-            else if(c>='A' && c<='Z')
+            } else if (c >= 'A' && c <= 'Z')
             {
                 // Camel case transaformed to _  EX: userTable -> user_table
-                String lower=(""+new Character(c)).toLowerCase();
-                if(i!=0)
+                String lower = ("" + new Character(c)).toLowerCase();
+                if (i != 0)
+                {
                     newName.append("_");
+                }
                 newName.append(lower);
-            }
-            else
+            } else
             {
                 // everyhting not letters is gonna be _
                 newName.append("_");
             }
         }
-        JOTLogger.debug(JOTLogger.CAT_DB, JOTModelMapping.class, "Table name for: '"+name+"' : '"+newName.toString().toUpperCase()+"'");
+        JOTLogger.debug(JOTLogger.CAT_DB, JOTModelMapping.class, "Table name for: '" + name + "' : '" + newName.toString().toUpperCase() + "'");
         return newName.toString().toUpperCase();
     }
 
@@ -449,6 +459,4 @@ public class JOTModelMapping
             f.delete();
         }
     }
-    
-
 }

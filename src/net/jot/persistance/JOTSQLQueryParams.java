@@ -15,7 +15,7 @@ import java.util.Vector;
  * such as a set of conditins, orderBy statement etc...
  * @author tcolar
  */
-public class JOTSQLQueryParams
+/*public class JOTSQLQueryParams
 {
 	private Vector conditions=new Vector();
 	private Vector orderBys=new Vector();
@@ -52,12 +52,9 @@ public class JOTSQLQueryParams
 	{
 		return limit;
 	}
-        /**
-         * Specify a limit to the number of rows returned by the query.
-         * @param limit
-         */
+        
 	public void setLimit(int limit)
 	{
 		this.limit = limit;
 	}
-}
+}*/

@@ -270,7 +270,7 @@ public abstract class JOTModel extends JOTModelAddons
      */
     public void delete(JOTTransaction transaction) throws Exception
     {
-        JOTQueryManager.delete(transaction, this);
+        JOTQueryBuilder.deleteQuery(getClass()).delete();
     }
 
     public void delete() throws Exception

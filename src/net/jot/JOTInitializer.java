@@ -75,7 +75,7 @@ public class JOTInitializer
                 JOTLogger.log(JOTLogger.CAT_MAIN, JOTLogger.DEBUG_LEVEL, JOTInitializer.class, "Stopping PersistanceManager");
                 JOTPersistanceManager.getInstance().destroy();
                 JOTLogger.log(JOTLogger.CAT_MAIN, JOTLogger.DEBUG_LEVEL, JOTInitializer.class, "Stopping FSIndexManager");
-                JOTFSIndexManager.destroy();
+                //JOTFSIndexManager.destroy();
                 JOTLogger.log(JOTLogger.CAT_MAIN, JOTLogger.DEBUG_LEVEL, JOTInitializer.class, "Stopping Logger");
                 JOTLogger.destroy();
                 System.out.println("Shutdown complete");

@@ -27,65 +27,16 @@ public class HasMany
     {
         parentId=parent.getId();
     }
-    /**
-     * Simply use a manually built query (JOTQueryBuilder)
-     * In my be simpler to directly call JOTQueryBuilder, which is what this does anyhow.
-     * JOTQueryBuilder.findAll(User.class).where("name>'a'").exeute();
-     * @param transaction
-     * @param queryBuilder
-     * @return
-     * @throws java.lang.Exception
-     */
-    /*
-    public Vector findByQuery(JOTTransaction transaction, JOTQueryBuilder queryBuilder) throws Exception
-    {
-    return JOTQueryManager.findByQuery(transaction, queryBuilder);
-    }
-    public static Vector findByQuery(JOTQueryBuilder queryBuilder) throws Exception
-    {
-    return JOTQueryManager.findByQuery(queryBuilder);
-    }*/
-    /**
-     * Returns the record whith the given ID <br>
-     * @param dataId
-     * @return a JOTModel object or null if none found
-     */
-    /*public static JOTModel findByID(JOTTransaction transaction, Class modelClass, long id) throws Exception
-    {
-    return JOTQueryManager.findByID(transaction, modelClass, id); 
-    }
-    public static JOTModel findByID(Class modelClass, long id) throws Exception
-    {
-    return JOTQueryManager.findByID(modelClass, id);
-    }*/
-    /**
-     * This is here, if you want to make manual custom SQL calls not covered by the other methods<br>
-     * 
-     * NOTE: your request MUST return records matching your model.<br>
-     * 
-     * @param sql   ie: "select * from 'users' where first=?, last=? order by name" ... etc ...
-     * @param params ie: ['John','Doe']
-     * @return a Vector of JOTModel objects 
-     */
-    /*public static Vector findUsingSQL(JOTTransaction transaction, Class modelClass, String sql, String[] params, JOTStatementFlags flags) throws Exception
-    {
-    return JOTQueryManager.findUsingSQL(transaction, modelClass, sql, params, flags);
-    }
-    public static Vector findUsingSQL(JOTTransaction transaction, Class modelClass, String sql, String[] params) throws Exception
-    {
-    return JOTQueryManager.findUsingSQL(transaction, modelClass, sql, params);
-    }
-    public static Vector findUsingSQL(Class modelClass, String sql, String[] params) throws Exception
-    {
-    return JOTQueryManager.findUsingSQL(modelClass, sql, params);
-    }*/
+
     /**
      * Returns all the records matching the parameters<br>
+     * For example: Authors.books.find(null); will return all the books by that author
+     * @param params - null means findAll
      * @return a Vector of JOTModel objects
      */
     public static Vector find(JOTTransaction transaction, JOTSQLQueryParams params) throws Exception
     {
-        TODO: where modelClass."parentname"_id == parentId;
+        //TODO: where modelClass."parentname"_id == parentId;
         return JOTQueryManager.find(transaction, modelClass, params);
     }
 
@@ -93,49 +44,29 @@ public class HasMany
     {
         return find(null,params);
     }
-    /**
-     * Returns the first records matching the parameters<br>
-     * @return a JOTModel object or null if none found
-     */
-    /*public static JOTModel findOne(JOTTransaction transaction, Class modelClass, JOTSQLQueryParams params) throws Exception
-    {
-    return JOTQueryManager.findOne(transaction, modelClass, params);
-    }
-    public static JOTModel findOne(Class modelClass, JOTSQLQueryParams params) throws Exception
-    {
-    return JOTQueryManager.findOne(modelClass, params);
-    }*/
-    /**
-     * Returns a record if it is found in the database
-     * If it is not found then create a blank new one and return it.
-     * @param modelClass
-     * @param params
-     * @return
-     * @throws java.lang.Exception
-     */
-    /*public static JOTModel findOrCreateOne(JOTTransaction transaction, Class modelClass, JOTSQLQueryParams params) throws Exception
-    {
-    return JOTQueryManager.findOrCreateOne(transaction, modelClass, params);
-    }
-    public static JOTModel findOrCreateOne(Class modelClass, JOTSQLQueryParams params) throws Exception
-    {
-    return JOTQueryManager.findOrCreateOne(modelClass, params);
-    }
     
-    public static void dumpAllToCSV(OutputStream out, Class modelClass) throws Exception
-    {
-    JOTQueryManager.dumpToCSV(out, modelClass);
-    }*/
     /**
-     * Dump a whole table (model) data into a stream(ie file) in CSV format
-     * @param out
-     * @param modelClass
-     * @param params
-     * @throws java.lang.Exception
+     * Create a new "HasMany" type item, referencing the parent.
+     * Note: won't be saved until you do save it (model.save())
+     * @return
      */
-    /*public static void dumpAllToCSV(OutputStream out, Class modelClass, JOTSQLQueryParams params) throws Exception
+    public static JOTModel createOne()
     {
-    JOTQueryManager.dumpToCSV(out, modelClass, params);
+        
     }
+    /**
+     * Deletes all the "HasMany" items refreing to this parent and matching the params.
+     * For example: Authors.books.delete(null); will delete all the books by that author
+     * @param transaction
+     * @param params - null means deleteAll
+     * @return
      */
-}
+    public static void delete(JOTTransaction transaction, JOTSQLQueryParams params)
+    {
+        JOTQueryBuilder.delete(modelClass);
+    }
+    public static void delete(JOTSQLQueryParams params)
+    {
+        delete(null, params);
+    }
+ }

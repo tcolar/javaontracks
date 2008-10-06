@@ -13,6 +13,7 @@ package net.jot.persistance;
  * @author thibautc
  *
  */
+/*
 public class JOTSQLOrderBy
 {
 	public static final int ASCENDING=0;
@@ -31,24 +32,16 @@ public class JOTSQLOrderBy
 		return direction;
 	}
 
-	/**
-	 * Create an SQL orderBy (used in orderBy statement)
-	 * 
-	 * @param field    ie: 'firstname'
-	 * @param direction (sort order): ASCENDING or DESCENDING
-	 */
+
 	public JOTSQLOrderBy(String field, int direction)
 	{
 		this.field=field;
 		this.direction=direction;
 	}
         
-	/**
-	 * Create an SQL orderBy (used in orderBy statement) order ASCENDING
-	 */ 
 	public JOTSQLOrderBy(String field)
 	{
 		this.field=field;
 		this.direction=ASCENDING;
 	}
-}
+}*/

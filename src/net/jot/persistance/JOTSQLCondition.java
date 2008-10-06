@@ -80,5 +80,8 @@ public class JOTSQLCondition
 		return s;
 	}
 
-
+        public String getSqlString()
+        {
+            return new StringBuffer(field).append(getSQLComparator()).toString();
+        }
 }

@@ -18,31 +18,21 @@ import net.jot.persistance.query.JOTQueryManager;
 
 /**
  * Manager for an FSDB index
+ * @deprecated 
  * @author tcolar
  */
 public class JOTFSIndexManager
 {
         /**
-         * Contains all the different tables indexes (in memory)
-         */
 	private static Hashtable indexes=new Hashtable();
 		
-	/**
-         * Get all the indexes
-         * @return
-         */
+	
 	public static Hashtable getIndexes()
 	{
 		return indexes;
 	}
 
-        /**
-         * Get the index from a specific table/model
-         * Loads it from file if it is the first request.
-         * @param mapping
-         * @return
-         * @throws java.lang.Exception
-         */
+       
 	public static JOTFSIndex getIndex(JOTModelMapping mapping) throws Exception
 	{
 		String name=mapping.getTableName();
@@ -89,5 +79,5 @@ public class JOTFSIndexManager
 				index.closeFile();
 		}
 	}
-
+*/
 }

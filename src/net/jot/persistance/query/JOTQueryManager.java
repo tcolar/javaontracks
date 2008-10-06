@@ -9,20 +9,13 @@ http://www.javaontracks.net
 package net.jot.persistance.query;
 
 import net.jot.persistance.JOTTransaction;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Vector;
 
-import net.jot.db.JOTDBField;
 import net.jot.logger.JOTLogger;
 import net.jot.persistance.JOTModel;
 import net.jot.persistance.JOTModelMapping;
-import net.jot.persistance.JOTQueryBuilder;
-import net.jot.persistance.JOTSQLQueryParams;
+import net.jot.persistance.JOTQueryResult;
 import net.jot.persistance.JOTStatementFlags;
-import net.jot.utils.JOTUtilities;
 
 /**
  * This is the "Main" Object for retrieving records from the persistance/database.<br>
@@ -38,18 +31,12 @@ public final class JOTQueryManager
     private static Hashtable modelMappings = new Hashtable();
     private static Hashtable implementations = new Hashtable();
 
-    public static void delete(JOTModel model) throws Exception
-    {
-        delete(null,model);
-    }
-
-    public static void delete(JOTTransaction transaction,JOTModel model) throws Exception
-    {
+    /*public static void delete(JOTTransaction transaction,JOTModel model) throws Exception
+    {        
         JOTModelMapping mapping = getMapping(model.getClass());
         JOTQueryInterface impl = JOTQueryManager.getImplementation(mapping.getQueryClassName());
         impl.delete(transaction, model);
-    }
-
+    }*/
     public static void save(JOTTransaction transaction, JOTModel model) throws Exception
     {
         JOTModelMapping mapping = getMapping(model.getClass());
@@ -121,39 +108,6 @@ public final class JOTQueryManager
     }
 
     /**
-     * Simply use a manually built query (JOTQueryBuilder)
-     * In might be simpler to directly call JOTQueryBuilder, which is what this does anyhow.
-     * JOTQueryBuilder.findAll(User.class).where("name>'a'").execute();
-     * @param transaction
-     * @param queryBuilder
-     * @return
-     * @throws java.lang.Exception
-     */
-    public static Vector findByQuery(JOTTransaction transaction, JOTQueryBuilder queryBuilder) throws Exception
-    {
-        return queryBuilder.execute(transaction);
-    }
-    public static Vector findByQuery(JOTQueryBuilder queryBuilder) throws Exception
-    {
-        return findByQuery(null, queryBuilder);
-    }
-    
-    /**
-     * Returns the record whith the given ID <br>
-     * @param dataId
-     * @return a JOTModel object or null if none found
-     */
-    public static JOTModel findByID(JOTTransaction transaction, Class modelClass, long id) throws Exception
-    {
-        JOTModelMapping mapping = getMapping(modelClass);
-        JOTQueryInterface impl = getImplementation(mapping.getQueryClassName());
-        return impl.findByID(transaction,mapping, modelClass, id);
-    }
-    public static JOTModel findByID(Class modelClass, long id) throws Exception
-    {
-       return findByID(null,modelClass, id);
-    }
-    /**
      * This is here, if you want to make manual custom SQL calls not covered by the other methods<br>
      * 
      * NOTE: your request MUST return records matching your model.<br>
@@ -162,114 +116,17 @@ public final class JOTQueryManager
      * @param params ie: ['John','Doe']
      * @return a Vector of JOTModel objects 
      */
-    public static Vector findUsingSQL(JOTTransaction transaction, Class modelClass, String sql, String[] params, JOTStatementFlags flags) throws Exception
+    public static JOTQueryResult executeSQL(JOTTransaction transaction, Class modelClass, String sql, String[] params, JOTStatementFlags flags) throws Exception
     {
         JOTModelMapping mapping = getMapping(modelClass);
         JOTQueryInterface impl = getImplementation(mapping.getQueryClassName());
-        return impl.findUsingSQL(transaction,mapping, modelClass, sql, params, flags);
+        return impl.executeSQL(transaction,mapping, modelClass, sql, params, flags);
     }
-    public static Vector findUsingSQL(JOTTransaction transaction, Class modelClass, String sql, String[] params) throws Exception
-    {
-        return findUsingSQL(transaction, modelClass, sql, params, null);
-    }
-    public static Vector findUsingSQL(Class modelClass, String sql, String[] params) throws Exception
-    {
-        return findUsingSQL(null, modelClass, sql, params, null);
-    }
-    /**
-     * Returns all the records matching the parameters<br>
-     * @return a Vector of JOTModel objects
-     */
-    public static Vector find(JOTTransaction transaction, Class modelClass, JOTSQLQueryParams params) throws Exception
+    public static JOTQueryResult updateSQL(JOTTransaction transaction, Class modelClass, String sql, String[] params, JOTStatementFlags flags) throws Exception
     {
         JOTModelMapping mapping = getMapping(modelClass);
         JOTQueryInterface impl = getImplementation(mapping.getQueryClassName());
-        return impl.find(transaction, mapping, modelClass, params);
-    }
-    public static Vector find(Class modelClass, JOTSQLQueryParams params) throws Exception
-    {
-        return find(null, modelClass, params);
-    }
-    /**
-     * Returns the first records matching the parameters<br>
-     * @return a JOTModel object or null if none found
-     */
-    public static JOTModel findOne(JOTTransaction transaction, Class modelClass, JOTSQLQueryParams params) throws Exception
-    {
-        JOTModelMapping mapping = getMapping(modelClass);
-        JOTQueryInterface impl = getImplementation(mapping.getQueryClassName());
-        return impl.findOne(null,mapping, modelClass, params);
-    }
-    public static JOTModel findOne(Class modelClass, JOTSQLQueryParams params) throws Exception
-    {
-        return findOne(null, modelClass, params);
-    }
-    /**
-     * Returns a record if it is found in the database
-     * If it is not found then create a blank new one and return it.
-     * @param modelClass
-     * @param params
-     * @return
-     * @throws java.lang.Exception
-     */
-    public static JOTModel findOrCreateOne(JOTTransaction transaction, Class modelClass, JOTSQLQueryParams params) throws Exception
-    {
-        JOTModel model = findOne(null,modelClass, params);
-        if (model == null)
-        {
-            model = (JOTModel) modelClass.newInstance();
-        }
-        return model;
-    }
-    public static JOTModel findOrCreateOne(Class modelClass, JOTSQLQueryParams params) throws Exception
-    {
-        return findOrCreateOne(null, modelClass, params);
-    }
-
-    public static void dumpToCSV(OutputStream out, Class modelClass) throws Exception
-    {
-        dumpToCSV(out, modelClass, null);
-    }
-
-    /**
-     * Dump a whole table (model) data into a stream(ie file) in CSV format
-     * @param out
-     * @param modelClass
-     * @param params
-     * @throws java.lang.Exception
-     */
-    public static void dumpToCSV(OutputStream out, Class modelClass, JOTSQLQueryParams params) throws Exception
-    {
-        Vector results = find(modelClass, params);
-        PrintWriter p = new PrintWriter(out);
-        JOTModelMapping mapping = getMapping(modelClass);
-        // write the meata on the first line
-        Hashtable fields = mapping.getFields();
-        Enumeration fieldNames = fields.keys();
-        String header = mapping.getPrimaryKey() + ",";
-        while (fieldNames.hasMoreElements())
-        {
-            String name=((JOTDBField)fields.get(fieldNames.nextElement())).getFieldName();
-            header += JOTUtilities.encodeCSVEntry(name) + ",";
-        }
-        header = header.substring(0, header.length() - 1);
-        p.println(header);
-        // writes the data in csv format
-        for (int i = 0; i != results.size(); i++)
-        {
-            // handle a line of data
-            JOTModel model = (JOTModel) results.get(i);
-            String line = model.getId() + ",";
-            fieldNames = fields.keys();
-            while (fieldNames.hasMoreElements())
-            {
-                String value = model.getFieldValue((String) fieldNames.nextElement()).toString();
-                line += JOTUtilities.encodeCSVEntry(value) + ",";
-            }
-            line = line.substring(0, line.length() - 1);
-            p.println(line);
-        }
-        p.flush();
+        return impl.updateSQL(transaction,mapping, sql, params, flags);
     }
 
     public static String getTableName(Class modelClass)
@@ -286,5 +143,5 @@ public final class JOTQueryManager
         }
         return name;
     }
-
+    
 }

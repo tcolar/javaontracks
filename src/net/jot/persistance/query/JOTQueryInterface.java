@@ -9,12 +9,11 @@ http://www.javaontracks.net
 package net.jot.persistance.query;
 
 import net.jot.persistance.JOTTransaction;
-import java.util.Vector;
 
 import net.jot.db.JOTDBField;
 import net.jot.persistance.JOTModel;
 import net.jot.persistance.JOTModelMapping;
-import net.jot.persistance.JOTSQLQueryParams;
+import net.jot.persistance.JOTQueryResult;
 import net.jot.persistance.JOTStatementFlags;
 
 /**
@@ -27,13 +26,6 @@ public interface JOTQueryInterface
 {
 
 	/**
-	 * Returns the record whith the given ID <br>
-	 * @param dataId
-	 * @return
-	 */
-	public JOTModel findByID(JOTTransaction transaction, JOTModelMapping mapping, Class objectClass, long id) throws Exception;
-		
-	/**
 	 * This is here, if you want to make manual custom SQL calls not covered by the other methods<br>
 	 * 
 	 * NOTE: your request MUST return records matching your model.<br>
@@ -43,22 +35,22 @@ public interface JOTQueryInterface
 	 * @param params ie: ['John','Doe']
 	 * @return
 	 */
-	public Vector findUsingSQL(JOTTransaction transaction, JOTModelMapping mapping, Class objectClass,String sql, Object[] params, JOTStatementFlags flags) throws Exception;
+	public JOTQueryResult executeSQL(JOTTransaction transaction, JOTModelMapping mapping, Class objectClass, String sql, Object[] params, JOTStatementFlags flags) throws Exception;
+
+        /**
+         * An "Update" type queries returns no results:
+         * IE: insert, delete etc...
+         * @param transaction
+         * @param mapping
+         * @param objectClass
+         * @param sql
+         * @param params
+         * @param flags
+         * @return
+         * @throws java.lang.Exception
+         */
+        public JOTQueryResult updateSQL(JOTTransaction transaction, JOTModelMapping mapping, String sql, Object[] params, JOTStatementFlags flags) throws Exception;
 	
-	/**
-	 * Returns the first records matching the parameters<br>
-	 * @return
-	 */
-	public JOTModel findOne(JOTTransaction transaction, JOTModelMapping mapping, Class objectClass,JOTSQLQueryParams params) throws Exception;
-
-	/**
-	 * Returns all the records matching the parameters<br>
-	 * @return
-	 */
-	public Vector find(JOTTransaction transaction, JOTModelMapping mapping, Class objectClass,JOTSQLQueryParams params) throws Exception;
-
-	public void createTable(JOTModelMapping mapping) throws Exception; 
-
         /**
          * Saves record in backend
          * @param model
@@ -72,13 +64,19 @@ public interface JOTQueryInterface
          * @throws java.lang.Exception
          */
 	public void deleteTable(JOTModelMapping mapping) throws Exception;
+        /**
+         * Delete the WHOLE TABLE in backend
+         * @param mapping
+         * @throws java.lang.Exception
+         */
+	public void createTable(JOTModelMapping mapping) throws Exception;
 
         /**
          * Delete record in backend
          * @param model
          * @throws java.lang.Exception
          */
-	public void delete(JOTTransaction transaction, JOTModel model) throws Exception;
+	//public void delete(JOTTransaction transaction, JOTModel model) throws Exception;
 
         /**
          * Add a new Field to a table

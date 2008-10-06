@@ -8,36 +8,7 @@ http://www.javaontracks.net
  */
 package net.jot.persistance.query;
 
-import net.jot.persistance.JOTTransaction;
-import java.io.File;
-import java.io.RandomAccessFile;
-import java.lang.reflect.Field;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.nio.ByteBuffer;
-import java.sql.Date;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Vector;
 
-import net.jot.db.JOTDBField;
-import net.jot.logger.JOTLogger;
-import net.jot.persistance.JOTFSIndex;
-import net.jot.persistance.JOTFSIndexManager;
-import net.jot.persistance.JOTModel;
-import net.jot.persistance.JOTModelMapping;
-import net.jot.persistance.JOTPersistanceManager;
-import net.jot.persistance.JOTSQLCondition;
-import net.jot.persistance.JOTSQLOrderBy;
-import net.jot.persistance.JOTSQLQueryParams;
-import net.jot.persistance.JOTStatementFlags;
-import net.jot.utils.JOTUtilities;
-
-//TODO: +++ make sure db files permissions are safe: ie: 600 ?
 
 /**
  * Implementation of The Query Interface for an the JOT FSDB database.<br>
@@ -47,12 +18,13 @@ import net.jot.utils.JOTUtilities;
  *
  * Does not support transactions.
  *
+ * @deprecated Giving up on this, have  not time to write own DB :-)
  * @author thibautc
  *
  */
-public class JOTFSQueryImpl implements JOTQueryInterface
+public class JOTFSQueryImpl /*implements JOTQueryInterface*/
 {
-
+/*
   private static final String TABLE_FILE_EXTENSION = ".jotdb";
   private static final String BACKUP_FILE_EXTENSION = ".back";
   private static final String INDEX_FILE_EXTENSION = ".jotindex";
@@ -108,19 +80,10 @@ public class JOTFSQueryImpl implements JOTQueryInterface
     //if we found 'limit' items, we are done.
     }
     model = null;
-    /*if (params != null && params.getLimit() > 0 && results.size() >= params.getLimit())
-    {
-      results = new Vector(results.subList(0, params.getLimit()));
-    }*/
+
     return results;
   }
 
-  /**
-         * adds a found result and sort it as requested.
-         * @param results
-         * @param model
-         * @param orderBys
-         */
   private void addResult(Vector results, JOTModel model, JOTSQLOrderBy[] orderBys) throws Exception
   {
     if (orderBys == null || orderBys.length == 0 || results.size() == 0)
@@ -266,12 +229,6 @@ public class JOTFSQueryImpl implements JOTQueryInterface
     return (JOTModel) result.get(0);
   }
 
-  /**
-         * checks wether a record macthes the query
-         * @param model
-         * @param conditions
-         * @return
-         */
   private boolean match(JOTModel model, JOTSQLCondition[] conditions)
   {
     try
@@ -523,9 +480,6 @@ public class JOTFSQueryImpl implements JOTQueryInterface
     }
   }
 
-  /**
-	 * Save/update the table in the database.
-	 */
   public void save(JOTTransaction transaction, JOTModel model) throws Exception
   {
     warnTransaction(transaction);
@@ -543,7 +497,7 @@ public class JOTFSQueryImpl implements JOTQueryInterface
         long value = dataFile.length();
         dataFile.seek(dataFile.length());
         dataFile.write(data);
-        index.addEntry(/*indexFile,*/(long) model.getId(), value);
+        index.addEntry((long) model.getId(), value);
       }
       JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.DEBUG_LEVEL, this, "Saved " + mapping.getTableName() + " : " + model.getId() + " into " + JOTPersistanceManager.getInstance().getDbFolder(mapping.getDBName()) + "/" + mapping.getTableName() + TABLE_FILE_EXTENSION);
     }
@@ -676,12 +630,6 @@ public class JOTFSQueryImpl implements JOTQueryInterface
     return model;
   }
 
-  /**
-         * Transforms a Model object data into a bytearray to be saved in the DB file.
-         * @param mapping
-         * @param model
-         * @return
-         */
   private byte[] buildData(JOTModelMapping mapping, JOTModel model)
   {
     ByteBuffer buf = ByteBuffer.allocate(mapping.getDataSize());
@@ -784,11 +732,6 @@ public class JOTFSQueryImpl implements JOTQueryInterface
     }
     else if (object instanceof BigDecimal)
     {
-      /* for a bigdecimal we will write:
-				 - 4 bytes: length of unscaledvalue(biginteger) data
-				 - 4 bytes: scale of the bigdecimal
-				 - n bytes: data of the unscaledvalue(bigdecimal)
-				 */
       BigDecimal decimal = (BigDecimal) object;
       BigInteger unscaled = decimal.unscaledValue();
       byte[] data = unscaled.toByteArray();
@@ -826,13 +769,6 @@ public class JOTFSQueryImpl implements JOTQueryInterface
   }
 
   // TODO: + provide a config entry to vacuum dbs dusing startup ie: db.fs.vacuum=user,toto,dada
-	/**
-         * Tries to vacuum the database
-         * This reindexes the database and compacts it, resulting in smaller DB size and faster performance.
-         * @param objectClass
-         * @param simulate
-         * @throws java.lang.Exception
-         */
 
   public static synchronized void vacuum(Class objectClass, boolean simulate) throws Exception
   {
@@ -922,9 +858,6 @@ public class JOTFSQueryImpl implements JOTQueryInterface
     tableFiles.clear();
   }
 
-  /**
-         * Releases resources and open files.
-         */
   public void destroy()
   {
     try
@@ -1022,8 +955,5 @@ public class JOTFSQueryImpl implements JOTQueryInterface
           JOTLogger.info(this, "WARNING: Transactions not supported by JOTDB, will be ignored !");
   }
 
-/*public void alterRemoveField(String fieldName) throws Exception
-  {
-    throw new UnsupportedOperationException("Not supported yet.");
-  }*/
+  */
 }

@@ -11,6 +11,7 @@ package net.jot.db.authentication;
 import net.jot.logger.JOTLogger;
 import net.jot.persistance.JOTModel;
 import net.jot.persistance.JOTModelMapping;
+import net.jot.persistance.JOTQueryBuilder;
 import net.jot.persistance.JOTSQLCondition;
 import net.jot.persistance.JOTSQLQueryParams;
 import net.jot.persistance.query.JOTQueryManager;
@@ -50,9 +51,8 @@ public abstract class JOTAuthUser extends JOTModel
      */
     public static boolean isNewUser(Class implClass, String login) throws Exception
     {
-        JOTSQLQueryParams params = new JOTSQLQueryParams();
-        params.addCondition(new JOTSQLCondition("dataLogin", JOTSQLCondition.IS_EQUAL, login));
-        return JOTQueryManager.findOne(implClass, params) == null;
+        JOTSQLCondition cond=new JOTSQLCondition("dataLogin", JOTSQLCondition.IS_EQUAL, login);
+        return JOTQueryBuilder.select(implClass).where(cond).execute().isEmpty();
     }
 
     /**
@@ -66,17 +66,15 @@ public abstract class JOTAuthUser extends JOTModel
      */
     public static boolean isUserValid(Class implClass, String login, String password) throws Exception
     {
-        JOTSQLQueryParams params = new JOTSQLQueryParams();
-        params.addCondition(new JOTSQLCondition("dataLogin", JOTSQLCondition.IS_EQUAL, login));
-        params.addCondition(new JOTSQLCondition("dataPassword", JOTSQLCondition.IS_EQUAL, password));
-        return JOTQueryManager.findOne(implClass, params) != null;
+        JOTSQLCondition cond=new JOTSQLCondition("dataLogin", JOTSQLCondition.IS_EQUAL, login);
+        JOTSQLCondition cond2=new JOTSQLCondition("dataPassword", JOTSQLCondition.IS_EQUAL, password);
+        return ! JOTQueryBuilder.select(implClass).where(cond).where(cond2).execute().isEmpty();
     }
 
     public static JOTAuthUser getUserByLogin(Class implClass, String login) throws Exception
     {
-        JOTSQLQueryParams params = new JOTSQLQueryParams();
-        params.addCondition(new JOTSQLCondition("dataLogin", JOTSQLCondition.IS_EQUAL, login));
-        return (JOTAuthUser) JOTQueryManager.findOne(implClass, params);
+        JOTSQLCondition cond=new JOTSQLCondition("dataLogin", JOTSQLCondition.IS_EQUAL, login);
+        return (JOTAuthUser)JOTQueryBuilder.select(implClass).where(cond).execute().getFirstResult();
     }
 
     /**
@@ -88,12 +86,11 @@ public abstract class JOTAuthUser extends JOTModel
     {
         if (dataProfile != -1)
         {
-            JOTSQLQueryParams params = new JOTSQLQueryParams();
-            params.addCondition(new JOTSQLCondition("dataProfile", JOTSQLCondition.IS_EQUAL, "" + dataProfile));
-            params.addCondition(new JOTSQLCondition("dataPermission", JOTSQLCondition.IS_EQUAL, permission));
+            JOTSQLCondition cond=new JOTSQLCondition("dataProfile", JOTSQLCondition.IS_EQUAL, "" + dataProfile);
+            JOTSQLCondition cond2=new JOTSQLCondition("dataPermission", JOTSQLCondition.IS_EQUAL, permission);
             try
             {
-                return JOTQueryManager.findOne(JOTAuthPermission.class, params) != null;
+                return ! JOTQueryBuilder.select(getClass()).where(cond).where(cond2).execute().isEmpty();
             } catch (Exception e)
             {
                 JOTLogger.logException(JOTLogger.ERROR_LEVEL, this, "error looking for prmission", e);
