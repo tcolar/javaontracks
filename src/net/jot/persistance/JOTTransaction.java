@@ -4,8 +4,7 @@
  */
 package net.jot.persistance;
 
-import net.jot.persistance.query.*;
-import java.sql.Savepoint;
+import net.jot.exceptions.JOTTransactionCompletedException;
 import net.jot.db.JOTDBManager;
 import net.jot.db.JOTTaggedConnection;
 import net.jot.logger.JOTLogger;
