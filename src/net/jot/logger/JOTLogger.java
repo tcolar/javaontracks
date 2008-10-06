@@ -32,6 +32,8 @@ import net.jot.utils.JOTUtilities;
  *	ERROR_LEVEL=4 <br>
  *	CRITICAL_LEVEL=5 <br>
  *
+ * You can use JOTLoggerLocation instead for log4j style use.
+ * 
  * @author thibautc
  *
  */
@@ -794,6 +796,28 @@ public final class JOTLogger
         log(cat, CRITICAL_LEVEL, o, user, message);
     }
 
-    
-
+    public static boolean isDebugEnabled()
+    {
+        return levels.contains(DEBUG_LEVEL);
+    }
+    public static boolean isTraceEnabled()
+    {
+        return levels.contains(TRACE_LEVEL);
+    }
+    public static boolean isInfoEnabled()
+    {
+        return levels.contains(INFO_LEVEL);
+    }
+    public static boolean isWarningEnabled()
+    {
+        return levels.contains(WARNING_LEVEL);
+    }
+    public static boolean isErrorEnabled()
+    {
+        return levels.contains(ERROR_LEVEL);
+    }
+    public static boolean isCriticalEnabled()
+    {
+        return levels.contains(CRITICAL_LEVEL);
+    }
 }
