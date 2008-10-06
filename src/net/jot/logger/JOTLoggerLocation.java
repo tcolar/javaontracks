@@ -8,6 +8,8 @@ package net.jot.logger;
 /**
  * A logger location - similar to log4j
  * Uses JOTLogger under the covers
+ * 
+ * JOTLoggerLocation loc=new JOTLogerLocation(getClass());
  * @author thibautc
  */
 public class JOTLoggerLocation 
