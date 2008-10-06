@@ -49,7 +49,7 @@ public interface JOTQueryInterface
          * @return
          * @throws java.lang.Exception
          */
-        public JOTQueryResult updateSQL(JOTTransaction transaction, JOTModelMapping mapping, String sql, Object[] params, JOTStatementFlags flags) throws Exception;
+        public void updateSQL(JOTTransaction transaction, JOTModelMapping mapping, String sql, Object[] params, JOTStatementFlags flags) throws Exception;
 	
         /**
          * Saves record in backend

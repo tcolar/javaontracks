@@ -34,26 +34,26 @@ public class HasMany
      * @param params - null means findAll
      * @return a Vector of JOTModel objects
      */
-    public static Vector find(JOTTransaction transaction, JOTSQLQueryParams params) throws Exception
+    /*public static Vector find(JOTTransaction transaction, JOTSQLQueryParams params) throws Exception
     {
         //TODO: where modelClass."parentname"_id == parentId;
         return JOTQueryManager.find(transaction, modelClass, params);
-    }
+    }*/
 
-    public static Vector find(JOTSQLQueryParams params) throws Exception
+    /*public static Vector find(JOTSQLQueryParams params) throws Exception
     {
         return find(null,params);
-    }
+    }*/
     
     /**
      * Create a new "HasMany" type item, referencing the parent.
      * Note: won't be saved until you do save it (model.save())
      * @return
      */
-    public static JOTModel createOne()
+    /*public static JOTModel createOne()
     {
         
-    }
+    }*/
     /**
      * Deletes all the "HasMany" items refreing to this parent and matching the params.
      * For example: Authors.books.delete(null); will delete all the books by that author
@@ -61,12 +61,12 @@ public class HasMany
      * @param params - null means deleteAll
      * @return
      */
-    public static void delete(JOTTransaction transaction, JOTSQLQueryParams params)
+    /*public static void delete(JOTTransaction transaction, JOTSQLQueryParams params)
     {
         JOTQueryBuilder.delete(modelClass);
     }
     public static void delete(JOTSQLQueryParams params)
     {
         delete(null, params);
-    }
+    }*/
  }

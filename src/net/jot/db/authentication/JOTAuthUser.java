@@ -13,8 +13,6 @@ import net.jot.persistance.JOTModel;
 import net.jot.persistance.JOTModelMapping;
 import net.jot.persistance.JOTQueryBuilder;
 import net.jot.persistance.JOTSQLCondition;
-import net.jot.persistance.JOTSQLQueryParams;
-import net.jot.persistance.query.JOTQueryManager;
 
 /**
  * Object representation of a User in DB and providing a basic authentication system. 
@@ -52,7 +50,7 @@ public abstract class JOTAuthUser extends JOTModel
     public static boolean isNewUser(Class implClass, String login) throws Exception
     {
         JOTSQLCondition cond=new JOTSQLCondition("dataLogin", JOTSQLCondition.IS_EQUAL, login);
-        return JOTQueryBuilder.select(implClass).where(cond).execute().isEmpty();
+        return JOTQueryBuilder.selectQuery(implClass).where(cond).findOne()==null;
     }
 
     /**
@@ -68,13 +66,13 @@ public abstract class JOTAuthUser extends JOTModel
     {
         JOTSQLCondition cond=new JOTSQLCondition("dataLogin", JOTSQLCondition.IS_EQUAL, login);
         JOTSQLCondition cond2=new JOTSQLCondition("dataPassword", JOTSQLCondition.IS_EQUAL, password);
-        return ! JOTQueryBuilder.select(implClass).where(cond).where(cond2).execute().isEmpty();
+        return JOTQueryBuilder.selectQuery(implClass).where(cond).where(cond2).findOne()!=null;
     }
 
     public static JOTAuthUser getUserByLogin(Class implClass, String login) throws Exception
     {
         JOTSQLCondition cond=new JOTSQLCondition("dataLogin", JOTSQLCondition.IS_EQUAL, login);
-        return (JOTAuthUser)JOTQueryBuilder.select(implClass).where(cond).execute().getFirstResult();
+        return (JOTAuthUser)JOTQueryBuilder.selectQuery(implClass).where(cond).findOne();
     }
 
     /**
@@ -90,7 +88,7 @@ public abstract class JOTAuthUser extends JOTModel
             JOTSQLCondition cond2=new JOTSQLCondition("dataPermission", JOTSQLCondition.IS_EQUAL, permission);
             try
             {
-                return ! JOTQueryBuilder.select(getClass()).where(cond).where(cond2).execute().isEmpty();
+                return JOTQueryBuilder.selectQuery(getClass()).where(cond).where(cond2).findOne()!=null;
             } catch (Exception e)
             {
                 JOTLogger.logException(JOTLogger.ERROR_LEVEL, this, "error looking for prmission", e);

@@ -122,11 +122,11 @@ public final class JOTQueryManager
         JOTQueryInterface impl = getImplementation(mapping.getQueryClassName());
         return impl.executeSQL(transaction,mapping, modelClass, sql, params, flags);
     }
-    public static JOTQueryResult updateSQL(JOTTransaction transaction, Class modelClass, String sql, String[] params, JOTStatementFlags flags) throws Exception
+    public static void updateSQL(JOTTransaction transaction, Class modelClass, String sql, String[] params, JOTStatementFlags flags) throws Exception
     {
         JOTModelMapping mapping = getMapping(modelClass);
         JOTQueryInterface impl = getImplementation(mapping.getQueryClassName());
-        return impl.updateSQL(transaction,mapping, sql, params, flags);
+        impl.updateSQL(transaction,mapping, sql, params, flags);
     }
 
     public static String getTableName(Class modelClass)

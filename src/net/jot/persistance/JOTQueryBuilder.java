@@ -38,7 +38,7 @@ public class JOTQueryBuilder
     private StringBuffer sql = new StringBuffer();
     private Class modelClass;
     private Vector params = new Vector();
-    JOTStatementFlags flags=new JOTStatementFlags();
+    JOTStatementFlags flags = new JOTStatementFlags();
     private int nbWhere = 0;
 
     private JOTQueryBuilder()
@@ -63,10 +63,19 @@ public class JOTQueryBuilder
     {
         JOTQueryBuilder builder = new JOTQueryBuilder();
         builder.setModelClass(modelClass);
+        builder.appendToSQL("INSERT INTO");
+        builder.appendToSQL(JOTQueryManager.getTableName(modelClass));
+        return builder;
+    }
+
+    public static JOTQueryBuilder updateQuery(Class modelClass)
+    {
+        JOTQueryBuilder builder = new JOTQueryBuilder();
+        builder.setModelClass(modelClass);
         builder.appendToSQL("UPDATE");
         builder.appendToSQL(JOTQueryManager.getTableName(modelClass));
         builder.appendToSQL("SET");
-        return builder;        
+        return builder;
     }
 
     public static JOTQueryBuilder deleteQuery(Class modelClass)
@@ -77,18 +86,66 @@ public class JOTQueryBuilder
         return builder;
     }
 
-    public void insert(String[] fields, String[] values)
+    public void insert(String[] fields, String[] values) throws Exception
     {
-        for(int i=0;i!=fields.length;i++)
-        {
-            if(i>0)
-                appendToSQL(",");
-            appendToSQL(fields[i]).appendToSQL("=?");
-        }
-        for(int i=0;i!=fields.length;i++)
-            params.add(fields[i]);
+        insert(null, fields, values);
     }
-    
+    public void insert(JOTTransaction transaction, String[] fields, String[] values) throws Exception
+    {
+        appendToSQL("(");
+        for (int i = 0; i != fields.length; i++)
+        {
+            if (i > 0)
+            {
+                appendToSQL(",");
+            }
+            appendToSQL(fields[i]);
+        }
+        appendToSQL(") VALUES (");
+        for (int i = 0; i != fields.length; i++)
+        {
+            if (i > 0)
+            {
+                appendToSQL(",");
+            }
+            appendToSQL("?");
+            params.add(fields[i]);
+        }
+        String[] pms = null;
+        if (params.size() > 0)
+        {
+            pms = (String[]) params.toArray(new String[0]);
+        }
+        JOTQueryManager.updateSQL(transaction, modelClass, sql.toString(), pms, flags);
+    }
+
+    public void update(String[] fields, String[] values) throws Exception
+    {
+        update(null, fields, values);
+    }
+    public void update(JOTTransaction transaction, String[] fields, String[] values) throws Exception
+    {
+        for (int i = 0; i != fields.length; i++)
+        {
+            if (i > 0)
+            {
+                appendToSQL(",");
+            }
+            appendToSQL(fields[i]);
+            appendToSQL("=?");
+        }
+        for (int i = 0; i != fields.length; i++)
+        {
+            params.add(fields[i]);
+        }
+        String[] pms = null;
+        if (params.size() > 0)
+        {
+            pms = (String[]) params.toArray(new String[0]);
+        }
+        JOTQueryManager.updateSQL(transaction, modelClass, sql.toString(), pms, flags);
+    }
+
     /**
      * Note: It is much safer to use where(JOTSQLCondition) ..,
      * If several where, we will be using AND
@@ -100,7 +157,7 @@ public class JOTQueryBuilder
         nbWhere++;
         return this;
     }
-    
+
     /**
      * Manullay append whatever you like to the query.
      * @param where
@@ -167,10 +224,12 @@ public class JOTQueryBuilder
 
     void delete(JOTTransaction transaction) throws Exception
     {
-        String[] pms=null;
-        if(params.size()>0)
-            pms=(String[])params.toArray(new String[0]);
-        JOTQueryManager.updateSQL(transaction,modelClass, sql.toString(), pms, flags);
+        String[] pms = null;
+        if (params.size() > 0)
+        {
+            pms = (String[]) params.toArray(new String[0]);
+        }
+        JOTQueryManager.updateSQL(transaction, modelClass, sql.toString(), pms, flags);
     }
 
     private JOTQueryBuilder appendToSQL(String append)
@@ -190,8 +249,10 @@ public class JOTQueryBuilder
      */
     public JOTQueryBuilder withParams(String[] pms)
     {
-        for(int i=0;i!=pms.length;i++)
+        for (int i = 0; i != pms.length; i++)
+        {
             params.add(pms[i]);
+        }
         return this;
     }
 
@@ -208,13 +269,15 @@ public class JOTQueryBuilder
 
     public JOTQueryResult find(JOTTransaction transaction) throws Exception
     {
-        String[] pms=null;
-        if(params.size()>0)
-            pms=(String[])params.toArray(new String[0]);
-        JOTQueryResult result=JOTQueryManager.executeSQL(transaction,modelClass, sql.toString(), pms, flags);
+        String[] pms = null;
+        if (params.size() > 0)
+        {
+            pms = (String[]) params.toArray(new String[0]);
+        }
+        JOTQueryResult result = JOTQueryManager.executeSQL(transaction, modelClass, sql.toString(), pms, flags);
         return result;
     }
-    
+
     public JOTModel findOne() throws Exception
     {
         return findOne(null);
@@ -223,15 +286,15 @@ public class JOTQueryBuilder
     public static JOTModel findByID(Class modelClass, int id) throws Exception
     {
         JOTQueryBuilder builder = selectQuery(modelClass);
-        JOTSQLCondition cond=new JOTSQLCondition("id", JOTSQLCondition.IS_EQUAL, id);
+        JOTSQLCondition cond = new JOTSQLCondition("id", JOTSQLCondition.IS_EQUAL, id);
         builder.where(cond);
         return builder.findOne();
     }
-    
+
     public static void deleteByID(Class modelClass, int id) throws Exception
     {
         JOTQueryBuilder builder = deleteQuery(modelClass);
-        JOTSQLCondition cond=new JOTSQLCondition("id", JOTSQLCondition.IS_EQUAL, id);
+        JOTSQLCondition cond = new JOTSQLCondition("id", JOTSQLCondition.IS_EQUAL, id);
         builder.where(cond);
         builder.delete();
     }
@@ -245,7 +308,7 @@ public class JOTQueryBuilder
      */
     public JOTModel findOne(JOTTransaction transaction) throws Exception
     {
-        return find(transaction).getFirstResult();        
+        return find(transaction).getFirstResult();
     }
 
     /**
@@ -256,11 +319,14 @@ public class JOTQueryBuilder
      */
     public JOTModel findOrCreateOne(JOTTransaction transaction) throws Exception
     {
-        JOTModel model=findOne(transaction);
-        if(model==null)
-             model = (JOTModel) modelClass.newInstance();
+        JOTModel model = findOne(transaction);
+        if (model == null)
+        {
+            model = (JOTModel) modelClass.newInstance();
+        }
         return model;
-    }    
+    }
+
     public JOTModel findOrCreateOne() throws Exception
     {
         return findOrCreateOne(null);
@@ -268,18 +334,18 @@ public class JOTQueryBuilder
 
     public String showSQL()
     {
-       return sql.toString(); 
+        return sql.toString();
     }
-    
+
     /**
      * Show special statement flags (if any)
      * @return
      */
     public String showFlags()
     {
-       return flags.toString();
+        return flags.toString();
     }
-    
+
     /**
      * If several where, we will be using AND
      * @param where
@@ -289,6 +355,7 @@ public class JOTQueryBuilder
         params.add(cond.getValue());
         return where(cond.getSqlString());
     }
+
     /**
      * If you want to do a OR where instead of and.
      * @param where
@@ -298,7 +365,7 @@ public class JOTQueryBuilder
         params.add(cond.getValue());
         return orWhere(cond.getSqlString());
     }
-    
+
     /**
      * Dump a whole table (model) data into a stream(ie file) in CSV format
      * @param out
@@ -317,7 +384,7 @@ public class JOTQueryBuilder
         String header = mapping.getPrimaryKey() + ",";
         while (fieldNames.hasMoreElements())
         {
-            String name=((JOTDBField)fields.get(fieldNames.nextElement())).getFieldName();
+            String name = ((JOTDBField) fields.get(fieldNames.nextElement())).getFieldName();
             header += JOTUtilities.encodeCSVEntry(name) + ",";
         }
         header = header.substring(0, header.length() - 1);
@@ -339,5 +406,4 @@ public class JOTQueryBuilder
         }
         p.flush();
     }
-
 }

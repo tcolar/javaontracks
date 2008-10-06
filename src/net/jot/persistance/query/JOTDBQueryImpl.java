@@ -363,10 +363,14 @@ public class JOTDBQueryImpl implements JOTQueryInterface
                 try
                 {
                     JOTSQLCondition cond=new JOTSQLCondition(model.getMapping().getPrimaryKey(), JOTSQLCondition.IS_EQUAL, new Integer((int) model.getId()));
-                    //String updateString = buildUpdateString(model.getMapping(), params.getConditions());
-                    String fields=;
-                    Object[] paramValues = model.getFieldValues(model.getMapping(), params.getConditions());
-                    updateSQL(transaction,model.getMapping(), updateString, paramValues,null);
+                    Object[] values = model.getFieldValues(model.getMapping(), null);
+                    String[] vals=new String[values.length];
+                    for(int i=0;i!=vals.length;i++)
+                    {
+                        vals[i]=values[i].toString();
+                    }
+                    String[] fields=model.getMapping().getInsertFields();
+                    JOTQueryBuilder.updateQuery(model.getClass()).where(cond).update(fields,vals);
                 } catch (SQLException e)
                 {
                     JOTLogger.logException(JOTLogger.CAT_DB, JOTLogger.ERROR_LEVEL, this, "Error during UPDATE", e);
@@ -412,7 +416,7 @@ public class JOTDBQueryImpl implements JOTQueryInterface
         }
     }
 
-    public JOTQueryResult updateSQL(JOTTransaction transaction, JOTModelMapping mapping, String sql, Object[] params, JOTStatementFlags flags) throws Exception
+    public void updateSQL(JOTTransaction transaction, JOTModelMapping mapping, String sql, Object[] params, JOTStatementFlags flags) throws Exception
     {
         JOTTaggedConnection con = getConnection(transaction, mapping);
         try
@@ -427,7 +431,6 @@ public class JOTDBQueryImpl implements JOTQueryInterface
             if(transaction==null)
                 JOTDBManager.getInstance().releaseConnection(con);
         }
-
     }
 
 }
