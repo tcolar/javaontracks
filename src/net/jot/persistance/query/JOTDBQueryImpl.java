@@ -24,7 +24,7 @@ import net.jot.db.JOTTaggedConnection;
 import net.jot.logger.JOTLogger;
 import net.jot.persistance.JOTModel;
 import net.jot.persistance.JOTModelMapping;
-import net.jot.persistance.JOTQueryBuilder;
+import net.jot.persistance.builders.JOTQueryBuilder;
 import net.jot.persistance.JOTSQLCondition;
 import net.jot.persistance.JOTStatementFlags;
 
@@ -38,8 +38,7 @@ import net.jot.persistance.JOTStatementFlags;
 public class JOTDBQueryImpl implements JOTQueryInterface
 {
 
-
-    public JOTQueryResult executeSQL(JOTTransaction transaction, JOTModelMapping mapping, Class objectClass,String sql, Object[] params, JOTStatementFlags flags) throws Exception
+    public JOTQueryResult executeSQL(JOTTransaction transaction, JOTModelMapping mapping, Class objectClass, String sql, Object[] params, JOTStatementFlags flags) throws Exception
     {
         ResultSet rs = null;
         JOTTaggedConnection con = getConnection(transaction, mapping);
@@ -59,7 +58,6 @@ public class JOTDBQueryImpl implements JOTQueryInterface
         }
         return LoadFromRS(mapping, objectClass, rs);
     }
-
 
     /**
      * Trandform a db resultset into an JOTModel object array
@@ -115,98 +113,6 @@ public class JOTDBQueryImpl implements JOTQueryInterface
         return v;
     }
 
-    /**
-     * Creates the condition part of the SQL String (WHERE ...)
-     * @param conds
-     * @return
-     */
-    public String getConditionsString(JOTSQLCondition[] conds)
-    {
-        String condString = "";
-        if (conds != null && conds.length > 0)
-        {
-            condString += " WHERE ";
-            for (int i = 0; i != conds.length; i++)
-            {
-                JOTSQLCondition cond = conds[i];
-                condString += cond.getField() + " " + cond.getSQLComparator();
-                if (conds.length > i + 1)
-                {
-                    condString += " AND ";
-                }
-            }
-        }
-        return condString;
-    }
-
-    /**
-     * Create the full INSERT SQL query String
-     * @param mapping
-     * @return
-     */
-    /*public String buildInsertString(JOTModelMapping mapping)
-    {
-        // no conditions on an insert
-        return "INSERT INTO  "+ mapping.getTableName() +  "(" + getInsertString(mapping) + ") VALUES(" + buildQmarksString(mapping) + ")";
-    }*/
-
-    /**
-     * Create the full UPDATE SQL query String
-     * @param mapping
-     * @param conds
-     * @return
-     */
-    /*public String buildUpdateString(JOTModelMapping mapping, JOTSQLCondition[] conds)
-    {
-        String query = "UPDATE " + mapping.getTableName() + " SET " + getUpdateString(mapping);
-        query += getConditionsString(conds);
-        return query;
-    }*/
-
-    /**
-     * Create the full DELETE SQL query String
-     * @param mapping
-     * @param conds
-     * @return
-     */
-    public String buildDeleteString(JOTModelMapping mapping, JOTSQLCondition[] conds)
-    {
-        String query = "DELETE FROM " + mapping.getTableName();
-        query += getConditionsString(conds);
-        return query;
-    }
-
-    /**
-     * Creates the SQL UPDATE string
-     * @param mapping
-     * @return
-     */
-    /*public String getUpdateString(JOTModelMapping mapping)
-    {
-        return mapping.getUpdateString();
-    }*/
-
-    /**
-     * Creates the question marks (paramters of the createSatement) String
-     * @param mapping
-     * @return
-     */
-    public String buildQmarksString(JOTModelMapping mapping)
-    {
-        int nbParams = mapping.getFields().size();
-        String qmarks = "?,";
-        for (int i = 0; i != nbParams; i++)
-        {
-            qmarks += "?,";
-        }
-        if (qmarks.length() > 0)
-        {
-            qmarks = qmarks.substring(0, qmarks.length() - 1);
-        }
-
-        return qmarks;
-    }
-
     public void createTable(JOTModelMapping mapping) throws Exception
     {
         JOTTaggedConnection con = JOTDBManager.getInstance().getConnection(mapping.getDBName());
@@ -250,16 +156,6 @@ public class JOTDBQueryImpl implements JOTQueryInterface
     }
 
     /**
-     * Creates the SQL INSERT string
-     * @param mapping
-     * @return
-     */
-    /*public String getInsertString(JOTModelMapping mapping)
-    {
-        return mapping.getInsertString();
-    }*/
-
-    /**
      * Creates the "column definition" string, used to create the table<br>
      * ie:  "dataId BIGINT, name varchar(80)"
      * @param mapping
@@ -293,117 +189,91 @@ public class JOTDBQueryImpl implements JOTQueryInterface
 
     /*public void delete(JOTTransaction transaction, JOTModel model) throws Exception
     {
-        JOTModelMapping mapping = model.getMapping();
-        JOTTaggedConnection con = getConnection(transaction, mapping);
-        try
-        {
-            JOTSQLQueryParams params = new JOTSQLQueryParams();
-            params.addCondition(new JOTSQLCondition(mapping.getPrimaryKey(), JOTSQLCondition.IS_EQUAL, new Integer((int) model.getId())));
-            String deleteString = buildDeleteString(mapping, params.getConditions());
-            Object[] paramValues =
-            {
-                new Integer((int) model.getId())
-            };
-            JOTDBManager.getInstance().update(con, deleteString, paramValues);
-        } catch (SQLException e)
-        {
-            JOTLogger.logException(JOTLogger.CAT_DB, JOTLogger.ERROR_LEVEL, this, "Error", e);
-            throw (e);
-        } finally
-        {
-            if (transaction == null)
-            {
-                JOTDBManager.getInstance().releaseConnection(con);
-            }
-        }
-
+    JOTModelMapping mapping = model.getMapping();
+    JOTTaggedConnection con = getConnection(transaction, mapping);
+    try
+    {
+    JOTSQLQueryParams params = new JOTSQLQueryParams();
+    params.addCondition(new JOTSQLCondition(mapping.getPrimaryKey(), JOTSQLCondition.IS_EQUAL, new Integer((int) model.getId())));
+    String deleteString = buildDeleteString(mapping, params.getConditions());
+    Object[] paramValues =
+    {
+    new Integer((int) model.getId())
+    };
+    JOTDBManager.getInstance().update(con, deleteString, paramValues);
+    } catch (SQLException e)
+    {
+    JOTLogger.logException(JOTLogger.CAT_DB, JOTLogger.ERROR_LEVEL, this, "Error", e);
+    throw (e);
+    } finally
+    {
+    if (transaction == null)
+    {
+    JOTDBManager.getInstance().releaseConnection(con);
+    }
+    }
     }*/
-
     /**
      * Save/update the table in the database.
      */
     public void save(JOTTransaction transaction, JOTModel model) throws Exception
     {
-            if (model.getId() == -1)
+        if (model.getId() == -1)
+        {
+            // create
+            JOTTaggedConnection con = getConnection(transaction, model.getMapping());
+            try
             {
-                // create
-                JOTTaggedConnection con=getConnection(transaction, model.getMapping());
-                try
-                {
-                    model.setId(JOTDBManager.getInstance().nextVal(con, model.getMapping().getTableName() + "_cpt"));
-                } catch (SQLException e)
-                {
-                    JOTLogger.logException(JOTLogger.CAT_DB, JOTLogger.ERROR_LEVEL, this, "Error getting NEXTVAL()", e);
-                    throw (e);
-                }
-                finally
-                {
-                    if(transaction==null)
-                        JOTDBManager.getInstance().releaseConnection(con);
-                }
-                try
-                {
-                    Object[] values = model.getFieldValues(model.getMapping(), null);
-                    String[] vals=new String[values.length];
-                    for(int i=0;i!=vals.length;i++)
-                    {
-                        vals[i]=values[i].toString();
-                    }
-                    String[] fields=model.getMapping().getInsertFields();
-                    JOTQueryBuilder.insertQuery(model.getClass()).insert(fields,vals);
-                } catch (SQLException e)
-                {
-                    JOTLogger.logException(JOTLogger.CAT_DB, JOTLogger.ERROR_LEVEL, this, "Error during INSERT", e);
-                    throw (e);
-                }
-            // TODO: rollback if -1 ?	
-            } else
+                model.setId(JOTDBManager.getInstance().nextVal(con, model.getMapping().getTableName() + "_cpt"));
+            } catch (SQLException e)
             {
-                // update
-                try
+                JOTLogger.logException(JOTLogger.CAT_DB, JOTLogger.ERROR_LEVEL, this, "Error getting NEXTVAL()", e);
+                throw (e);
+            } finally
+            {
+                if (transaction == null)
                 {
-                    JOTSQLCondition cond=new JOTSQLCondition(model.getMapping().getPrimaryKey(), JOTSQLCondition.IS_EQUAL, new Integer((int) model.getId()));
-                    Object[] values = model.getFieldValues(model.getMapping(), null);
-                    String[] vals=new String[values.length];
-                    for(int i=0;i!=vals.length;i++)
-                    {
-                        vals[i]=values[i].toString();
-                    }
-                    String[] fields=model.getMapping().getInsertFields();
-                    JOTQueryBuilder.updateQuery(model.getClass()).where(cond).update(fields,vals);
-                } catch (SQLException e)
-                {
-                    JOTLogger.logException(JOTLogger.CAT_DB, JOTLogger.ERROR_LEVEL, this, "Error during UPDATE", e);
-                    throw (e);
+                    JOTDBManager.getInstance().releaseConnection(con);
                 }
             }
+            try
+            {
+                Object[] values = model.getFieldValues(model.getMapping(), null);
+                String[] vals = new String[values.length];
+                for (int i = 0; i != vals.length; i++)
+                {
+                    vals[i] = values[i].toString();
+                }
+                String[] fields = model.getMapping().getInsertFields();
+                JOTQueryBuilder.insertQuery(model.getClass()).insert(fields, vals);
+            } catch (SQLException e)
+            {
+                JOTLogger.logException(JOTLogger.CAT_DB, JOTLogger.ERROR_LEVEL, this, "Error during INSERT", e);
+                throw (e);
+            }
+        // TODO: rollback if -1 ?	
+        } else
+        {
+            // update
+            try
+            {
+                JOTSQLCondition cond = new JOTSQLCondition(model.getMapping().getPrimaryKey(), JOTSQLCondition.IS_EQUAL, new Integer((int) model.getId()));
+                Object[] values = model.getFieldValues(model.getMapping(), null);
+                String[] fields = model.getMapping().getInsertFields();
+                JOTQueryBuilder.updateQuery(model.getClass()).update(fields, values).where(cond).executeUpdate();
+            } catch (SQLException e)
+            {
+                JOTLogger.logException(JOTLogger.CAT_DB, JOTLogger.ERROR_LEVEL, this, "Error during UPDATE", e);
+                throw (e);
+            }
+        }
     }
 
     public void alterAddField(JOTModelMapping mapping, JOTDBField field, Object defaultValue) throws Exception
     {
         //TODO
-        throw(new UnsupportedOperationException());
-        /*String[] params =
-        {
-            mapping.getTableName()
-        };
-        updateSQL(null,mapping, "ALTER TABLE ? ADD " + getColumnDefinition(field), params,null);
-         */
+        throw (new UnsupportedOperationException());
     }
-
-    /*private JOTStatementFlags buildFlags(JOTSQLQueryParams params)
-    {
-        JOTStatementFlags flags=null;
-        if(params!=null)
-        {
-            if(params.getLimit()!=-1)
-            {
-                flags=new JOTStatementFlags();
-                flags.setMaxRows(params.getLimit());
-            }
-        }
-        return flags;
-    }*/
 
     private JOTTaggedConnection getConnection(JOTTransaction transaction, JOTModelMapping mapping) throws Exception
     {
@@ -428,9 +298,10 @@ public class JOTDBQueryImpl implements JOTQueryInterface
             throw (e);
         } finally
         {
-            if(transaction==null)
+            if (transaction == null)
+            {
                 JOTDBManager.getInstance().releaseConnection(con);
+            }
         }
     }
-
 }

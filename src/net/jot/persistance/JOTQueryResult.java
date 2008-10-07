@@ -13,7 +13,7 @@ import java.util.Vector;
  */
 public class JOTQueryResult
 {
-    private Vector elems;
+    private Vector elems=new Vector();
     
     public void add(JOTModel model)
     {
@@ -39,8 +39,12 @@ public class JOTQueryResult
     {
         return elems.isEmpty();
     }
-    public int getSize()
+    public int size()
     {
         return elems.size();
+    }
+    public JOTModel get(int i)
+    {
+        return (JOTModel)elems.get(i);
     }
 }

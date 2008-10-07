@@ -14,6 +14,7 @@ import java.util.Hashtable;
 import net.jot.logger.JOTLogger;
 
 /**
+ * @deprecated
  * Represents an index for an FSDB database
  * Used to find data faster and index/vacuum it.
  * 

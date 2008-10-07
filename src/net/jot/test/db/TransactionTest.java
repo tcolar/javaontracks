@@ -4,10 +4,8 @@
  */
 package net.jot.test.db;
 
-import net.jot.persistance.JOTSQLOrderBy;
-import net.jot.persistance.JOTSQLQueryParams;
 import net.jot.persistance.JOTTransaction;
-import net.jot.persistance.query.JOTQueryManager;
+import net.jot.persistance.builders.JOTQueryBuilder;
 import net.jot.testing.JOTTestable;
 import net.jot.testing.JOTTester;
 
@@ -21,25 +19,24 @@ public class TransactionTest implements JOTTestable
     public void jotTest() throws Throwable
     {
         DBTestData.populateUserTestData();
-        JOTSQLQueryParams params = new JOTSQLQueryParams();
-        params.addOrderBy(new JOTSQLOrderBy("id", JOTSQLOrderBy.ASCENDING));
-        TestUser user = (TestUser) JOTQueryManager.findOne(TestUser.class, params);
+        TestUser user = (TestUser) JOTQueryBuilder.selectQuery(TestUser.class).orderBy("ID").findOne();
         // test normal commit
         JOTTransaction tx = new JOTTransaction("test");
         user.firstName = "toto";
         user.save(tx);
         tx.commit();
-        user = (TestUser) JOTQueryManager.findOne(TestUser.class, params);
+        user = (TestUser) JOTQueryBuilder.selectQuery(TestUser.class).orderBy("ID").findOne();
+        System.out.println(user);
         JOTTester.checkIf("Transaction worked", user.firstName.equals("toto"));
 
         // test transaction with rollback
         tx = new JOTTransaction("test");
         user.firstName = "xyz";
         user.save(tx);
-        user = (TestUser) JOTQueryManager.findOne(TestUser.class, params);
+        user = (TestUser) JOTQueryBuilder.selectQuery(TestUser.class).orderBy("id").findOne();
         JOTTester.checkIf("rollback before", user.firstName.equals("xyz"));
         tx.rollBack();
-        user = (TestUser) JOTQueryManager.findOne(TestUser.class, params);
+        user = (TestUser) JOTQueryBuilder.selectQuery(TestUser.class).orderBy("id").findOne();
         JOTTester.checkIf("rollback after", user.firstName.equals("toto"));
 
         /* multithread test - test atomic transactions, some commit, some rolled back*/
@@ -54,7 +51,7 @@ public class TransactionTest implements JOTTestable
         {
             threads[i].join();
         }
-        user = (TestUser) JOTQueryManager.findOne(TestUser.class, params);
+        user = (TestUser) JOTQueryBuilder.selectQuery(TestUser.class).orderBy("id").findOne();
         JOTTester.warnIf("7 concurrent transactions (might fail on some DB's)", user.firstName.equals(saved));
     }
 
@@ -73,14 +70,11 @@ public class TransactionTest implements JOTTestable
             try
             {
                 // this changes firstname but then fix it back in a transaction
-                JOTSQLQueryParams params = new JOTSQLQueryParams();
-                params.addOrderBy(new JOTSQLOrderBy("id", JOTSQLOrderBy.ASCENDING));
                 JOTTransaction tx = new JOTTransaction("test");
-                TestUser user = (TestUser) JOTQueryManager.findOne(TestUser.class, params);
-                ;
+                TestUser user = (TestUser) JOTQueryBuilder.selectQuery(TestUser.class).orderBy("id").findOne();
                 user.firstName = user.firstName + "x";
                 user.save(tx);
-                user = (TestUser) JOTQueryManager.findOne(TestUser.class, params);
+                user = (TestUser) JOTQueryBuilder.selectQuery(TestUser.class).orderBy("id").findOne();
                 //System.out.println(user.firstName);
                 user.firstName = user.firstName.substring(0, user.firstName.length() - 1);
                 user.save(tx);

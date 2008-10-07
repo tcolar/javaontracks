@@ -107,12 +107,15 @@ public class JOTModelMapping
     }*/
     public String[] getInsertFields()
     {
-        String[] iFields = new String[getFields().size()];
+        String[] iFields = new String[getFields().size()+1];
+        //TODO: db format ex: my_id
+        iFields[0]=createCleanTableName(getPrimaryKey());
         Enumeration e = getFields().elements();
-        int cpt=0;
+        int cpt=1;
         while (e.hasMoreElements())
         {
-            iFields[cpt] = (String) e.nextElement();
+            JOTDBField field = (JOTDBField) e.nextElement();
+            iFields[cpt] = field.getFieldName();
             cpt++;
         }
         return iFields;

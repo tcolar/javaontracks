@@ -798,26 +798,26 @@ public final class JOTLogger
 
     public static boolean isDebugEnabled()
     {
-        return levels.contains(DEBUG_LEVEL);
+        return levels.contains(new Integer(DEBUG_LEVEL));
     }
     public static boolean isTraceEnabled()
     {
-        return levels.contains(TRACE_LEVEL);
+        return levels.contains(new Integer(TRACE_LEVEL));
     }
     public static boolean isInfoEnabled()
     {
-        return levels.contains(INFO_LEVEL);
+        return levels.contains(new Integer(INFO_LEVEL));
     }
     public static boolean isWarningEnabled()
     {
-        return levels.contains(WARNING_LEVEL);
+        return levels.contains(new Integer(WARNING_LEVEL));
     }
     public static boolean isErrorEnabled()
     {
-        return levels.contains(ERROR_LEVEL);
+        return levels.contains(new Integer(ERROR_LEVEL));
     }
     public static boolean isCriticalEnabled()
     {
-        return levels.contains(CRITICAL_LEVEL);
+        return levels.contains(new Integer(CRITICAL_LEVEL));
     }
 }

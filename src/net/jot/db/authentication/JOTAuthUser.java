@@ -11,7 +11,7 @@ package net.jot.db.authentication;
 import net.jot.logger.JOTLogger;
 import net.jot.persistance.JOTModel;
 import net.jot.persistance.JOTModelMapping;
-import net.jot.persistance.JOTQueryBuilder;
+import net.jot.persistance.builders.JOTQueryBuilder;
 import net.jot.persistance.JOTSQLCondition;
 
 /**

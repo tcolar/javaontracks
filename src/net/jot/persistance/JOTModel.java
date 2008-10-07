@@ -8,6 +8,7 @@ http://www.javaontracks.net
  */
 package net.jot.persistance;
 
+import net.jot.persistance.builders.JOTQueryBuilder;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Enumeration;

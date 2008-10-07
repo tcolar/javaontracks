@@ -80,5 +80,4 @@ public class TestUser extends JOTModel
         return "Age: " + age + " ID:" + id + " first:" + firstName + " last:" + lastName;
     }
 
-    
 }

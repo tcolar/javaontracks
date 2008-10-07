@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 
 import net.jot.logger.JOTLogger;
 import net.jot.persistance.JOTModel;
-import net.jot.persistance.JOTQueryBuilder;
+import net.jot.persistance.builders.JOTQueryBuilder;
 import net.jot.persistance.query.JOTQueryManager;
 import net.jot.utils.JOTUtilities;
 import net.jot.web.JOTFlowRequest;
