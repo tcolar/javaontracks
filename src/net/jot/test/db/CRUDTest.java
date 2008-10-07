@@ -80,8 +80,9 @@ public class CRUDTest implements JOTTestable
 
         user.delete();
         users = JOTQueryBuilder.selectQuery(TestUser.class).find().getAllResults();
-        JOTTester.checkIf("checking delete worked",users.size()==3);
-        users = JOTQueryBuilder.selectQuery(TestUser.class).find().getAllResults();
+        JOTTester.checkIf("checking delete worked",users.size()==3,""+users.size());
+        cond=new JOTSQLCondition("FIRST_NAME", JOTSQLCondition.IS_EQUAL, "Wayne");
+        users = JOTQueryBuilder.selectQuery(TestUser.class).where(cond).find().getAllResults();
         JOTTester.checkIf("checking delete worked 2",users.size()==0);
         
         //TODO: check custom field names(mapping), constraints etc....

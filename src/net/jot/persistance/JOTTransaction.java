@@ -46,7 +46,7 @@ public final class JOTTransaction
             throw new JOTTransactionCompletedException();
         }
         con.getConnection().rollback();
-        // if no exception, this tranmsaction is completed
+        // if no exception, this transaction is completed
         terminate();
     }
 

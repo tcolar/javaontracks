@@ -26,17 +26,16 @@ public class TransactionTest implements JOTTestable
         user.save(tx);
         tx.commit();
         user = (TestUser) JOTQueryBuilder.selectQuery(TestUser.class).orderBy("ID").findOne();
-        System.out.println(user);
         JOTTester.checkIf("Transaction worked", user.firstName.equals("toto"));
 
         // test transaction with rollback
         tx = new JOTTransaction("test");
         user.firstName = "xyz";
         user.save(tx);
-        user = (TestUser) JOTQueryBuilder.selectQuery(TestUser.class).orderBy("id").findOne();
+        user = (TestUser) JOTQueryBuilder.selectQuery(TestUser.class).orderBy("ID").findOne(tx);
         JOTTester.checkIf("rollback before", user.firstName.equals("xyz"));
         tx.rollBack();
-        user = (TestUser) JOTQueryBuilder.selectQuery(TestUser.class).orderBy("id").findOne();
+        user = (TestUser) JOTQueryBuilder.selectQuery(TestUser.class).orderBy("ID").findOne();
         JOTTester.checkIf("rollback after", user.firstName.equals("toto"));
 
         /* multithread test - test atomic transactions, some commit, some rolled back*/
@@ -52,7 +51,7 @@ public class TransactionTest implements JOTTestable
             threads[i].join();
         }
         user = (TestUser) JOTQueryBuilder.selectQuery(TestUser.class).orderBy("id").findOne();
-        JOTTester.warnIf("7 concurrent transactions (might fail on some DB's)", user.firstName.equals(saved));
+        JOTTester.warnIf("7 concurrent transactions (might fail on some DB's)", user.firstName.equals(saved),""+user.firstName);
     }
 
     class TransactionTestThread extends Thread

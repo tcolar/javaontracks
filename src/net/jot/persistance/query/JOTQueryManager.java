@@ -116,7 +116,7 @@ public final class JOTQueryManager
      * @param params ie: ['John','Doe']
      * @return a Vector of JOTModel objects 
      */
-    public static JOTQueryResult executeSQL(JOTTransaction transaction, Class modelClass, String sql, String[] params, JOTStatementFlags flags) throws Exception
+    public static JOTQueryResult executeSQL(JOTTransaction transaction, Class modelClass, String sql, Object[] params, JOTStatementFlags flags) throws Exception
     {
         JOTModelMapping mapping = getMapping(modelClass);
         JOTQueryInterface impl = getImplementation(mapping.getQueryClassName());

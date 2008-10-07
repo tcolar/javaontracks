@@ -58,9 +58,4 @@
         </javadoc>
     </target>
     
-    <target name="example.app.run" depends="compile">
-        <java classname="com.jot.examples.movie.MainFrame" classpath="classes" fork="true">
-        </java>
-    </target>
-    
 </project>

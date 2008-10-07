@@ -328,14 +328,18 @@ public class JOTTester
     }
     public static boolean warnIf(String message, boolean test) throws JOTTestException
     {
+        return warnIf(message, test, "");
+    }
+    public static boolean warnIf(String message, boolean test, String infos) throws JOTTestException
+    {
         tester.numberOfTests++;
         if (!test)
         {
             tester.numberOfWarnings++;
-            tester.displayResult(message, test,true);
+            tester.displayResult(message + " (Infos: " + infos + ")", test, true);
         } else
         {
-            tester.displayResult(message, test,true);
+            tester.displayResult(message, test, true);
         }
         return test;
     }

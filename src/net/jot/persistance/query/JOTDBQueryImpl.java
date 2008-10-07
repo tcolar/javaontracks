@@ -245,7 +245,7 @@ public class JOTDBQueryImpl implements JOTQueryInterface
                     vals[i] = values[i].toString();
                 }
                 String[] fields = model.getMapping().getInsertFields();
-                JOTQueryBuilder.insertQuery(model.getClass()).insert(fields, vals);
+                JOTQueryBuilder.insertQuery(model.getClass()).insert(transaction,fields, vals);
             } catch (SQLException e)
             {
                 JOTLogger.logException(JOTLogger.CAT_DB, JOTLogger.ERROR_LEVEL, this, "Error during INSERT", e);
@@ -260,7 +260,7 @@ public class JOTDBQueryImpl implements JOTQueryInterface
                 JOTSQLCondition cond = new JOTSQLCondition(model.getMapping().getPrimaryKey(), JOTSQLCondition.IS_EQUAL, new Integer((int) model.getId()));
                 Object[] values = model.getFieldValues(model.getMapping(), null);
                 String[] fields = model.getMapping().getInsertFields();
-                JOTQueryBuilder.updateQuery(model.getClass()).update(fields, values).where(cond).executeUpdate();
+                JOTQueryBuilder.updateQuery(model.getClass()).update(fields, values).where(cond).executeUpdate(transaction);
             } catch (SQLException e)
             {
                 JOTLogger.logException(JOTLogger.CAT_DB, JOTLogger.ERROR_LEVEL, this, "Error during UPDATE", e);

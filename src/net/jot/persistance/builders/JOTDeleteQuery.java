@@ -28,10 +28,10 @@ public class JOTDeleteQuery extends JOTQueryBase{
      */
     public void delete(JOTTransaction transaction) throws Exception
     {
-        String[] pms = null;
+        Object[] pms = null;
         if (params.size() > 0)
         {
-            pms = (String[]) params.toArray(new String[0]);
+            pms = params.toArray();
         }
         JOTQueryManager.updateSQL(transaction, modelClass, sql.toString(), pms, flags);
     }
@@ -74,9 +74,9 @@ public class JOTDeleteQuery extends JOTQueryBase{
      * @param append
      * @return
      */
-    public JOTSelectQuery appendToSQL(String append)
+    public JOTDeleteQuery appendToSQL(String append)
     {
-        return (JOTSelectQuery)JOTQueryBuilderHelper.appendToSQL(this, append);
+        return (JOTDeleteQuery)JOTQueryBuilderHelper.appendToSQL(this, append);
     }
 
 }

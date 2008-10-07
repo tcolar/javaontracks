@@ -41,10 +41,10 @@ public class JOTSelectQuery extends JOTQueryBase{
 
     public JOTQueryResult find(JOTTransaction transaction) throws Exception
     {
-        String[] pms = null;
+        Object[] pms = null;
         if (params.size() > 0)
         {
-            pms = (String[]) params.toArray(new String[0]);
+            pms = params.toArray();
         }
         JOTQueryResult result = JOTQueryManager.executeSQL(transaction, modelClass, sql.toString(), pms, flags);
         return result;
