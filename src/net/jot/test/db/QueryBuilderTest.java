@@ -5,10 +5,9 @@
 
 package net.jot.test.db;
 
-import java.util.Vector;
+import java.io.ByteArrayOutputStream;
 import net.jot.persistance.JOTQueryResult;
 import net.jot.persistance.builders.JOTQueryBuilder;
-import net.jot.persistance.query.JOTQueryManager;
 import net.jot.testing.JOTTestable;
 import net.jot.testing.JOTTester;
 
@@ -75,9 +74,37 @@ public class QueryBuilderTest implements JOTTestable
 
         v=JOTQueryBuilder.selectQuery(TestUser.class).where("LAST_NAME='Doe'").orWhere("FIRST_NAME='Wayne'").find();
         JOTTester.checkIf("Checking simple manual dual where query", v.size()==3);
+        
+        /**
+         * New querybuilder tests
+         */
+        JOTTester.tag("QueryBuilder Tests");
+        // reset the data
+        DBTestData.populateUserTestData();
+        TestUser user=(TestUser)JOTQueryBuilder.selectQuery(TestUser.class).findOne();
+        TestUser user2=(TestUser)JOTQueryBuilder.findByID(TestUser.class, user.getId());
+        JOTTester.checkIf("Checking findyID works",user2.getId()==user.getId());
+                
+        // testing helpers
+        JOTQueryBuilder.deleteByID(TestUser.class, user.getId());
+        JOTQueryBuilder.findByID(TestUser.class, user.getId());
+        JOTTester.checkIf("Checking delete by ID worked", JOTQueryBuilder.findByID(TestUser.class, user.getId())==null);
+        ByteArrayOutputStream bos=new ByteArrayOutputStream();
+        JOTQueryBuilder.dumpToCSV(bos, TestUser.class);
+        JOTTester.checkIf("Checking dumpToCSV", bos.toString().length()>0);
+        bos=null;
+        JOTQueryBuilder.findAll(TestUser.class);
+        JOTTester.checkIf("Checking findAll worked", JOTQueryBuilder.findAll(TestUser.class).size()==3);
+        
+        // test other select functions
+        user=(TestUser)JOTQueryBuilder.selectQuery(TestUser.class).findOne();
+        JOTTester.checkIf("Checking findOne",JOTQueryBuilder.selectQuery(TestUser.class).where("id=-1").findOne()==null);
+        JOTTester.checkIf("Checking findOne2",JOTQueryBuilder.selectQuery(TestUser.class).findOne()!=null);
+        TestUser user3=(TestUser)JOTQueryBuilder.selectQuery(TestUser.class).where("id="+user.getId()).findOrCreateOne();
+        JOTTester.checkIf("Checking findOrCreateOne",user.getId()==user3.getId(),user.getId()+" vs "+user3.getId());
+        TestUser user4=(TestUser)JOTQueryBuilder.selectQuery(TestUser.class).where("id=-5").findOrCreateOne();
+        JOTTester.checkIf("Checking findOrCreateOne2",user4.isNew());
     }
 
-        // TODO: test update
-        // TODO: test delete
-        // TODO: test insert
+    
 }

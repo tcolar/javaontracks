@@ -21,6 +21,6 @@ public class TestTest
     public static void jotTest() throws Throwable
     {
         TestTest test=new TestTest();
-        JOTTester.checkIf("Silly math Test", test.add(1,3)==4);
+        JOTTester.checkIf("Test Class Test", test.add(1,3)==4);
     }
 }

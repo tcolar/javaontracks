@@ -23,6 +23,6 @@ public class InterfaceTestTest implements JOTTestable
     public void jotTest() throws Throwable
     {
         TestTest test=new TestTest();
-        JOTTester.checkIf("Silly math Test(I)", add(1,3)==4);
+        JOTTester.checkIf("Test Interface Test", add(1,3)==4);
     }
 }
