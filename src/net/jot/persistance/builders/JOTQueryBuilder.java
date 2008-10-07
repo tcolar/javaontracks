@@ -4,6 +4,7 @@
  */
 package net.jot.persistance.builders;
 
+import java.io.OutputStream;
 import net.jot.persistance.*;
 import net.jot.persistance.query.JOTQueryManager;
 
@@ -85,10 +86,10 @@ public class JOTQueryBuilder
      * @return
      * @throws java.lang.Exception
      */
-    public static JOTModel findByID(Class modelClass, int id) throws Exception
+    public static JOTModel findByID(Class modelClass, long id) throws Exception
     {
         JOTSelectQuery builder = selectQuery(modelClass);
-        JOTSQLCondition cond = new JOTSQLCondition("id", JOTSQLCondition.IS_EQUAL, new Integer(id));
+        JOTSQLCondition cond = new JOTSQLCondition("id", JOTSQLCondition.IS_EQUAL, new Long(id));
         builder.where(cond);
         return builder.findOne();
     }
@@ -98,10 +99,10 @@ public class JOTQueryBuilder
      * @param id
      * @throws java.lang.Exception
      */
-    public static void deleteByID(Class modelClass, int id) throws Exception
+    public static void deleteByID(Class modelClass, long id) throws Exception
     {
         JOTDeleteQuery builder = deleteQuery(modelClass);
-        JOTSQLCondition cond = new JOTSQLCondition("id", JOTSQLCondition.IS_EQUAL, new Integer(id));
+        JOTSQLCondition cond = new JOTSQLCondition("id", JOTSQLCondition.IS_EQUAL, new Long(id));
         builder.where(cond);
         builder.delete();
     }
@@ -116,4 +117,14 @@ public class JOTQueryBuilder
         return builder.find();
     }
 
+    /**
+     * Dump a whole table in CSV  format to out.
+     * @param out
+     * @param modelClass
+     * @throws java.lang.Exception
+     */
+    public static void dumpToCSV(OutputStream out, Class modelClass) throws Exception
+    {
+        selectQuery(modelClass).dumpToCSV(out);
+    }
 }
