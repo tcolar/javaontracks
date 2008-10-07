@@ -18,7 +18,12 @@ import net.jot.persistance.query.JOTQueryManager;
 public class JOTUpdateQuery extends JOTQueryBase{
     
     protected JOTUpdateQuery(){}
-    
+    /**
+     * set the fields and values to be updated.
+     * @param fields
+     * @param values
+     * @return
+     */
     public JOTUpdateQuery update(String[] fields, Object[] values)
     {
         for (int i = 0; i != fields.length; i++)
@@ -36,7 +41,10 @@ public class JOTUpdateQuery extends JOTQueryBase{
         }
         return this;
     }
-
+    /**
+     * actually runs the update
+     * @throws java.lang.Exception
+     */
     public void executeUpdate() throws Exception
     {
         executeUpdate(null);
@@ -56,12 +64,22 @@ public class JOTUpdateQuery extends JOTQueryBase{
         return (JOTUpdateQuery)JOTQueryBuilderHelper.where(this,cond);
     }
 
+    /**
+     * It's much safer to use where(JOTSQLCondition cond)
+     * @param where
+     * @return
+     */
     public JOTUpdateQuery where(String where)
     {
         return (JOTUpdateQuery)JOTQueryBuilderHelper.where(this,where);
     }
 
-    public JOTUpdateQuery withParams(String[] pms)
+   /**
+     * Pass the (prepared statement )parameters (ie: values)
+     * @param pms
+     * @return
+     */
+     public JOTUpdateQuery withParams(String[] pms)
     {
         return (JOTUpdateQuery)JOTQueryBuilderHelper.withParams(this,pms);
     }
@@ -71,6 +89,11 @@ public class JOTUpdateQuery extends JOTQueryBase{
         return (JOTUpdateQuery)JOTQueryBuilderHelper.orWhere(this,where);
     }
     
+    /**
+     * append generic SQL to the query, use with precautions !
+     * @param append
+     * @return
+     */
     public JOTUpdateQuery appendToSQL(String append)
     {
         return (JOTUpdateQuery)JOTQueryBuilderHelper.appendToSQL(this, append);

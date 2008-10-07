@@ -22,6 +22,13 @@ public class JOTInsertQuery extends JOTQueryBase
     {
         insert(null, fields, values);
     }
+    /**
+     * Runs the insert
+     * @param transaction
+     * @param fields
+     * @param values
+     * @throws java.lang.Exception
+     */
     public void insert(JOTTransaction transaction, String[] fields, String[] values) throws Exception
     {
         appendToSQL("(");
@@ -57,12 +64,22 @@ public class JOTInsertQuery extends JOTQueryBase
         return (JOTInsertQuery)JOTQueryBuilderHelper.where(this,cond);
     }
 
+    /**
+     * It's much safer to use where(JOTSQLCondition cond)
+     * @param where
+     * @return
+     */
     public JOTInsertQuery where(String where)
     {
         return (JOTInsertQuery)JOTQueryBuilderHelper.where(this,where);
     }
 
-    public JOTInsertQuery withParams(String[] pms)
+   /**
+     * Pass the (prepared statement )parameters (ie: values)
+     * @param pms
+     * @return
+     */
+     public JOTInsertQuery withParams(String[] pms)
     {
         return (JOTInsertQuery)JOTQueryBuilderHelper.withParams(this,pms);
     }
@@ -71,7 +88,11 @@ public class JOTInsertQuery extends JOTQueryBase
     {
         return (JOTInsertQuery)JOTQueryBuilderHelper.orWhere(this,where);
     }
-
+    /**
+     * append generic SQL to the query, use with precautions !
+     * @param append
+     * @return
+     */
     public JOTInsertQuery appendToSQL(String append)
     {
         return (JOTInsertQuery)JOTQueryBuilderHelper.appendToSQL(this, append);

@@ -29,6 +29,7 @@ public class JOTSelectQuery extends JOTQueryBase{
     protected JOTSelectQuery(){}
     /**
      * Execute the query and return a Vector of "modelClass"(JOTModel).
+     * Find all matches - ifno conditions -> all.
      * Will not be null for selects (might be empty)
      * or null for "Update type queries".
      * @throws java.lang.Exception
@@ -102,7 +103,7 @@ public class JOTSelectQuery extends JOTQueryBase{
         return this;
     }
 
-        /**
+     /**
      * Dump matching data into a stream(ie file) in CSV format with column names
      * @param out
      * @param modelClass
@@ -153,12 +154,22 @@ public class JOTSelectQuery extends JOTQueryBase{
         return (JOTSelectQuery)JOTQueryBuilderHelper.where(this,cond);
     }
 
+    /**
+     * It's much safer to use where(JOTSQLCondition cond)
+     * @param where
+     * @return
+     */
     public JOTSelectQuery where(String where)
     {
         return (JOTSelectQuery)JOTQueryBuilderHelper.where(this,where);
     }
 
-    public JOTSelectQuery withParams(String[] pms)
+   /**
+     * Pass the (prepared statement )parameters (ie: values)
+     * @param pms
+     * @return
+     */
+     public JOTSelectQuery withParams(String[] pms)
     {
         return (JOTSelectQuery)JOTQueryBuilderHelper.withParams(this,pms);
     }
@@ -177,6 +188,11 @@ public class JOTSelectQuery extends JOTQueryBase{
     {
         return (JOTSelectQuery)JOTQueryBuilderHelper.orWhere(this,where);
     }
+    /**
+     * append generic SQL to the query, use with precautions !
+     * @param append
+     * @return
+     */
     public JOTSelectQuery appendToSQL(String append)
     {
         return (JOTSelectQuery)JOTQueryBuilderHelper.appendToSQL(this, append);

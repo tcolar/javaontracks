@@ -21,7 +21,11 @@ public class JOTDeleteQuery extends JOTQueryBase{
     {
         delete(null);
     }
-
+    /**
+     * actually runs the delete action
+     * @param transaction
+     * @throws java.lang.Exception
+     */
     public void delete(JOTTransaction transaction) throws Exception
     {
         String[] pms = null;
@@ -31,7 +35,7 @@ public class JOTDeleteQuery extends JOTQueryBase{
         }
         JOTQueryManager.updateSQL(transaction, modelClass, sql.toString(), pms, flags);
     }
-
+    
     public JOTDeleteQuery orWhere(JOTSQLCondition cond)
     {
         return (JOTDeleteQuery)JOTQueryBuilderHelper.orWhere(this,cond);
@@ -41,12 +45,20 @@ public class JOTDeleteQuery extends JOTQueryBase{
     {
         return (JOTDeleteQuery)JOTQueryBuilderHelper.where(this,cond);
     }
-
+    /**
+     * It's much safer to use where(JOTSQLCondition cond)
+     * @param where
+     * @return
+     */
     public JOTDeleteQuery where(String where)
     {
         return (JOTDeleteQuery)JOTQueryBuilderHelper.where(this,where);
     }
-
+    /**
+     * Pass the (prepared statement )parameters (ie: values)
+     * @param pms
+     * @return
+     */
     public JOTDeleteQuery withParams(String[] pms)
     {
         return (JOTDeleteQuery)JOTQueryBuilderHelper.withParams(this,pms);
@@ -57,6 +69,11 @@ public class JOTDeleteQuery extends JOTQueryBase{
         return (JOTDeleteQuery)JOTQueryBuilderHelper.orWhere(this,where);
     }
 
+    /**
+     * append generic SQL to the query, use with precautions !
+     * @param append
+     * @return
+     */
     public JOTSelectQuery appendToSQL(String append)
     {
         return (JOTSelectQuery)JOTQueryBuilderHelper.appendToSQL(this, append);

@@ -105,5 +105,15 @@ public class JOTQueryBuilder
         builder.where(cond);
         builder.delete();
     }
+    /**
+     * Shortcut to return ALL the items of a table.
+     * @param modelClass
+     * @throws java.lang.Exception
+     */
+    public static JOTQueryResult findAll(Class modelClass) throws Exception
+    {
+        JOTSelectQuery builder = selectQuery(modelClass);
+        return builder.find();
+    }
 
 }
