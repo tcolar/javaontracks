@@ -87,6 +87,7 @@ public class Configurator implements JOTServerRequestHandler
         }
         catch(Exception e2)
         {
+            e2.printStackTrace();
         }
     }
 

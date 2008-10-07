@@ -6,7 +6,10 @@
 package net.jot.web.widget;
 
 import java.util.Hashtable;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import net.jot.web.JOTFlowRequest;
+import net.jot.web.view.JOTView;
 
 /**
  * Widget Base but without Ajaxa support / javascript
@@ -14,6 +17,7 @@ import net.jot.web.JOTFlowRequest;
  */
 public abstract class JOTWidgetNoAjaxBase extends JOTWidgetBase
 {
+
     // Disabling ajax
     public boolean isAjaxEnabled()
     {

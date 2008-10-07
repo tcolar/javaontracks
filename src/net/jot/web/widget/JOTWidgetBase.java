@@ -9,7 +9,9 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import net.jot.logger.JOTLogger;
 import net.jot.web.JOTFlowRequest;
 import net.jot.web.ajax.JOTAjaxHelper;
@@ -22,7 +24,7 @@ import net.jot.web.view.JOTView;
  * it's main job is to render data.
  * @author thibautc
  */
-public abstract class JOTWidgetBase  extends JOTView implements JOTAjaxProvider
+public abstract class JOTWidgetBase  implements JOTAjaxProvider
 {
 
     protected static final Pattern ARG_PATTERN = Pattern.compile("\\s*(\\S+)\\s*=\\s*'([^']*)'\\s*");
@@ -32,13 +34,35 @@ public abstract class JOTWidgetBase  extends JOTView implements JOTAjaxProvider
      */
     public int uniqueId = 0;
     public JOTWidgetBaseProperties properties = new JOTWidgetBaseProperties();
+    public JOTFlowRequest request;
+    public HttpServletResponse response;
+    public HttpSession session;
+    protected JOTView view=null;
 
+    public JOTWidgetBase()
+    {
+        // don't forget to init !
+    }
     /**
      * Standard widdget constructor, calls customizeProperties
      */
-    public JOTWidgetBase()
+    public void init(JOTView view)
     {
-        super();
+        this.view=view;
+        request=view.request;
+        response=view.response;
+        session=view.session;
+        customizeProperties();
+    }
+    /**
+     * "Manual" constructor
+     * @param view
+     */
+    public void init(HttpServletRequest request, HttpServletResponse response)
+    {
+        this.request=new JOTFlowRequest(request);
+        this.response=response;
+        session=request.getSession(true);
         customizeProperties();
     }
 

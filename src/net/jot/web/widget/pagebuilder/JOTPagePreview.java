@@ -51,7 +51,7 @@ public class JOTPagePreview extends JOTWidgetBase
         for (int i = 0; elements != null && i != elements.size(); i++)
         {
             JOTWidgetBase widget = (JOTWidgetBase)elements.get(i);
-            widget.init(getMaster());
+            widget.init(view);
             //String height=widget.getProperties().getProperty(JOTWidgetBaseProperties.PROP_HEIGHT).getDefaultValue();
             //String width=widget.getProperties().getProperty(JOTWidgetBaseProperties.PROP_WIDTH).getDefaultValue();
             //String bgcolor=widget.getProperties().getProperty(JOTWidgetBaseProperties.PROP_BG_COLOR).getDefaultValue();

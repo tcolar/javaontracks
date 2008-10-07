@@ -1171,7 +1171,7 @@ public class JOTViewParser
             if (instance instanceof JOTWidgetBase)
             {
                 JOTWidgetBase widget = (JOTWidgetBase) instance;
-                widget.init(view.getMaster());
+                widget.init(view);
                 String widgetHtml = widget.render(args);
                 safeAppendReplacement(m, buf, widgetHtml);
             } else

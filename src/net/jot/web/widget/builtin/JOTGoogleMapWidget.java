@@ -61,7 +61,9 @@ public class JOTGoogleMapWidget extends JOTTitledBoxWidget
     }
     public String getLinkToGoogle(String address)
     {
-        return "<center><a target='_blank' href='http://maps.google.com/maps?hl=en&q="+response.encodeURL(address)+"'>Click here for larger Map & Directions</a></center>";
+        if(response!=null)
+            address=response.encodeURL(address);
+        return "<center><a target='_blank' href='http://maps.google.com/maps?hl=en&q="+address+"'>Click here for larger Map & Directions</a></center>";
     }
     
     public String renderBoxContent(Hashtable args)
