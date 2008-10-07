@@ -8,7 +8,7 @@ package net.jot.persistance.builders;
 import net.jot.persistance.JOTSQLCondition;
 
 /**
- *
+ * Common static methods shared by all query builders
  * @author tcolar
  */
 public final class JOTQueryBuilderHelper {

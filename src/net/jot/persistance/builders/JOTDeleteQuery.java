@@ -10,10 +10,13 @@ import net.jot.persistance.JOTTransaction;
 import net.jot.persistance.query.JOTQueryManager;
 
 /**
- *
+ * Query builder for delete type queries
+ * Use through JOQueryBuilder
  * @author tcolar
  */
 public class JOTDeleteQuery extends JOTQueryBase{
+    protected JOTDeleteQuery(){}
+    
     public void delete() throws Exception
     {
         delete(null);

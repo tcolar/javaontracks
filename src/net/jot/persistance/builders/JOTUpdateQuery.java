@@ -10,10 +10,14 @@ import net.jot.persistance.JOTTransaction;
 import net.jot.persistance.query.JOTQueryManager;
 
 /**
- *
+ * Query builder for update type queries
+ * Use through JOQueryBuilder
+ * !! Note: does not delete anyhting until you call executeUpdate() !!
  * @author tcolar
  */
 public class JOTUpdateQuery extends JOTQueryBase{
+    
+    protected JOTUpdateQuery(){}
     
     public JOTUpdateQuery update(String[] fields, Object[] values)
     {

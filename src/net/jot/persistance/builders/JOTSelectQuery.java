@@ -20,10 +20,13 @@ import net.jot.persistance.query.JOTQueryManager;
 import net.jot.utils.JOTUtilities;
 
 /**
- *
- * @author tcolar
- */
+* Query builder for select type queries
+* Use through JOQueryBuilder
+* @author tcolar
+*/
 public class JOTSelectQuery extends JOTQueryBase{
+    
+    protected JOTSelectQuery(){}
     /**
      * Execute the query and return a Vector of "modelClass"(JOTModel).
      * Will not be null for selects (might be empty)

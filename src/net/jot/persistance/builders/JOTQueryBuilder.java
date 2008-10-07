@@ -8,15 +8,15 @@ import net.jot.persistance.*;
 import net.jot.persistance.query.JOTQueryManager;
 
 /**
- * This allow to build an SQL query manually.
+ * This allow to build an SQL queries(insert,select,delete,update) manually.
  * It uses a builder pattern to make it more readable, failry close to ruby activeRecord's syntax
  * 
  * Example:
- * JOTQueryBuilder.select(User.class).where("name>a").where("name<d").orderBy("name").limit(2).execute();
+ * JOTQueryBuilder.selectQuery(User.class).where("name>a").where("name<d").orderBy("name").limit(2).find();
  * Oftentimes it's best(safer) to use PreparedStatement form:
  * Example:
  * String[] params={"john","O'hara"}; // the ' could be dangerous if not using preparesStatement
- * JOTQueryBuilder.select(User.class).where("first=?").where("last=?").withParams(params).execute();
+ * JOTQueryBuilder.selectQuery(User.class).where("first=?").where("last=?").withParams(params).find();
  * 
  * Notes: 
  * - multiple "Where" are ANDED unless you use OrWhere
@@ -34,7 +34,7 @@ public class JOTQueryBuilder
     }
 
     /**
-     * Factory method to create the queryBuilder
+     * Builds a select query
      * @param modelClass
      * @return
      */
@@ -46,7 +46,11 @@ public class JOTQueryBuilder
         builder.appendToSQL(JOTQueryManager.getTableName(modelClass));
         return builder;
     }
-
+    /**
+     * builds an insert query
+     * @param modelClass
+     * @return
+     */
     public static JOTInsertQuery insertQuery(Class modelClass)
     {
         JOTInsertQuery builder = new JOTInsertQuery();
@@ -74,7 +78,13 @@ public class JOTQueryBuilder
         builder.appendToSQL(JOTQueryManager.getTableName(modelClass));
         return builder;
     }
-    
+    /**
+     * shortcut to find an item by it's id
+     * @param modelClass
+     * @param id
+     * @return
+     * @throws java.lang.Exception
+     */
     public static JOTModel findByID(Class modelClass, int id) throws Exception
     {
         JOTSelectQuery builder = selectQuery(modelClass);
@@ -82,7 +92,12 @@ public class JOTQueryBuilder
         builder.where(cond);
         return builder.findOne();
     }
-
+    /**
+     * shortcut to delete an item by it's id
+     * @param modelClass
+     * @param id
+     * @throws java.lang.Exception
+     */
     public static void deleteByID(Class modelClass, int id) throws Exception
     {
         JOTDeleteQuery builder = deleteQuery(modelClass);

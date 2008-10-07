@@ -10,11 +10,14 @@ import net.jot.persistance.JOTTransaction;
 import net.jot.persistance.query.JOTQueryManager;
 
 /**
- *
+ * Query builder for insert type queries
+ * Use through JOQueryBuilder
  * @author tcolar
  */
 public class JOTInsertQuery extends JOTQueryBase
 {
+    protected JOTInsertQuery(){}
+    
     public void insert(String[] fields, String[] values) throws Exception
     {
         insert(null, fields, values);

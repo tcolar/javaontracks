@@ -18,9 +18,9 @@ import net.jot.persistance.JOTQueryResult;
 import net.jot.persistance.JOTStatementFlags;
 
 /**
- * This is the "Main" Object for retrieving records from the persistance/database.<br>
- * Ie: Vector users=JOTQueryManager.findUsingSQL(User.class, "SELECT * FROM mytable", null);
- * 
+ * Low(medium) level database access
+ * Usually you would rather use JOTMOdel methods or the JOTQueryBuilder
+ * unless you want to make a completely manual SQL query
  * @author thibautc
  * 
  *
