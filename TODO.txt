@@ -13,3 +13,10 @@ hasOne.belongsTo,hasMany,manytoMany
 work on exceptions (JOTException): runtime vs regular exceptions etc... bloch57-65
 
 write more querybuilder tests
+
+
+
+MiniWebServer
+-> use a jotconf type file for request ???
+-> provide a request and response with minimum functionallities (params,cookies,session,redirects)
+-> provide a JOTBasicWidgetBase compatible with miniserv (use miniserv request,response).
