@@ -4,11 +4,7 @@
  */
 package net.jottools;
 
-import java.net.Socket;
-import java.util.Enumeration;
-import java.util.Hashtable;
 import net.jot.server.JOTMiniWebServer;
-import net.jot.server.JOTServerRequestHandler;
 import net.jot.utils.JOTUtilities;
 import net.jottools.actions.ConfigView;
 
@@ -16,17 +12,17 @@ import net.jottools.actions.ConfigView;
  *
  * @author thibautc
  */
-public class Configurator implements JOTServerRequestHandler
+public class JOTConfigurator
 {
     private final static int DEFAULT_PORT=8033;
     private JOTMiniWebServer server=null;
     
-    public Configurator(Integer port)
+    public JOTConfigurator(Integer port)
     {
         server=new JOTMiniWebServer();
         try
         {
-            server.start(port.intValue(), this);        
+            server.start(port.intValue(), JOTConfiguratorHandler.class);        
         }
         catch(Exception e)
         {
@@ -52,7 +48,7 @@ public class Configurator implements JOTServerRequestHandler
             String p = args[1];
             port = new Integer(p.trim());
         }
-        new Configurator(port);
+        new JOTConfigurator(port);
     }
 
     public void finalyze() throws Throwable
@@ -64,33 +60,7 @@ public class Configurator implements JOTServerRequestHandler
         super.finalize();
     }
     
-    public void handleGetRequest(Socket socket, String path, Hashtable Parameters)
-    {
-        System.out.println("Request: "+path);
-        Enumeration e=Parameters.keys();
-        while(e.hasMoreElements())
-        {
-            String key=(String)e.nextElement();
-            System.out.println("Param: "+key+" -> "+(String)Parameters.get(key));
-        }
-        try
-        {
-            ConfigView view=getViewClass(path);
-            if(view!=null)
-            {
-                view.writePage(socket.getOutputStream(),Parameters);
-            }
-            else
-            {
-                socket.getOutputStream().write("Page Not Found !".getBytes());
-            }
-        }
-        catch(Exception e2)
-        {
-            e2.printStackTrace();
-        }
-    }
-
+ 
     private ConfigView getViewClass(String path)
     {
         Object view=null;
