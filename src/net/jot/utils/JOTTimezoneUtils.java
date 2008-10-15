@@ -5,8 +5,10 @@
  */
 package net.jot.utils;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.TimeZone;
 import java.util.Vector;
@@ -17,6 +19,13 @@ import java.util.Vector;
  */
 public class JOTTimezoneUtils
 {
+    /**EEE dd MMM yyyy HH:mm z */
+    public final static String FORMAT_STD = "EEE dd MMM yyyy HH:mm z";
+    /**MM-dd-yyyy HH:mm */
+    public final static String FORMAT_DB = "MM-dd-yyyy HH:mm";
+    /**EEE, dd MMM yyyy HH:MM:SS*/
+    public final static String FORMAT_HEADER = "EEE, dd MMM yyyy HH:mm:ss";
+
 
     static Hashtable commonZones = new Hashtable();
     public final static String AMERICA_ID = "America";
@@ -117,6 +126,22 @@ public class JOTTimezoneUtils
         }
         return (String[])commonZones.get(zoneId);
     }
+
+        /**
+     * Converts a date into another timezone.
+     * TODO: not sure that works - needs testing.
+     * @param date
+     * @param destZone
+     * @param dbFormat
+     * @return
+     */
+    public static String convertTimezone(Date date, String destZone, String dateFormat)
+    {
+        DateFormat df = new SimpleDateFormat(dateFormat);
+        df.setTimeZone(TimeZone.getTimeZone(destZone));
+        return df.format(date);
+    }
+
 
     public static void main(String args[])
     {

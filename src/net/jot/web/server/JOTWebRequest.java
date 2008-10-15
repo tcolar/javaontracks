@@ -43,7 +43,7 @@ public class JOTWebRequest {
         return (Cookie[])cookies.toArray(new Cookie[0]);
     }
     
-    public void addHeader(String key, String value)
+    protected void addHeader(String key, String value)
     {
         Vector v=new Vector();
         if(headers.containsKey(key))

@@ -593,29 +593,6 @@ public class JOTUtilities
 
     }
 
-    /**
-     * Converts a date into another timezone.
-     * TODO: not sure that works - needs testing.
-     * @param date
-     * @param destZone
-     * @param dbFormat
-     * @return
-     */
-    public static String convertTimezone(Date date, String destZone, boolean dbFormat)
-    {
-        String pattern = "EEE dd MMM yyyy HH:mm z";
-        if (dbFormat)
-        {
-            pattern = "MM-dd-yyyy HH:mm";
-        }
-
-        DateFormat dateFormat = new SimpleDateFormat(pattern);
-        dateFormat.setTimeZone(TimeZone.getTimeZone(destZone));
-        return dateFormat.format(date);
-
-
-    }
-
     public static boolean isWindowsOS()
     {
         String os = System.getProperty("os.name");
