@@ -16,7 +16,7 @@ import javax.servlet.http.Cookie;
  * @author thibautc
  */
 public class JOTWebRequest {
-
+    
     String method="GET";
     String protocol=null;
     String path;
@@ -187,5 +187,5 @@ public class JOTWebRequest {
     {
         return rawRequestLine;
     }
-    
+
 }

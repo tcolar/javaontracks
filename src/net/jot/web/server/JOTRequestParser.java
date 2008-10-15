@@ -64,17 +64,18 @@ public class JOTRequestParser
         //handler.handleGetRequest(socket, path, params);*/
         }
 
-        reader.close();
+        // TODO: close the inputstream ??
+        /*reader.close();
         if (!socket.isClosed())
         {
             try
             {
                 socket.getOutputStream().close();
             } catch (Exception e2)
-            {/*already closed .. big deal*/
+            {
 
             }
-        }
+        }*/
         return request;
     }
 

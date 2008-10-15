@@ -41,10 +41,11 @@ Connection: Keep-Alive
 
 200 OK
  */
-
 package net.jot.web.server;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Date;
@@ -60,51 +61,49 @@ import net.jot.utils.JOTTimezoneUtils;
  * HttpServletResponse impl.
  * @author thibautc
  */
-public class JOTWebResponse implements HttpServletResponse{
+public class JOTWebResponse implements HttpServletResponse
+{
 
     /** The connection socket to the client*/
     private final Socket socket;
-    
-    private final static int DEFAULT_BUFFER_SIZE=5000;
-
+    private final static int DEFAULT_BUFFER_SIZE = 5000;
     /** Default: 5K */
-    private int bufferSize=DEFAULT_BUFFER_SIZE;
+    private int bufferSize = DEFAULT_BUFFER_SIZE;
     /** Default: default java VM Loc.*/
-    private Locale loc=Locale.getDefault();
+    private Locale loc = Locale.getDefault();
     /** Default: ISO-8859-1*/
-    private String encoding="ISO-8859-1";
-
-    private boolean isCommited=false;
-    private boolean anythingWritten=false;
-
+    private String encoding = "ISO-8859-1";
+    private boolean isCommited = false;
+    private boolean bufferUsed = false;
     /** default: unset*/
-    private int contentLength=-1;
+    private int contentLength = -1;
     /** default: unset*/
-    private String contentType=null;
-    
-    // user print and output streams : only one of the two can be used !
-    private PrintWriter print=null;
-    private ServletOutputStream out=null;
-    
-    private byte[] buffer=new byte[bufferSize];
+    private String contentType = null;    // user print and output streams : only one of the two can be used !
+    private MyWriter print = null;
+    private MyStream out = null;
     /** Defaults to 200: OK*/
-    private int statusCode=SC_OK;
+    private int statusCode = SC_OK;
     /** headers (header name -> Vector of values(string)) **/
-    Hashtable headers=new Hashtable();
+    Hashtable headers = new Hashtable();
     // vector of Cookie
-    Vector cookies=new Vector();
-    
-    /**
-     * Create the response from the client socket.
-     * @param socket
-     */
-    public JOTWebResponse(Socket socket)
+    Vector cookies = new Vector();
+    private String sessionID = null;
+    // we need the request to encode URL's etc...
+    private JOTWebRequest request;
+
+    JOTWebResponse(Socket socket, JOTWebRequest request)
     {
-        this.socket=socket;
+        this.socket = socket;
+        this.request = request;
+    //TODO: read jsessionID from the request (if avail)
     }
-    
+
     public void addCookie(Cookie cookie)
     {
+        if (isCommited)
+        {
+            throw new IllegalStateException("We already have flushed the buffer, to late!");
+        }
         cookies.add(cookie);
     }
 
@@ -113,14 +112,17 @@ public class JOTWebResponse implements HttpServletResponse{
         return headers.containsKey(headerName);
     }
 
-    public String encodeURL(String arg0)
+    public String encodeURL(String url)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        // TODO: what about relative URL's ??
+        return addSessionIdToURL(url, sessionID);
     }
 
-    public String encodeRedirectURL(String arg0)
+    public String encodeRedirectURL(String url)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        // TODO: what about relative URL's ??
+        // TODO: what is the diff with encodeURL ??
+        return encodeURL(url);
     }
 
     /**
@@ -132,6 +134,7 @@ public class JOTWebResponse implements HttpServletResponse{
     {
         return encodeURL(arg0);
     }
+
     /**
      * @deprecated
      * @param arg0
@@ -142,63 +145,87 @@ public class JOTWebResponse implements HttpServletResponse{
         return encodeRedirectURL(arg0);
     }
 
-    public void sendError(int arg0, String arg1) throws IOException
+    public void sendError(int statusCode, String err) throws IOException
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (isCommited)
+        {
+            throw new IllegalStateException("Response already commited !");
+        }
+        reset();
+        setStatus(statusCode);
+        sendText(err);
+        flushBuffer();
     }
 
-    public void sendError(int arg0) throws IOException
+    public void sendError(int statusCode) throws IOException
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        sendError(statusCode, null);
     }
 
-    public void sendRedirect(String arg0) throws IOException
+    public void sendRedirect(String url) throws IOException
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        url = absoluteURL(url);
+        if (isCommited)
+        {
+            throw new IllegalStateException("Response already commited !");
+        }
+        setStatus(SC_MOVED_TEMPORARILY);
+        setHeader("Location", url);
+        isCommited = true;
     }
 
     public void setDateHeader(String key, long date)
     {
-        String value= JOTTimezoneUtils.convertTimezone(new Date(date), "GMT + 0", JOTTimezoneUtils.FORMAT_HEADER)+" GMT";
-        setHeader(key, ""+value);
+        // UTC/GMT style date
+        String value = JOTTimezoneUtils.convertTimezone(new Date(date), "GMT + 0", JOTTimezoneUtils.FORMAT_HEADER) + " GMT";
+        setHeader(key, "" + value);
     }
 
     public void addDateHeader(String key, long date)
     {
-        String value= JOTTimezoneUtils.convertTimezone(new Date(date), "GMT + 0", JOTTimezoneUtils.FORMAT_HEADER)+" GMT";
-        addHeader(key, ""+value);
+        // UTC/GMT style date
+        String value = JOTTimezoneUtils.convertTimezone(new Date(date), "GMT + 0", JOTTimezoneUtils.FORMAT_HEADER) + " GMT";
+        addHeader(key, "" + value);
     }
 
     public void setHeader(String key, String value)
     {
         headers.remove(key);
-        addHeader(key,value);
+        addHeader(key, value);
     }
 
     public void addHeader(String key, String value)
     {
-        Vector v=new Vector();
-        if(headers.containsKey(key))
+        if (isCommited)
         {
-            v=(Vector)headers.get(key);
+            throw new IllegalStateException("We already have flushed the buffer, to late!");
+        }
+        Vector v = new Vector();
+        if (headers.containsKey(key))
+        {
+            v = (Vector) headers.get(key);
         }
         v.add(value);
-        headers.put(key,v);
+        headers.put(key, v);
     }
 
     public void setIntHeader(String key, int value)
     {
-        setHeader(key, ""+value);
+        setHeader(key, "" + value);
     }
 
     public void addIntHeader(String key, int value)
     {
-        addHeader(key, ""+value);
+        addHeader(key, "" + value);
     }
 
     public void setStatus(int status)
     {
-        statusCode=status;
+        if (isCommited)
+        {
+            throw new IllegalStateException("We already have flushed the buffer, to late!");
+        }
+        statusCode = status;
     }
 
     /**
@@ -212,8 +239,9 @@ public class JOTWebResponse implements HttpServletResponse{
         try
         {
             sendError(status, sm);
+        } catch (IOException e)
+        {
         }
-        catch(IOException e){}
     }
 
     public String getCharacterEncoding()
@@ -228,42 +256,66 @@ public class JOTWebResponse implements HttpServletResponse{
 
     public ServletOutputStream getOutputStream() throws IOException
     {
-        if(print!=null)
+        if (print != null)
+        {
             throw new IllegalStateException("Can not gte both an outputstream and a printwriter !");
-        if(out==null)
-            out=(ServletOutputStream)socket.getOutputStream();
-        return out;
+        }
+        if (out == null)
+        {
+            out = new MyStream(socket.getOutputStream());
+        }
+        bufferUsed=true;
+        return (ServletOutputStream) (OutputStream) out;
     }
 
     public PrintWriter getWriter() throws IOException
     {
-        if(out!=null)
-            throw new IllegalStateException("Can not gte both an outputstream and a printwriter !");
-        if(print==null)
-            print=new PrintWriter(socket.getOutputStream());
+        if (out != null)
+        {
+            throw new IllegalStateException("Can not get both an outputstream and a printwriter !");
+        }
+        if (print == null)
+        {
+            print = new MyWriter(socket.getOutputStream());
+        }
+        bufferUsed=true;
         return print;
     }
 
     public void setCharacterEncoding(String enc)
     {
-        encoding=enc;
+        if (isCommited)
+        {
+            throw new IllegalStateException("We already have flushed the buffer, to late!");
+        }
+        encoding = enc;
     }
 
     public void setContentLength(int length)
     {
-        contentLength=length;
+        if (isCommited)
+        {
+            throw new IllegalStateException("We already have flushed the buffer, to late!");
+        }
+        contentLength = length;
     }
 
     public void setContentType(String type)
     {
-        contentType=type;
+        if (isCommited)
+        {
+            throw new IllegalStateException("We already have flushed the buffer, to late!");
+        }
+        contentType = type;
     }
 
     public void setBufferSize(int size)
     {
-        if(anythingWritten)
+        if (bufferUsed)
+        {
             throw new IllegalStateException("Can't change buffer size, after data was written.");
-        bufferSize=size;
+        }
+        bufferSize = size;
         clearBuffer();
     }
 
@@ -274,12 +326,24 @@ public class JOTWebResponse implements HttpServletResponse{
 
     public void flushBuffer() throws IOException
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (print != null)
+        {
+            print.flush();
+        }
+        if (out != null)
+        {
+            out.flush();
+        // TODO: do the flush: write the headers etc.. (if first time) and then send the buffer content
+        }
     }
 
     public void resetBuffer()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (isCommited)
+        {
+            throw new IllegalStateException("The buffer was already flushed !");
+        }
+        clearBuffer();
     }
 
     public boolean isCommitted()
@@ -290,13 +354,14 @@ public class JOTWebResponse implements HttpServletResponse{
     public void reset()
     {
         clearBuffer();
-        statusCode=SC_OK;
+        statusCode = SC_OK;
         headers.clear();
+        cookies.clear();
     }
 
     public void setLocale(Locale locale)
     {
-        loc=locale;
+        loc = locale;
     }
 
     public Locale getLocale()
@@ -304,13 +369,187 @@ public class JOTWebResponse implements HttpServletResponse{
         return loc;
     }
 
+    private String absoluteURL(String url)
+    {
+        //TODO: make this work right somehow
+        // no need to do jsessionid, user would call encoderedirurl first
+        return url;
+    }
+
     private void clearBuffer()
     {
-        buffer=new byte[bufferSize];
+        print = null;
+        out = null;
     }
-    
-    /*public static void main(String[] args)
+
+    private String addSessionIdToURL(String url, String sessionId)
     {
-        System.out.println(JOTTimezoneUtils.convertTimezone(new Date(), "GMT + 0", JOTTimezoneUtils.FORMAT_HEADER));
-    }*/
+        //TODO: only encode if url is relvant to this webapp ? 
+        if ((url == null) || (sessionId == null))
+        {
+            return (url);
+        }
+        String path = "";
+        String args = "";
+        String anchor = "";
+        int urlIndex = url.indexOf('?');
+        if (urlIndex != -1)
+        {
+            path = url.substring(0, urlIndex);
+            args = url.substring(urlIndex);
+        }
+        int anchorIndex = path.indexOf('#');
+        if (anchorIndex != -1)
+        {
+            anchor = path.substring(anchorIndex);
+            path = path.substring(0, anchorIndex);
+        }
+        StringBuffer sb = new StringBuffer(path).append(";jsessionid=").append(sessionId).append(anchor).append(args);
+        return (sb.toString());
+    }
+
+    public void destroy() throws Exception
+    {
+        Exception ex = null;
+        try
+        {
+            flushBuffer();
+        } catch (Exception e)
+        {
+            ex = e;
+        }
+        //TODO: close thestreams and socket etc ... ??
+        try
+        {
+            if (out != null)
+            {
+                out.close();
+            }
+        } catch (Exception e)
+        {
+            ex = e;
+
+        }
+        try
+        {
+            if (print != null)
+            {
+                print.close();
+            }
+        } catch (Exception e)
+        {
+            ex = e;
+
+        }
+        try
+        {
+            if (socket != null && !socket.isClosed() && socket.getInputStream() != null)
+            {
+                socket.getInputStream().close();
+            }
+        } catch (Exception e)
+        {
+            ex = e;
+
+        }
+        try
+        {
+            if (socket != null && !socket.isClosed() && socket.getOutputStream() != null)
+            {
+                socket.getOutputStream().close();
+            }
+        } catch (Exception e)
+        {
+            ex = e;
+
+        }
+        if (ex != null)
+        {
+            throw (ex);
+        }
+    }
+
+    /**
+     * Send some message to the browser.
+     * Used mostlt for error messages
+     * @param err
+     */
+    private void sendText(String text)
+    {
+        setContentType("text/html");
+        setContentLength(text.length());
+        try
+        {
+            if (print != null)
+            {
+                print.print(text);
+            } else if (out != null)
+            {
+                out.write(text.getBytes());
+            }
+        } catch (Exception e)
+        {/* TODO */
+            e.printStackTrace();
+        }
+
+    }
+
+    void writePreamble()
+    {
+        if(!isCommited)
+        {
+            // TODO write response code, headers, content type etc...
+        }
+        isCommited=true;
+    }
+
+    class MyStream extends BufferedOutputStream
+    {
+
+        MyStream(OutputStream out)
+        {
+            super(out);
+            setBufferSize(bufferSize);
+        }
+
+        /**
+         * Override, once it's flushed the first time, setting to commited
+         * @throws java.io.IOException
+         */
+        public synchronized void flush() throws IOException
+        {
+            //call the response flushbuffer (ie: commit)
+            writePreamble();
+            // then proceed with comitting the actual content.
+            super.flush();
+        }
+    }
+
+    class MyWriter extends PrintWriter
+    {
+
+        MyWriter(OutputStream out)
+        {
+            super(out);
+            setBufferSize(bufferSize);
+        }
+
+        /**
+         * Override, once it's flushed the first time, setting to commited
+         * @throws java.io.IOException
+         */
+        public synchronized void flush()
+        {
+            //call the response flushbuffer (ie: commit)
+            try
+            {
+                writePreamble();
+            } catch (Exception e)
+            {
+                //throw new RuntimeException();
+            }
+            // then proceed with comitting the actual content.
+            super.flush();
+        }
+    }
 }

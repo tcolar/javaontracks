@@ -21,7 +21,7 @@ public interface JOTServerRequestHandler
      * So you should not have to worry about thread safety much in impl.
      * @param client
      */
-    public void handle(Socket socket);
+    public void handle(Socket socket) throws Exception;
     
     /**
      * Provide optional parameters, will be called before handle() 

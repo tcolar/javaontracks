@@ -15,11 +15,12 @@ import net.jot.web.server.JOTWebRequestHandlerBase;
 public class JOTStaticServerHandler extends JOTWebRequestHandlerBase{
     private Object rootFolder;
 
-    public void handle()
+    public void handle() throws Exception
     {
         if(request.getMethod().equalsIgnoreCase("GET"))
         {
             System.out.println(request);
+            response.sendError(response.SC_REQUESTED_RANGE_NOT_SATISFIABLE, "What kind of an error is that !");
         }
     }
 

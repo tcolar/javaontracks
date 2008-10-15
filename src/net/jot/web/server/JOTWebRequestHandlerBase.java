@@ -8,31 +8,30 @@ import java.net.Socket;
 
 /**
  * Base implementation of a request handler providing a parsed request object
- * giving easy access to parsed cookies, parameters, headers etc...
+ * giving easy access to request and response
  * TODO: provide a response helper too
  * @author thibautc
  */
 public abstract class JOTWebRequestHandlerBase implements JOTServerRequestHandler
 {
 
-    protected Socket socket;
+    private Socket socket;
     public JOTWebRequest request;
+    public JOTWebResponse response;
 
-    public void handle(Socket socket)
+    public void handle(Socket socket) throws Exception
     {
         this.socket = socket;
-        try
-        {
-            request = JOTRequestParser.parseRequest(socket);
-            handle();
-        } catch (Exception e)
-        {
-        }
+        request = JOTRequestParser.parseRequest(socket);
+        response = new JOTWebResponse(socket, request);
+        handle();
+        // note: that wil cleanup the request too
+        response.destroy();
     }
 
     /**
      * Implement this to handle your requesthandler.
      * Note that you can/should make use of the provided "request" object. 
      */
-    public abstract void handle();
+    public abstract void handle() throws Exception;
 }
