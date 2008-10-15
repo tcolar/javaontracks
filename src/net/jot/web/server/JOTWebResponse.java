@@ -313,7 +313,7 @@ public class JOTWebResponse implements HttpServletResponse
     {
         if (bufferUsed)
         {
-            throw new IllegalStateException("Can't change buffer size, after data was written.");
+            throw new IllegalStateException("Can't change buffer size, already retrieved.");
         }
         bufferSize = size;
         clearBuffer();
