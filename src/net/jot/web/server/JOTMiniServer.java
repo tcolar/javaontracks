@@ -2,10 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.jot.server;
+package net.jot.web.server;
 
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Hashtable;
 import java.util.Vector;
 
 /**
@@ -16,14 +17,14 @@ import java.util.Vector;
  * server.start(8033,MYJOTConfiguratorHandler.class);
  * @author thibautc
  */
-public class JOTMiniWebServer
+public class JOTMiniServer
 {
     // Vector is synchronized.
     private Vector threads = new Vector();
     volatile boolean stop = false;
     ServerSocket socket = null;
 
-    public JOTMiniWebServer()
+    public JOTMiniServer()
     {
     }
 
@@ -33,9 +34,10 @@ public class JOTMiniWebServer
      * for simplicity, just provide a subclass impl. of JOTWebRequestHandlerBase
      * @param port
      * @param handler
+     * @param params: Optionnals params that will be passed to the requestImpl
      * @throws java.lang.Exception
      */
-    public void start(int port, Class jOTServerRequestHandlerImplClass) throws Exception
+    public void start(int port, Class jOTServerRequestHandlerImplClass, Hashtable params) throws Exception
     {
         socket = new ServerSocket(port);
         while (socket != null && !stop)
@@ -43,6 +45,7 @@ public class JOTMiniWebServer
             Socket client = socket.accept();
             System.out.println("New Connection from: " + client.getRemoteSocketAddress());
             JOTServerRequestHandler handler=(JOTServerRequestHandler)jOTServerRequestHandlerImplClass.newInstance();
+            handler.init(params);
             RequestThread c = new RequestThread(client, handler);
             threads.add(c);
             c.run();

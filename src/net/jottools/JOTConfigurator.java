@@ -4,7 +4,7 @@
  */
 package net.jottools;
 
-import net.jot.server.JOTMiniWebServer;
+import net.jot.web.server.JOTMiniServer;
 import net.jot.utils.JOTUtilities;
 import net.jottools.actions.ConfigView;
 
@@ -15,14 +15,14 @@ import net.jottools.actions.ConfigView;
 public class JOTConfigurator
 {
     private final static int DEFAULT_PORT=8033;
-    private JOTMiniWebServer server=null;
+    private JOTMiniServer server=null;
     
     public JOTConfigurator(Integer port)
     {
-        server=new JOTMiniWebServer();
+        server=new JOTMiniServer();
         try
         {
-            server.start(port.intValue(), JOTConfiguratorHandler.class);        
+            server.start(port.intValue(), JOTConfiguratorHandler.class,null);        
         }
         catch(Exception e)
         {

@@ -4,7 +4,8 @@
  */
 package net.jottools;
 
-import net.jot.server.JOTWebRequestHandlerBase;
+import java.util.Hashtable;
+import net.jot.web.server.JOTWebRequestHandlerBase;
 
 /**
  *
@@ -41,5 +42,9 @@ public class JOTConfiguratorHandler extends JOTWebRequestHandlerBase
     public void handle()
     {
             System.out.println(request);
+    }
+
+    public void init(Hashtable params)
+    {
     }
 }

@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package net.jot.server;
+package net.jot.web.server;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -147,4 +147,45 @@ public class JOTWebRequest {
         str+="\n";
         return str;
     }
+
+    public Hashtable getHeaders()
+    {
+        return headers;
+    }
+
+    public String getHost()
+    {
+        return host;
+    }
+
+    public String getMethod()
+    {
+        return method;
+    }
+
+    public Hashtable getParameters()
+    {
+        return parameters;
+    }
+
+    public String getPath()
+    {
+        return path;
+    }
+
+    public int getPort()
+    {
+        return port;
+    }
+
+    public String getProtocol()
+    {
+        return protocol;
+    }
+
+    public String getRawRequestLine()
+    {
+        return rawRequestLine;
+    }
+    
 }

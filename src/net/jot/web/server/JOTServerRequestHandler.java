@@ -3,9 +3,10 @@
  * and open the template in the editor.
  */
 
-package net.jot.server;
+package net.jot.web.server;
 
 import java.net.Socket;
+import java.util.Hashtable;
 
 /**
  * Handle a request 
@@ -21,5 +22,10 @@ public interface JOTServerRequestHandler
      * @param client
      */
     public void handle(Socket socket);
-
+    
+    /**
+     * Provide optional parameters, will be called before handle() 
+     * @param params
+     */
+    public void init(Hashtable params);
 }

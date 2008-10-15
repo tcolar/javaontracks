@@ -8,9 +8,9 @@ package net.jotserver;
 import java.net.Socket;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import net.jot.server.JOTRequestParser;
-import net.jot.server.JOTServerRequestHandler;
-import net.jot.server.JOTWebRequest;
+import net.jot.web.server.JOTRequestParser;
+import net.jot.web.server.JOTServerRequestHandler;
+import net.jot.web.server.JOTWebRequest;
 import net.jot.utils.JOTUtilities;
 import net.jottools.actions.ConfigView;
 
@@ -79,5 +79,9 @@ public class JOTWebappRequestProcessor  implements JOTServerRequestHandler{
             view = null;
         }
         return (ConfigView) view;
+    }
+
+    public void init(Hashtable params)
+    {
     }
 }

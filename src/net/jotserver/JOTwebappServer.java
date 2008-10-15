@@ -7,7 +7,7 @@ package net.jotserver;
 import java.io.File;
 import net.jot.logger.JOTLogger;
 import net.jot.prefs.JOTPreferences;
-import net.jot.server.JOTMiniWebServer;
+import net.jot.web.server.JOTMiniServer;
 
 /**
  *
@@ -36,7 +36,7 @@ public class JOTwebappServer
             props.createNewFile();
         }
     }
-    private JOTMiniWebServer server = null;
+    private JOTMiniServer server = null;
 
     public JOTwebappServer(File root, JOTPreferences prefs)
     {
@@ -47,10 +47,10 @@ public class JOTwebappServer
         JOTLogger.setPrintToConcole(true);
         JOTLogger.setPrintStackTrace(true);
         JOTLogger.info(this,"Starting server on port: "+port);
-        server = new JOTMiniWebServer();
+        server = new JOTMiniServer();
         try
         {
-            server.start(port.intValue(), JOTWebappRequestProcessor.class);
+            server.start(port.intValue(), JOTWebappRequestProcessor.class, null);
         } catch (Exception e)
         {
             System.err.println("Failed starting server: " + e);
