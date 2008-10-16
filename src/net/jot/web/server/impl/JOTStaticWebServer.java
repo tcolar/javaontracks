@@ -5,6 +5,8 @@
 package net.jot.web.server.impl;
 
 import java.util.Hashtable;
+import net.jot.logger.JOTLogger;
+import net.jot.logger.JOTLoggerLocation;
 import net.jot.web.server.JOTMiniServer;
 
 /**
@@ -16,6 +18,7 @@ public class JOTStaticWebServer
 
     public final JOTMiniServer server = new JOTMiniServer();
     public final static String ROOT_FOLDER = "ROOT_FOLDER";
+    JOTLoggerLocation logger=new JOTLoggerLocation(JOTLogger.CAT_SERVER,getClass());
 
     public void start(int port, String rootFolder)
     {
@@ -23,11 +26,12 @@ public class JOTStaticWebServer
         {
             Hashtable params=new Hashtable();
             params.put(ROOT_FOLDER,rootFolder);
+            logger.info("Server started on port "+port);
             System.out.println("Server started on port "+port);
             server.start(port, JOTStaticServerHandler.class, params);
         } catch (Exception e)
         {
-            e.printStackTrace();
+            logger.exception("Failed starting the server.", e);
         }
     }
 

@@ -17,6 +17,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.Vector;
 
+import javax.swing.filechooser.FileNameExtensionFilter;
 import net.jot.prefs.JOTPreferenceInterface;
 import net.jot.scheduler.JOTClock;
 import net.jot.utils.JOTUtilities;
@@ -39,6 +40,7 @@ import net.jot.utils.JOTUtilities;
  */
 public final class JOTLogger
 {
+    private static boolean inited=false;
     // regexp to be used by JOTLoggerApp
     private static final String regexp = "^(\\S+)\\s+(\\d)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(.*)$";
     //                                    cat      level     date      servlet    user    text
@@ -67,6 +69,7 @@ public final class JOTLogger
     public static final String CAT_MAIN = "JOT";
     public static final String CAT_DB = "JOT.DB";
     public static final String CAT_FLOW = "JOT.FLOW";
+    public static final String CAT_SERVER = "JOT.SERVER";
 
     /**
      * Sets the default logging category (ie: "Myapp")
@@ -241,6 +244,7 @@ public final class JOTLogger
      */
     public static synchronized void init(JOTPreferenceInterface prefs, String logFile)
     {
+        inited=true;
         String folder = null;
 
         if (JOTUtilities.isWindowsOS())
@@ -412,6 +416,7 @@ public final class JOTLogger
                 }
             }
             printer = new PrintStream(new FileOutputStream(file, true));
+            System.out.println("Will log to: "+f.getAbsolutePath());
             status = INITED_OK;
         } catch (Exception e)
         {
@@ -819,5 +824,17 @@ public final class JOTLogger
     public static boolean isCriticalEnabled()
     {
         return levels.contains(new Integer(CRITICAL_LEVEL));
+    }
+    
+    /**
+     * Will init only if not inited already
+     * @param filePath
+     * @param levels
+     * @param categories
+     */
+    public static void initIfNecessary(String filePath, String[] levels, String categories)
+    {
+        if(!inited)
+            init(filePath, levels, categories);
     }
 }

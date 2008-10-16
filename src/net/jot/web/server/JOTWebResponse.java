@@ -55,6 +55,8 @@ import java.util.Vector;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import net.jot.logger.JOTLogger;
+import net.jot.logger.JOTLoggerLocation;
 import net.jot.utils.JOTTimezoneUtils;
 
 /**
@@ -63,7 +65,8 @@ import net.jot.utils.JOTTimezoneUtils;
  */
 public class JOTWebResponse implements HttpServletResponse
 {
-
+    JOTLoggerLocation logger=new JOTLoggerLocation(JOTLogger.CAT_SERVER,getClass());
+    public final static String INFOS="JavaOnTracks Server 1.0";
     /** The connection socket to the client*/
     private final Socket socket;
     private final static int DEFAULT_BUFFER_SIZE = 5000;
@@ -90,6 +93,9 @@ public class JOTWebResponse implements HttpServletResponse
     private String sessionID = null;
     // we need the request to encode URL's etc...
     private JOTWebRequest request;
+    private static final String MSG_HEAD="<html><body><table width=100%><tr height=25 bgcolor='#eeeeff'><td><b>ERROR ";
+    private static final String MSG_HEAD2="</b></td></tr><tr><td>";
+    private static final String MSG_TAIL="</td></tr><tr height=15 bgcolor='#eeeeff'><td>"+INFOS+"</td></tr></table></body></html>";
 
     JOTWebResponse(Socket socket, JOTWebRequest request)
     {
@@ -151,10 +157,8 @@ public class JOTWebResponse implements HttpServletResponse
         {
             throw new IllegalStateException("Response already commited !");
         }
+        sendMessage(""+statusCode,err);
         reset();
-        setStatus(statusCode);
-        sendText(err);
-        flushBuffer();
     }
 
     public void sendError(int statusCode) throws IOException
@@ -265,7 +269,7 @@ public class JOTWebResponse implements HttpServletResponse
             out = new MyStream(socket.getOutputStream());
         }
         bufferUsed=true;
-        return (ServletOutputStream) (OutputStream) out;
+        return (ServletOutputStream)out;
     }
 
     public PrintWriter getWriter() throws IOException
@@ -330,7 +334,7 @@ public class JOTWebResponse implements HttpServletResponse
         {
             print.flush();
         }
-        if (out != null)
+        else if (out != null)
         {
             out.flush();
         // TODO: do the flush: write the headers etc.. (if first time) and then send the buffer content
@@ -408,7 +412,7 @@ public class JOTWebResponse implements HttpServletResponse
         return (sb.toString());
     }
 
-    public void destroy() throws Exception
+    public void destroy()
     {
         Exception ex = null;
         try
@@ -418,7 +422,7 @@ public class JOTWebResponse implements HttpServletResponse
         {
             ex = e;
         }
-        //TODO: close thestreams and socket etc ... ??
+        //TODO: close the streams and socket etc ... ??
         try
         {
             if (out != null)
@@ -465,8 +469,20 @@ public class JOTWebResponse implements HttpServletResponse
         }
         if (ex != null)
         {
-            throw (ex);
+            logger.exception("Errors closing request socket.", ex);
         }
+    }
+    /**
+     * internal message page (errorrs etc..)
+     * Does not set status_code, do that beforehand
+     * @param string
+     * @param err
+     */
+    private void sendMessage(String title, String message) throws IOException
+    {
+        setStatus(statusCode);
+        sendText(MSG_HEAD+title+MSG_HEAD2+message+MSG_TAIL);
+        flushBuffer();
     }
 
     /**
@@ -486,30 +502,70 @@ public class JOTWebResponse implements HttpServletResponse
             } else if (out != null)
             {
                 out.write(text.getBytes());
+            }else
+            {
+                getOutputStream().write(text.getBytes());
             }
         } catch (Exception e)
         {/* TODO */
-            e.printStackTrace();
+            logger.exception("Failed adding text to response.", e);
         }
 
     }
+/*
+ * Date: Wed, 15 Oct 2008 18:39:11 GMT
+Server: Apache
+Accept-Ranges: bytes
+Cache-Control: max-age=60, private, private
+Expires: Wed, 15 Oct 2008 18:40:03 GMT
+Content-Type: text/html
+Vary: User-Agent,Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 20420
+Keep-Alive: timeout=5, max=63
+Connection: Keep-Alive
 
+ * */
     void writePreamble()
     {
         if(!isCommited)
         {
-            // TODO write response code, headers, content type etc...
+            try
+            {
+            PrintWriter p=new PrintWriter(socket.getOutputStream());
+            p.println("HTTP/1.1 "+statusCode);
+            p.println("Location: "+"TODO");
+            p.println("Status: "+statusCode);
+            p.println("Server: "+INFOS);
+            if(!headers.containsKey("Date"))
+            {
+                String now=JOTTimezoneUtils.convertTimezone(new Date(), "GMT + 0", JOTTimezoneUtils.FORMAT_HEADER);
+                p.println("Date: "+now+" GMT");
+            }
+            //headers
+            //cookies
+            //content-type
+            if(contentType!=null)
+                p.println("Content-type: "+contentType);
+            if(contentLength!=-1)
+                p.println("Content-length: "+contentLength);
+            p.println();
+            p.flush();
+            }
+            catch(Exception e)
+            {
+                logger.exception("Failure while writing headers to response.", e);
+            }
         }
         isCommited=true;
     }
 
-    class MyStream extends BufferedOutputStream
+    class MyStream extends ServletOutputStream
     {
-
+        BufferedOutputStream stream;
         MyStream(OutputStream out)
         {
-            super(out);
-            setBufferSize(bufferSize);
+            stream=new BufferedOutputStream(out,bufferSize);
         }
 
         /**
@@ -521,7 +577,12 @@ public class JOTWebResponse implements HttpServletResponse
             //call the response flushbuffer (ie: commit)
             writePreamble();
             // then proceed with comitting the actual content.
-            super.flush();
+            stream.flush();
+        }
+
+        public void write(int b) throws IOException
+        {
+            stream.write(b);
         }
     }
 
@@ -540,15 +601,7 @@ public class JOTWebResponse implements HttpServletResponse
          */
         public synchronized void flush()
         {
-            //call the response flushbuffer (ie: commit)
-            try
-            {
-                writePreamble();
-            } catch (Exception e)
-            {
-                //throw new RuntimeException();
-            }
-            // then proceed with comitting the actual content.
+            writePreamble();
             super.flush();
         }
     }

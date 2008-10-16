@@ -6,6 +6,8 @@
 package net.jot.web.server.impl;
 
 import java.util.Hashtable;
+import net.jot.logger.JOTLogger;
+import net.jot.logger.JOTLoggerLocation;
 import net.jot.web.server.JOTWebRequestHandlerBase;
 
 /**
@@ -14,12 +16,17 @@ import net.jot.web.server.JOTWebRequestHandlerBase;
  */
 public class JOTStaticServerHandler extends JOTWebRequestHandlerBase{
     private Object rootFolder;
+    JOTLoggerLocation logger=new JOTLoggerLocation(JOTLogger.CAT_SERVER,getClass());
 
     public void handle() throws Exception
     {
+        if(logger.isDebugEnabled())
+            logger.debug("Received Request:  "+request.getHost()+" "+request.getRawRequestLine());
+        if(logger.isTraceEnabled())
+            logger.trace("Received Request:  "+request.toString());
+        
         if(request.getMethod().equalsIgnoreCase("GET"))
         {
-            System.out.println(request);
             response.sendError(response.SC_REQUESTED_RANGE_NOT_SATISFIABLE, "What kind of an error is that !");
         }
     }

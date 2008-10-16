@@ -8,6 +8,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Hashtable;
 import java.util.Vector;
+import net.jot.logger.JOTLogger;
+import net.jot.logger.JOTLoggerLocation;
 
 /**
  * Mini generic web server (regular- not j2ee)
@@ -23,9 +25,11 @@ public class JOTMiniServer
     private Vector threads = new Vector();
     volatile boolean stop = false;
     ServerSocket socket = null;
+    JOTLoggerLocation logger=new JOTLoggerLocation(JOTLogger.CAT_SERVER,getClass());
 
     public JOTMiniServer()
     {
+        JOTLogger.initIfNecessary("server.log", JOTLogger.ALL_LEVELS, null);
     }
 
     /**
@@ -43,7 +47,7 @@ public class JOTMiniServer
         while (socket != null && !stop)
         {
             Socket client = socket.accept();
-            System.out.println("New Connection from: " + client.getRemoteSocketAddress());
+            logger.debug("New Connection from: " + client.getRemoteSocketAddress());
             JOTServerRequestHandler handler=(JOTServerRequestHandler)jOTServerRequestHandlerImplClass.newInstance();
             handler.init(params);
             RequestThread c = new RequestThread(client, handler);
@@ -61,6 +65,7 @@ public class JOTMiniServer
 
     public void stop()
     {
+        logger.debug("Stopping server.");
         stop = true;
         for (int i = 0; i != threads.size(); i++)
         {
@@ -95,7 +100,7 @@ public class JOTMiniServer
                 handler.handle(socket);
             } catch (Exception e)
             {
-                e.printStackTrace();
+                logger.exception("Unhandled request processing error", e);
             } finally
             {
                 try
