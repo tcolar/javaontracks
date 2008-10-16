@@ -16,7 +16,7 @@ import net.jot.web.server.JOTWebRequestHandlerBase;
  */
 public class JOTStaticServerHandler extends JOTWebRequestHandlerBase{
     private Object rootFolder;
-    JOTLoggerLocation logger=new JOTLoggerLocation(JOTLogger.CAT_SERVER,getClass());
+    private static final JOTLoggerLocation logger=new JOTLoggerLocation(JOTLogger.CAT_SERVER,JOTStaticServerHandler.class);
 
     public void handle() throws Exception
     {
