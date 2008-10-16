@@ -17,7 +17,6 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.Vector;
 
-import javax.swing.filechooser.FileNameExtensionFilter;
 import net.jot.prefs.JOTPreferenceInterface;
 import net.jot.scheduler.JOTClock;
 import net.jot.utils.JOTUtilities;

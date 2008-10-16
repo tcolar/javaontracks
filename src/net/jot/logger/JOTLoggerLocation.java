@@ -88,27 +88,27 @@ public class JOTLoggerLocation
         JOTLogger.log(cat, JOTLogger.CRITICAL_LEVEL, area, user, message);
     }
     
-    public static boolean isDebugEnabled()
+    public boolean isDebugEnabled()
     {
         return JOTLogger.isDebugEnabled();
     }
-    public static boolean isTraceEnabled()
+    public boolean isTraceEnabled()
     {
         return JOTLogger.isTraceEnabled();
     }
-    public static boolean isInfoEnabled()
+    public boolean isInfoEnabled()
     {
         return JOTLogger.isInfoEnabled();
     }
-    public static boolean isWarningEnabled()
+    public boolean isWarningEnabled()
     {
         return JOTLogger.isWarningEnabled();
     }
-    public static boolean isErrorEnabled()
+    public boolean isErrorEnabled()
     {
         return JOTLogger.isErrorEnabled();
     }
-    public static boolean isCriticalEnabled()
+    public boolean isCriticalEnabled()
     {
         return JOTLogger.isCriticalEnabled();
     }

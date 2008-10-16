@@ -13,6 +13,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * // TODO: deal with anchors in url (#)
+ * // TODO: deal with jsessionID in URL
+ * 
+ * 
  * Parse a socket input (web request) into an easy to use JOTWebRequest object
  * @author thibautc
  */
@@ -25,8 +29,8 @@ public class JOTRequestParser
     public static JOTWebRequest parseRequest(Socket socket) throws Exception
     {
         JOTWebRequest request = new JOTWebRequest();
-        request.setHost(socket.getInetAddress().getHostAddress());
-        request.setPort(socket.getPort());
+        request.setRemoteHost(socket.getInetAddress().getHostAddress());
+        request.setRemotePort(socket.getPort());
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         String line = "";
@@ -57,6 +61,10 @@ public class JOTRequestParser
                 request.setParameters(params2);
                 request.setPath(path);
                 request.setProtocol(protocol);
+                request.setLocalHost(socket.getLocalAddress().getHostAddress());
+                request.setLocalPort(socket.getLocalPort());
+                request.setRemoteHost(socket.getInetAddress().getHostAddress());
+                request.setRemotePort(socket.getPort());
             } else if (m2.matches())
             {
                 request.addHeader(m2.group(1), m2.group(2));

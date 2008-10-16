@@ -22,8 +22,10 @@ public class JOTWebRequest {
     String path;
     // requestLine as it came to us
     String rawRequestLine;
-    String host=null;
-    int port=-1;
+    String remoteHost=null;
+    int remotePort=-1;
+    String localHost=null;
+    int localPort=-1;
     /** headers (header name -> Vector of values(string)) **/
     Hashtable headers=new Hashtable();
     // parameters (hash of strings)
@@ -58,9 +60,9 @@ public class JOTWebRequest {
         }
     }
 
-    public void setHost(String host)
+    public void setRemoteHost(String host)
     {
-        this.host = host;
+        this.remoteHost = host;
     }
 
     public void setMethod(String method)
@@ -78,9 +80,9 @@ public class JOTWebRequest {
         this.path = path;
     }
 
-    public void setPort(int port)
+    public void setRemotePort(int port)
     {
-        this.port = port;
+        this.remotePort = port;
     }
 
     public void setProtocol(String protocol)
@@ -119,7 +121,7 @@ public class JOTWebRequest {
      */
     public String toString()
     {
-        String str= ""+getClass().getSimpleName()+" [method:"+method+" proto:"+protocol+" path:"+path+" host:"+host+" port:"+port+"]";
+        String str= ""+getClass().getSimpleName()+" [method:"+method+" proto:"+protocol+" path:"+path+" host:"+remoteHost+" port:"+remotePort+"]";
         str+="\n\tHeaders:";
         Enumeration e=headers.keys();
         while(e.hasMoreElements())
@@ -153,9 +155,9 @@ public class JOTWebRequest {
         return headers;
     }
 
-    public String getHost()
+    public String getRemoteHost()
     {
-        return host;
+        return remoteHost;
     }
 
     public String getMethod()
@@ -173,9 +175,9 @@ public class JOTWebRequest {
         return path;
     }
 
-    public int getPort()
+    public int getRemotePort()
     {
-        return port;
+        return remotePort;
     }
 
     public String getProtocol()
@@ -186,6 +188,26 @@ public class JOTWebRequest {
     public String getRawRequestLine()
     {
         return rawRequestLine;
+    }
+
+    public String getLocalHost()
+    {
+        return localHost;
+    }
+
+    public void setLocalHost(String localHost)
+    {
+        this.localHost = localHost;
+    }
+
+    public int getLocalPort()
+    {
+        return localPort;
+    }
+
+    public void setLocalPort(int localPort)
+    {
+        this.localPort = localPort;
     }
 
 }

@@ -21,7 +21,7 @@ public class JOTStaticServerHandler extends JOTWebRequestHandlerBase{
     public void handle() throws Exception
     {
         if(logger.isDebugEnabled())
-            logger.debug("Received Request:  "+request.getHost()+" "+request.getRawRequestLine());
+            logger.debug("Received Request:  "+request.getRemoteHost()+" "+request.getRawRequestLine());
         if(logger.isTraceEnabled())
             logger.trace("Received Request:  "+request.toString());
         
