@@ -23,13 +23,17 @@ import java.util.regex.Pattern;
 public class JOTRequestParser
 {
     // Ex: GET /test?toto=3&block=4 HTTP/1.1
+
     public static Pattern REQUEST_PARSER = Pattern.compile("^(\\S+)\\s+([^\\? ]*)(\\?\\S*)?\\s+(HTTP/\\d+\\.\\d+)");
     public static Pattern HEADER_PATTERN = Pattern.compile("^(\\S+)\\s*:(.*)");
 
     public static JOTWebRequest parseRequest(Socket socket) throws Exception
     {
+        boolean valid=false;
         JOTWebRequest request = new JOTWebRequest();
-        request.socket=socket;
+        request.socket = socket;
+        request.setLocalHost(socket.getLocalAddress().getHostAddress());
+        request.setLocalPort(socket.getLocalPort());
         request.setRemoteHost(socket.getInetAddress().getHostAddress());
         request.setRemotePort(socket.getPort());
 
@@ -40,32 +44,12 @@ public class JOTRequestParser
             line = reader.readLine();
             //System.out.println("ln: "+line);
             // handle the main request line (path/query/protocol)
-            Matcher m = REQUEST_PARSER.matcher(line);
             Matcher m2 = HEADER_PATTERN.matcher(line);
+            Matcher m = REQUEST_PARSER.matcher(line);
             if (m.matches())
             {
-                String method = m.group(1);
-                String path = URLDecoder.decode(m.group(2), "UTF-8");
-                String params = m.group(3);
-                if (params != null && params.length() > 0)
-                {
-                    params = params.substring(1, params.length());
-                }
-                String protocol = m.group(4);
-                /*System.out.println("m:"+method);
-                System.out.println("path:"+path);
-                System.out.println("params:"+params);
-                System.out.println("proto:"+protocol);*/
-                Hashtable params2 = parseParameters(params);
-                request.setRawRequestLine(line);
-                request.setMethod(method);
-                request.setParameters(params2);
-                request.setPath(path);
-                request.setProtocol(protocol);
-                request.setLocalHost(socket.getLocalAddress().getHostAddress());
-                request.setLocalPort(socket.getLocalPort());
-                request.setRemoteHost(socket.getInetAddress().getHostAddress());
-                request.setRemotePort(socket.getPort());
+                valid=true;
+                parseRequestLine(request, line);
             } else if (m2.matches())
             {
                 request.addHeader(m2.group(1), m2.group(2));
@@ -77,14 +61,16 @@ public class JOTRequestParser
         /*reader.close();
         if (!socket.isClosed())
         {
-            try
-            {
-                socket.getOutputStream().close();
-            } catch (Exception e2)
-            {
-
-            }
+        try
+        {
+        socket.getOutputStream().close();
+        } catch (Exception e2)
+        {
+        
+        }
         }*/
+        if(!valid)
+            throw new IllegalArgumentException("Main Request Line missing or not parseable !");
         return request;
     }
 
@@ -108,5 +94,54 @@ public class JOTRequestParser
             }
         }
         return hash;
+    }
+
+    /**
+     * Builds a "fake" request for testing.
+     * Does not set any headers, etc.., you can add those manually as needed
+     * @param socket: a scoket for simulating a connection
+     * @param requestLine: ie: something like "GET /test#anchor?toto=3&block=4 HTTP/1.1"
+     * @return
+     */
+    public static JOTWebRequest getTestRequest(Socket socket, String requestLine) throws Exception
+    {
+        JOTWebRequest request = new JOTWebRequest();
+        request.socket = socket;
+        request.setLocalHost(socket.getLocalAddress().getHostAddress());
+        request.setLocalPort(socket.getLocalPort());
+        request.setRemoteHost(socket.getInetAddress().getHostAddress());
+        request.setRemotePort(socket.getPort());
+        
+        Matcher m = REQUEST_PARSER.matcher(requestLine);
+        if (!m.matches())
+        {
+              throw new IllegalArgumentException("Main Request Line not parseable : "+requestLine);
+        }
+        parseRequestLine(request, requestLine);
+ 
+        return request;
+    }
+
+    private static void parseRequestLine(JOTWebRequest request, String line) throws Exception
+    {
+        Matcher m = REQUEST_PARSER.matcher(line);
+        if (m.matches())
+        {
+            String method = m.group(1);
+            String path = URLDecoder.decode(m.group(2), "UTF-8");
+            String params = m.group(3);
+            if (params != null && params.length() > 0)
+            {
+                params = params.substring(1, params.length());
+            }
+            String protocol = m.group(4);
+            Hashtable params2 = parseParameters(params);
+            request.setRawRequestLine(line);
+            request.setMethod(method);
+            request.setRawParameters(params);
+            request.setParameters(params2);
+            request.setPath(path);
+            request.setProtocol(protocol);
+        }
     }
 }

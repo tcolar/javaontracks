@@ -36,6 +36,17 @@ public class JOTWebRequest {
     private Hashtable parameters=new Hashtable();
     // vector of Cookie
     private Vector cookies=new Vector();
+    private String rawParams;
+
+    public String getRawParameters()
+    {
+        return rawParams;
+    }
+
+    public void setRawParams(String rawParams)
+    {
+        this.rawParams = rawParams;
+    }
     // TODO: basic authentication ?
     //String user;
     //String password;
@@ -43,7 +54,11 @@ public class JOTWebRequest {
     // body if any (ex: multipart)
     byte[] body;
     // local server name / host
+
+    //those, lazy inited
     private String serverName=null;
+    private String url=null;
+    private String scheme=null;
 
     /**
      * should be retrieved through JOTRequestParser
@@ -262,6 +277,35 @@ public class JOTWebRequest {
         }
         catch(java.net.UnknownHostException e){/*How could that fail ?? */}
         return serverName;
+    }
+
+    public String getScheme()
+    {
+        if(scheme!=null)
+            return scheme;
+        //TODO
+        scheme="http://";
+        return scheme;
+    }
+
+    public String getURL()
+    {
+        if(url!=null)
+            return url;
+        StringBuffer sb=new StringBuffer(getScheme()).append(getServerName());
+        if(getLocalPort() != 80)
+            sb.append(":").append(getLocalPort());
+        sb.append(getPath());
+        if(rawParams!=null && rawParams.length()>0)
+            sb.append("?").append(rawParams);
+        url=sb.toString();
+        System.out.println(url);
+        return url;
+    }
+
+    void setRawParameters(String params)
+    {
+        rawParams=params;
     }
     
 }

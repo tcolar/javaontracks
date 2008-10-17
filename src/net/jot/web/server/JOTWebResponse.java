@@ -15,7 +15,6 @@ import java.util.Vector;
 import java.util.regex.Pattern;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.jot.logger.JOTLogger;
 import net.jot.logger.JOTLoggerLocation;
@@ -68,7 +67,12 @@ public class JOTWebResponse implements HttpServletResponse
     private static final String MSG_TAIL = "</td></tr><tr height=15 bgcolor='#eeeeff'><td>" + INFOS + "</td></tr></table></body></html>";
     private static final Pattern PROTOCOL_PATTERN = Pattern.compile("^\\w+\\://.*");
 
-    JOTWebResponse(Socket socket, JOTWebRequest request)
+    /**
+     * You usually would't create a response on your own ut be provided one by the container.
+     * @param socket
+     * @param request
+     */
+    public JOTWebResponse(Socket socket, JOTWebRequest request)
     {
         this.socket = socket;
         this.request = request;
@@ -345,7 +349,7 @@ public class JOTWebResponse implements HttpServletResponse
         return loc;
     }
 
-    private String absoluteURL(String path)
+    public String absoluteURL(String path)
     {
         if(path==null)
             return null;
@@ -357,14 +361,14 @@ public class JOTWebResponse implements HttpServletResponse
         } catch (MalformedURLException e)
         {
             // if this failed this was a relative url
-            String ctxURL = request.getServerName();
+            String ctxURL = request.getURL();
             try
             {
                 // building the new URL using the current request URL as the context
                 url = new URL(new URL(ctxURL), path);
             } catch (MalformedURLException e2)
             {
-                throw new IllegalArgumentException("Could not build absolute URL for: "+ path);
+                throw new IllegalArgumentException("Could not build absolute URL for: "+ path, e2);
             }
         }
         return (url.toExternalForm());
