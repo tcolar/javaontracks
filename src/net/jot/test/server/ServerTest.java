@@ -23,12 +23,13 @@ public class ServerTest implements JOTTestable{
     {
         Socket socket=new Socket("www.google.com",80,InetAddress.getLocalHost(),8044);
         JOTWebRequest request=JOTRequestParser.getTestRequest(socket, "GET /folder/test#anchor?toto=3&block=4 HTTP/1.1");
+        request.getHeaders().put("Host","frenchie:8033");
         JOTWebResponse response=new JOTWebResponse(socket, request);
         String path="relative.html";
         System.out.println(response.encodeRedirectURL(path));
         System.out.println(response.encodeURL(path));
         System.out.println(response.absoluteURL(path));
-        path="relative,html#anchor";
+        path="relative.html#anchor";
         System.out.println(response.encodeRedirectURL(path));
         System.out.println(response.encodeURL(path));
         System.out.println(response.absoluteURL(path));
@@ -44,6 +45,7 @@ public class ServerTest implements JOTTestable{
         System.out.println(response.encodeRedirectURL(path));
         System.out.println(response.encodeURL(path));
         System.out.println(response.absoluteURL(path));
+        socket.close();
     }
 
 }

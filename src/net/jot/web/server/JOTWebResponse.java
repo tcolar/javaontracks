@@ -34,7 +34,7 @@ import net.jot.utils.JOTTimezoneUtils;
 public class JOTWebResponse implements HttpServletResponse
 {
 
-    JOTLoggerLocation logger = new JOTLoggerLocation(JOTLogger.CAT_SERVER, getClass());
+    static final JOTLoggerLocation logger = new JOTLoggerLocation(JOTLogger.CAT_SERVER, JOTWebResponse.class);
     public final static String INFOS = "JavaOnTracks Server 1.0";
     /** The connection socket to the client*/
     private final Socket socket;
