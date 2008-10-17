@@ -4,7 +4,9 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.net.Socket;
+import java.net.URL;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -13,6 +15,7 @@ import java.util.Vector;
 import java.util.regex.Pattern;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.jot.logger.JOTLogger;
 import net.jot.logger.JOTLoggerLocation;
@@ -24,8 +27,9 @@ import net.jot.utils.JOTTimezoneUtils;
  */
 public class JOTWebResponse implements HttpServletResponse
 {
-    JOTLoggerLocation logger=new JOTLoggerLocation(JOTLogger.CAT_SERVER,getClass());
-    public final static String INFOS="JavaOnTracks Server 1.0";
+
+    JOTLoggerLocation logger = new JOTLoggerLocation(JOTLogger.CAT_SERVER, getClass());
+    public final static String INFOS = "JavaOnTracks Server 1.0";
     /** The connection socket to the client*/
     private final Socket socket;
     private final static int DEFAULT_BUFFER_SIZE = 5000;
@@ -52,16 +56,16 @@ public class JOTWebResponse implements HttpServletResponse
     private String sessionID = null;
     // we need the request to encode URL's etc...
     private JOTWebRequest request;
-    private static final String MSG_HEAD="<html><body><table width=100%><tr height=25 bgcolor='#eeeeff'><td><b>ERROR ";
-    private static final String MSG_HEAD2="</b></td></tr><tr><td>";
-    private static final String MSG_TAIL="</td></tr><tr height=15 bgcolor='#eeeeff'><td>"+INFOS+"</td></tr></table></body></html>";
-    private static final Pattern PROTOCOL_PATTERN=Pattern.compile("^\\w+\\://.*");
+    private static final String MSG_HEAD = "<html><body><table width=100%><tr height=25 bgcolor='#eeeeff'><td><b>ERROR ";
+    private static final String MSG_HEAD2 = "</b></td></tr><tr><td>";
+    private static final String MSG_TAIL = "</td></tr><tr height=15 bgcolor='#eeeeff'><td>" + INFOS + "</td></tr></table></body></html>";
+    private static final Pattern PROTOCOL_PATTERN = Pattern.compile("^\\w+\\://.*");
 
     JOTWebResponse(Socket socket, JOTWebRequest request)
     {
         this.socket = socket;
         this.request = request;
-        //TODO: read jsessionID from the request (if avail)
+    //TODO: read jsessionID from the request (if avail)
     }
 
     public void addCookie(Cookie cookie)
@@ -115,7 +119,7 @@ public class JOTWebResponse implements HttpServletResponse
         {
             throw new IllegalStateException("Response already commited !");
         }
-        sendMessage(""+statusCode,err);
+        sendMessage("" + statusCode, err);
         reset();
     }
 
@@ -226,8 +230,8 @@ public class JOTWebResponse implements HttpServletResponse
         {
             out = new MyStream(socket.getOutputStream());
         }
-        bufferUsed=true;
-        return (ServletOutputStream)out;
+        bufferUsed = true;
+        return (ServletOutputStream) out;
     }
 
     public PrintWriter getWriter() throws IOException
@@ -240,7 +244,7 @@ public class JOTWebResponse implements HttpServletResponse
         {
             print = new MyWriter(socket.getOutputStream());
         }
-        bufferUsed=true;
+        bufferUsed = true;
         return print;
     }
 
@@ -291,8 +295,7 @@ public class JOTWebResponse implements HttpServletResponse
         if (print != null)
         {
             print.flush();
-        }
-        else if (out != null)
+        } else if (out != null)
         {
             out.flush();
         }
@@ -330,24 +333,30 @@ public class JOTWebResponse implements HttpServletResponse
         return loc;
     }
 
-    private String absoluteURL(String url)
+    private String absoluteURL(String path)
     {
-        if(url.startsWith("/"))
+        if(path==null)
+            return null;
+        URL url = null;
+        try
         {
-            //request.getProtocol()+":"+request.get
-            // URLrelative to server root
-        }
-        else if(PROTOCOL_PATTERN.matcher(url).matches())
+            url = new URL(path);
+            // if we get here we have an absolute url already
+        } catch (MalformedURLException e)
         {
-            // TODO: test this pattern
-            // already absolute URL .. do nothing
+            // if this failed this was a relative url
+            String ctxURL = request.getHost();
+            try
+            {
+                // building the new URL using the current request URL as the context
+                url = new URL(new URL(ctxURL), path);
+            } catch (MalformedURLException e2)
+            {
+                throw new IllegalArgumentException("Could not build absolute URL for: "+ path);
+            }
         }
-        else
-        {
-            // URL relative to current request
-        }
-        // no need to do jsessionid, user would call encoderedirurl first ??
-        return url;
+        return (url.toExternalForm());
+
     }
 
     private void clearBuffer()
@@ -444,6 +453,7 @@ public class JOTWebResponse implements HttpServletResponse
             logger.exception("Errors closing request socket.", ex);
         }
     }
+
     /**
      * internal message page (errorrs etc..)
      * Does not set status_code, do that beforehand
@@ -453,7 +463,7 @@ public class JOTWebResponse implements HttpServletResponse
     private void sendMessage(String title, String message) throws IOException
     {
         setStatus(statusCode);
-        sendText(MSG_HEAD+title+MSG_HEAD2+message+MSG_TAIL);
+        sendText(MSG_HEAD + title + MSG_HEAD2 + message + MSG_TAIL);
         flushBuffer();
     }
 
@@ -474,7 +484,7 @@ public class JOTWebResponse implements HttpServletResponse
             } else if (out != null)
             {
                 out.write(text.getBytes());
-            }else
+            } else
             {
                 getOutputStream().write(text.getBytes());
             }
@@ -487,75 +497,84 @@ public class JOTWebResponse implements HttpServletResponse
 
     void writePreamble()
     {
-        if(!isCommited)
+        if (!isCommited)
         {
             try
             {
-            PrintWriter p=new PrintWriter(socket.getOutputStream());
-            p.println("HTTP/1.1 "+statusCode);
-            p.println("Location: "+"TODO");
-            //content-type
-            p.println("Content-encoding: "+encoding);
-            if(contentType!=null)
-                p.println("Content-type: "+contentType);
-            if(contentLength!=-1)
-                p.println("Content-length: "+contentLength);
-            //headers
-            p.println("Status: "+statusCode);
-            if(!headers.containsKey("Server"))
-            {
-                p.println("Server: "+INFOS);
-            }
-            if(!headers.containsKey("Date"))
-            {
-                String now=JOTTimezoneUtils.convertTimezone(new Date(), "GMT + 0", JOTTimezoneUtils.FORMAT_HEADER);
-                p.println("Date: "+now+" GMT");
-            }
-            Enumeration e=headers.keys();
-            while(e.hasMoreElements())
-            {
-                String key=(String)e.nextElement();
-                StringBuffer header=new StringBuffer(key).append(": ");
-                Vector values=(Vector)headers.get(key);
-                for(int i=0;i!=values.size();i++)
+                PrintWriter p = new PrintWriter(socket.getOutputStream());
+                p.println("HTTP/1.1 " + statusCode);
+                p.println("Location: " + "TODO");
+                //content-type
+                p.println("Content-encoding: " + encoding);
+                if (contentType != null)
                 {
-                    header.append((String)(values.get(i)));
-                    if(i<values.size()-1)
-                        header.append(";");
+                    p.println("Content-type: " + contentType);
                 }
-                p.println(header);
-            }
-            //cookies
-            if(cookies.size()>0)
-            {
-                StringBuffer header=new StringBuffer("Cookies: ");
-                for(int i=0;i!=cookies.size();i++)
+                if (contentLength != -1)
                 {
-                    Cookie cookie=(Cookie)cookies.get(i);
-                    header.append(cookie.getName()).append("=").append(cookie.getValue());
-                    if(i<cookies.size()-1)
-                        header.append(";");
+                    p.println("Content-length: " + contentLength);
                 }
-                p.println(header);
-            }
-            //end headers, add empty line
-            p.println();
-            p.flush();
-            }
-            catch(Exception e)
+                //headers
+                p.println("Status: " + statusCode);
+                if (!headers.containsKey("Server"))
+                {
+                    p.println("Server: " + INFOS);
+                }
+                if (!headers.containsKey("Date"))
+                {
+                    String now = JOTTimezoneUtils.convertTimezone(new Date(), "GMT + 0", JOTTimezoneUtils.FORMAT_HEADER);
+                    p.println("Date: " + now + " GMT");
+                }
+                Enumeration e = headers.keys();
+                while (e.hasMoreElements())
+                {
+                    String key = (String) e.nextElement();
+                    StringBuffer header = new StringBuffer(key).append(": ");
+                    Vector values = (Vector) headers.get(key);
+                    for (int i = 0; i != values.size(); i++)
+                    {
+                        header.append((String) (values.get(i)));
+                        if (i < values.size() - 1)
+                        {
+                            header.append(";");
+                        }
+                    }
+                    p.println(header);
+                }
+                //cookies
+                if (cookies.size() > 0)
+                {
+                    StringBuffer header = new StringBuffer("Cookies: ");
+                    for (int i = 0; i != cookies.size(); i++)
+                    {
+                        Cookie cookie = (Cookie) cookies.get(i);
+                        header.append(cookie.getName()).append("=").append(cookie.getValue());
+                        if (i < cookies.size() - 1)
+                        {
+                            header.append(";");
+                        }
+                    }
+                    p.println(header);
+                }
+                //end headers, add empty line
+                p.println();
+                p.flush();
+            } catch (Exception e)
             {
                 logger.exception("Failure while writing headers to response.", e);
             }
         }
-        isCommited=true;
+        isCommited = true;
     }
 
     class MyStream extends ServletOutputStream
     {
+
         BufferedOutputStream stream;
+
         MyStream(OutputStream out)
         {
-            stream=new BufferedOutputStream(out,bufferSize);
+            stream = new BufferedOutputStream(out, bufferSize);
         }
 
         /**

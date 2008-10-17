@@ -210,4 +210,57 @@ public class JOTWebRequest {
         this.localPort = localPort;
     }
 
+    
+    /*
+     *
+    public String getHost()
+    {
+        // Return already determined host
+        if (_host!=null)
+            return _host;
+
+        // Return host from absolute URI
+        _host=_uri.getHost();
+        _port=_uri.getPort();
+        if (_host!=null)
+            return _host;
+
+        // Return host from header field
+        _hostPort=_header.get(HttpFields.__Host);
+        _host=_hostPort;
+        _port=0;
+        if (_host!=null && _host.length()>0)
+        {
+            int colon=_host.lastIndexOf(':');
+            if (colon>=0)
+            {
+                if (colon<_host.length())
+                {
+                    try{
+                        _port=TypeUtil.parseInt(_host,colon+1,-1,10);
+                    }
+                    catch(Exception e)
+                    {Code.ignore(e);}
+                }
+                _host=_host.substring(0,colon);
+            }
+
+            return _host;
+        }
+
+        // Return host from connection
+        if (_connection!=null)
+        {
+            _host=_connection.getServerName();
+            _port=_connection.getServerPort();
+            if (_host!=null && !InetAddrPort.__0_0_0_0.equals(_host))
+                return _host;
+        }
+
+        // Return the local host
+        try {_host=InetAddress.getLocalHost().getHostAddress();}
+        catch(java.net.UnknownHostException e){Code.ignore(e);}
+        return _host;
+    }
+    */
 }
