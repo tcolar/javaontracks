@@ -22,6 +22,13 @@ import net.jot.logger.JOTLoggerLocation;
 import net.jot.utils.JOTTimezoneUtils;
 
 /**
+ * TODO: write test case for encodeurl, sendredirect, absoluteurl etc..
+ * For url's: local, remote, relative(starting with / or not)
+ * Test with urls with http:// ftp:// https:// ..
+ * Test urls with IP address, starnge port, hostname
+ * Test with anchors, parameterrs, jsessionID etc..
+ * 
+ * 
  * HttpServletResponse impl.
  * @author thibautc
  */
@@ -137,6 +144,7 @@ public class JOTWebResponse implements HttpServletResponse
         }
         setStatus(SC_MOVED_TEMPORARILY);
         setHeader("Location", url);
+        flushBuffer();
         isCommited = true;
     }
 
@@ -292,7 +300,11 @@ public class JOTWebResponse implements HttpServletResponse
 
     public void flushBuffer() throws IOException
     {
-        if (print != null)
+        if(print==null && out==null)
+        {
+            writePreamble();
+        }
+        else if (print != null)
         {
             print.flush();
         } else if (out != null)
@@ -345,7 +357,7 @@ public class JOTWebResponse implements HttpServletResponse
         } catch (MalformedURLException e)
         {
             // if this failed this was a relative url
-            String ctxURL = request.getHost();
+            String ctxURL = request.getServerName();
             try
             {
                 // building the new URL using the current request URL as the context
@@ -503,7 +515,8 @@ public class JOTWebResponse implements HttpServletResponse
             {
                 PrintWriter p = new PrintWriter(socket.getOutputStream());
                 p.println("HTTP/1.1 " + statusCode);
-                p.println("Location: " + "TODO");
+                if (!headers.containsKey("Location"))
+                    p.println("Location: " + "TODO");
                 //content-type
                 p.println("Content-encoding: " + encoding);
                 if (contentType != null)

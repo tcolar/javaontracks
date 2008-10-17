@@ -29,6 +29,7 @@ public class JOTRequestParser
     public static JOTWebRequest parseRequest(Socket socket) throws Exception
     {
         JOTWebRequest request = new JOTWebRequest();
+        request.socket=socket;
         request.setRemoteHost(socket.getInetAddress().getHostAddress());
         request.setRemotePort(socket.getPort());
 

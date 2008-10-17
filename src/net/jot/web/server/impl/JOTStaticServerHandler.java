@@ -27,7 +27,8 @@ public class JOTStaticServerHandler extends JOTWebRequestHandlerBase{
         
         if(request.getMethod().equalsIgnoreCase("GET"))
         {
-            response.sendError(response.SC_REQUESTED_RANGE_NOT_SATISFIABLE, "What kind of an error is that !");
+            //response.sendError(response.SC_REQUESTED_RANGE_NOT_SATISFIABLE, "What kind of an error is that !");
+            response.sendRedirect("http://www.gogle.com/");
         }
     }
 

@@ -5,6 +5,10 @@
 
 package net.jot.web.server;
 
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.Socket;
+import java.net.URL;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -16,29 +20,37 @@ import javax.servlet.http.Cookie;
  * @author thibautc
  */
 public class JOTWebRequest {
-    
-    String method="GET";
-    String protocol=null;
-    String path;
+    Socket socket=null;
+    private String method="GET";
+    private String protocol=null;
+    private String path;
     // requestLine as it came to us
-    String rawRequestLine;
-    String remoteHost=null;
-    int remotePort=-1;
-    String localHost=null;
-    int localPort=-1;
+    private String rawRequestLine;
+    private String remoteHost=null;
+    private int remotePort=-1;
+    private String localHost=null;
+    private int localPort=-1;
     /** headers (header name -> Vector of values(string)) **/
-    Hashtable headers=new Hashtable();
+    private Hashtable headers=new Hashtable();
     // parameters (hash of strings)
-    Hashtable parameters=new Hashtable();
+    private Hashtable parameters=new Hashtable();
     // vector of Cookie
-    Vector cookies=new Vector();
+    private Vector cookies=new Vector();
     // TODO: basic authentication ?
     //String user;
     //String password;
     
     // body if any (ex: multipart)
     byte[] body;
+    // local server name / host
+    private String serverName=null;
 
+    /**
+     * should be retrieved through JOTRequestParser
+     */
+    JOTWebRequest()
+    {
+    }
     
     public Cookie[] getCookie(String nameetc)
     {
@@ -210,57 +222,46 @@ public class JOTWebRequest {
         this.localPort = localPort;
     }
 
-    
-    /*
-     *
-    public String getHost()
+    public String getServerName()
     {
-        // Return already determined host
-        if (_host!=null)
-            return _host;
+        // lazy inited
+        if (serverName!=null)
+            return serverName;
 
         // Return host from absolute URI
-        _host=_uri.getHost();
-        _port=_uri.getPort();
-        if (_host!=null)
-            return _host;
-
+        /*serverName=_uri.getHost();
+        if (serverName!=null)
+            return serverName;
+*/
         // Return host from header field
-        _hostPort=_header.get(HttpFields.__Host);
-        _host=_hostPort;
-        _port=0;
-        if (_host!=null && _host.length()>0)
+        String host=(String)headers.get("Host");
+        if (host!=null)
         {
-            int colon=_host.lastIndexOf(':');
-            if (colon>=0)
+            try
             {
-                if (colon<_host.length())
-                {
-                    try{
-                        _port=TypeUtil.parseInt(_host,colon+1,-1,10);
-                    }
-                    catch(Exception e)
-                    {Code.ignore(e);}
-                }
-                _host=_host.substring(0,colon);
+                URL url=new URL(host);
+                serverName=url.getHost();
+                return serverName;
             }
-
-            return _host;
+            catch(MalformedURLException e){/*try something else*/}
         }
 
-        // Return host from connection
-        if (_connection!=null)
+        // Try from socket host
+        if (socket!=null)
         {
-            _host=_connection.getServerName();
-            _port=_connection.getServerPort();
-            if (_host!=null && !InetAddrPort.__0_0_0_0.equals(_host))
-                return _host;
+            //TODO: use canonial or regular host name ??
+            serverName=socket.getLocalAddress().getCanonicalHostName();
+            if(serverName!=null)
+                return serverName;
         }
 
-        // Return the local host
-        try {_host=InetAddress.getLocalHost().getHostAddress();}
-        catch(java.net.UnknownHostException e){Code.ignore(e);}
-        return _host;
+        // Fallback to local host
+        try 
+        {
+            serverName=InetAddress.getLocalHost().getHostAddress();
+        }
+        catch(java.net.UnknownHostException e){/*How could that fail ?? */}
+        return serverName;
     }
-    */
+    
 }
