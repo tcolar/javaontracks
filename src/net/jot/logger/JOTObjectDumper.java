@@ -6,6 +6,9 @@ package net.jot.logger;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.util.Hashtable;
+import java.util.Vector;
+import net.jot.testing.JOTTestable;
 
 /**
  * Dumps an whole object hierarchy (fileds, values.. recursively)
@@ -13,7 +16,7 @@ import java.lang.reflect.Field;
  *
  * @author thibautc
  */
-public class JOTObjectDumper
+public class JOTObjectDumper implements JOTTestable
 {
 
     public static String dump(Object o)
@@ -65,7 +68,37 @@ public class JOTObjectDumper
                 }
                 oClass = oClass.getSuperclass();
             }
-            buffer.append(padding).append("}");
+            buffer.append(padding).append("}").append("\n");
+        }
+    }
+
+    public void jotTest() throws Throwable
+    {
+        TestObject t=new TestObject();
+        System.out.println(dump(t));
+    }
+    
+    class TestObject
+    {
+        int field1=5;
+        Integer field2=new Integer(2);
+        String field3="field3";
+        float field4=2.25f;
+        byte[] b={1,2,3,4};
+        Vector v=new Vector();
+        
+        Hashtable hash=new Hashtable();
+        
+        TestObject()
+        {
+            hash.put("blah",field3);
+            hash.put("bloh",field2);
+            hash.put("blut",b);
+            
+            v.add(field3);
+            v.add(field2);
+            v.add(b);
+            v.add(hash);
         }
     }
 }
