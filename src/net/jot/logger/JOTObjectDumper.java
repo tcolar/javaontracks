@@ -6,9 +6,10 @@ package net.jot.logger;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.util.Hashtable;
-import java.util.Vector;
-import net.jot.testing.JOTTestable;
+import java.lang.reflect.Modifier;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Map;
 
 /**
  * Dumps an whole object hierarchy (fileds, values.. recursively)
@@ -16,136 +17,157 @@ import net.jot.testing.JOTTestable;
  *
  * @author thibautc
  */
-public class JOTObjectDumper implements JOTTestable
+public class JOTObjectDumper
 {
+
+    public static int maxRecursiveDepth = 30;
+    public static final String TAB = "  ";
+
+    public static int getMaxRecursiveDepth()
+    {
+        return maxRecursiveDepth;
+    }
+
+    /**
+     * Default: 15
+     * @param maxRecursiveDepth
+     */
+    public static void setMaxRecursiveDepth(int maxRecursiveDepth)
+    {
+        JOTObjectDumper.maxRecursiveDepth = maxRecursiveDepth;
+    }
 
     public static String dump(Object o)
     {
         StringBuffer buffer = new StringBuffer();
-        dumpToSB(o, buffer, "");
+        dumpToSB(o, buffer, "", null);
         return buffer.toString();
     }
 
-    public static void dumpToSB(Object o, StringBuffer buffer, String padding)
+    private static void dumpToSB(Object o, StringBuffer buffer, String padding, String fieldName)
     {
-        Class oClass = o.getClass();
-        if (oClass.isArray())
+        if (padding.length() > 0 && padding.length() / TAB.length() > maxRecursiveDepth)
         {
-            buffer.append(padding).append("[").append(oClass.getName()).append("\n");
+            buffer.append("\n ... More Avail - To deep recursion ... \n");
+            return;
+        }
+
+        buffer.append(padding);
+        if (fieldName != null)
+        {
+            buffer.append(fieldName).append(" = ");
+        }
+
+        if (o == null)
+        {
+            buffer.append("null").append("\n");
+            return;
+        }
+
+        Class clazz = o.getClass();
+        //System.out.println(clazz.getName());
+
+        if (sameClass(clazz, Class.class) || sameClass(clazz, Object.class))
+        {
+            // we don't want to log all the Object/Class internals.
+            buffer.append("\n");
+            return;
+        }
+
+        boolean primitive = clazz.isPrimitive() || sameClass(clazz, String.class) ||
+                sameClass(clazz, StringBuffer.class) || o instanceof Number;
+
+        if (primitive)
+        {
+            buffer.append(o.toString()).append("\n");
+            return;
+        }
+
+        if (o instanceof Collection)
+        {
+            Collection c = (Collection) o;
+            buffer.append("Collection(").append(clazz.getName()).append(")\n");
+            Object[] array = c.toArray();
+            for (int i = 0; i != array.length; i++)
+            {
+                dumpToSB(array[i], buffer, padding + TAB, null);
+            }
+            return;
+        }
+        if (o instanceof Map)
+        {
+            Map m = (Map) o;
+            buffer.append("Map(").append(clazz.getName()).append(")\n");
+            Object[] array = m.keySet().toArray();
+            for (int i = 0; i != array.length; i++)
+            {
+                buffer.append(padding + TAB).append(array[i].toString()).append(" => \n");
+                dumpToSB(m.get(array[i]), buffer, padding + TAB + TAB, null);
+            }
+            return;
+        }
+        if (o instanceof Enumeration)
+        {
+            Enumeration e = (Enumeration) o;
+            buffer.append("Enumeration(").append(clazz.getName()).append(")\n");
+            while (e.hasMoreElements())
+            {
+                dumpToSB(e.nextElement(), buffer, padding + TAB, null);
+            }
+            return;
+        }
+        if (clazz.isArray())
+        {
+            buffer.append("Array(").append(clazz.getName()).append(")\n");
             for (int i = 0; i != Array.getLength(o); i++)
             {
-                Object value = Array.get(o, i);
-                dumpToSB(value, buffer, padding + "  ");
+                Object o2 = Array.get(o, i);
+                dumpToSB(o2, buffer, padding + TAB, null);
             }
-            buffer.append(padding).append("]").append("\n");
-        } else
+            return;
+        }
+        
+        buffer.append("Object(").append(clazz.getName()).append(")\n");
+
+        // Go through the class fields
+        doFields(clazz, o, buffer, padding);
+
+        // go through the object superclass(es) fields
+        clazz=clazz.getSuperclass();
+        while(clazz!=null)
         {
-            buffer.append(padding).append("{").append(oClass.getName()).append("\n");
-            while (oClass != null)
+            doFields(clazz, o, buffer, padding);
+            clazz=clazz.getSuperclass();
+        }
+
+    }
+
+    private static void doFields(Class clazz, Object o, StringBuffer buffer, String padding)
+    {
+            Field[] fields = clazz.getDeclaredFields();
+
+            for (int i = 0; i != fields.length; i++)
             {
-                Field[] fields = oClass.getDeclaredFields();
-                for (int i = 0; i != fields.length; i++)
+                int modifiers = fields[i].getModifiers();
+                fields[i].setAccessible(true);
+                try
                 {
-                    fields[i].setAccessible(true);
-                    buffer.append(padding).append(fields[i].getName());
-                    buffer.append(" = ");
-                    try
+                    if (!(Modifier.isFinal(modifiers) && Modifier.isStatic(modifiers)) && !fields[i].getName().startsWith("this$"))
                     {
-                        Object value = fields[i].get(o);
-                        if (value != null)
-                        {
-                            if (value.getClass().isArray())
-                            {
-                                dumpToSB(value, buffer, padding + "  ");
-                            } else
-                            {
-                                buffer.append(value).append("\n");
-                            }
-                        }
-                    } catch (IllegalAccessException e)
-                    {
+                        // do not bother listing constants
+                        // also ignore inner classes whihc cause issues
+                        Object o2 = fields[i].get(o);
+                        System.out.println(fields[i].getName());
+                        dumpToSB(o2, buffer, padding + TAB, fields[i].getName());
                     }
+                } catch (IllegalAccessException e)
+                {
                 }
-                oClass = oClass.getSuperclass();
             }
-            buffer.append(padding).append("}").append("\n");
-        }
-    }
-
-    public void jotTest() throws Throwable
-    {
-        TestObject t=new TestObject();
-        System.out.println(dump(t));
     }
     
-    class TestObject
+    private static boolean sameClass(Class clazz, Class clazz2)
     {
-        int field1=5;
-        Integer field2=new Integer(2);
-        String field3="field3";
-        float field4=2.25f;
-        byte[] b={1,2,3,4};
-        Vector v=new Vector();
-        
-        Hashtable hash=new Hashtable();
-        
-        TestObject()
-        {
-            hash.put("blah",field3);
-            hash.put("bloh",field2);
-            hash.put("blut",b);
-            
-            v.add(field3);
-            v.add(field2);
-            v.add(b);
-            v.add(hash);
-        }
+        return clazz.getName().equals(clazz2.getName());
     }
-    
-    /*Serialization dump ??
-     *
-     * try
-        {
-            HeaderSalesDocument header = order.getHeader();
-            PaymentBase payment = order.getPayment();
-            PaymentBaseData pb = order.getPaymentData();
-            //PaymentBaseData paymentBase=header.getPaymentData();
-            //File f = new File("/tmp/b2cdump.txt");
-            FileOutputStream f2 = new FileOutputStream("/tmp/b2cdump.xml");
-            XMLEncoder encoder = new XMLEncoder(f2);
-            encoder.writeObject(order);
-            encoder.writeObject(order.getExtensionMap());
-            encoder.writeObject(order.getHeaderBase());
-            encoder.writeObject(order.getItems());
-            encoder.writeObject(order.getLastEnteredCVVS());
-            encoder.writeObject(order.getShipTos());
-
-            encoder.writeObject(payment);
-            encoder.writeObject(payment.getPaymentMethods());
-            encoder.writeObject(payment.getPaymentTypes());
-            encoder.writeObject(payment.getTechKey());
-            encoder.writeObject(pb.getExtensionDataValues());
-            encoder.writeObject(pb.getPaymentMethods());
-
-            encoder.writeObject(header);
-            encoder.writeObject(header.getAssignedCampaigns());
-            encoder.writeObject(header.getAssignedCampaignsData());
-            encoder.writeObject(header.getDeliveryPriority());
-            encoder.writeObject(header.getIncoTerms1());
-            encoder.writeObject(header.getDeliveryStatus());
-            encoder.writeObject(header.getPartnerList());
-            encoder.writeObject(header.getSalesOrg());
-            encoder.writeObject(header.getPartnerList());
-            encoder.writeObject(header.getReqDeliveryDate());
-            encoder.writeObject(header.getShipTo());
-
-
-            encoder.flush();
-            f2.close();
-       );
-        } catch (Exception e)
-        {
-        }
-
-     */
 }
