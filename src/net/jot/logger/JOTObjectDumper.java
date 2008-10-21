@@ -101,4 +101,51 @@ public class JOTObjectDumper implements JOTTestable
             v.add(hash);
         }
     }
+    
+    /*Serialization dump ??
+     *
+     * try
+        {
+            HeaderSalesDocument header = order.getHeader();
+            PaymentBase payment = order.getPayment();
+            PaymentBaseData pb = order.getPaymentData();
+            //PaymentBaseData paymentBase=header.getPaymentData();
+            //File f = new File("/tmp/b2cdump.txt");
+            FileOutputStream f2 = new FileOutputStream("/tmp/b2cdump.xml");
+            XMLEncoder encoder = new XMLEncoder(f2);
+            encoder.writeObject(order);
+            encoder.writeObject(order.getExtensionMap());
+            encoder.writeObject(order.getHeaderBase());
+            encoder.writeObject(order.getItems());
+            encoder.writeObject(order.getLastEnteredCVVS());
+            encoder.writeObject(order.getShipTos());
+
+            encoder.writeObject(payment);
+            encoder.writeObject(payment.getPaymentMethods());
+            encoder.writeObject(payment.getPaymentTypes());
+            encoder.writeObject(payment.getTechKey());
+            encoder.writeObject(pb.getExtensionDataValues());
+            encoder.writeObject(pb.getPaymentMethods());
+
+            encoder.writeObject(header);
+            encoder.writeObject(header.getAssignedCampaigns());
+            encoder.writeObject(header.getAssignedCampaignsData());
+            encoder.writeObject(header.getDeliveryPriority());
+            encoder.writeObject(header.getIncoTerms1());
+            encoder.writeObject(header.getDeliveryStatus());
+            encoder.writeObject(header.getPartnerList());
+            encoder.writeObject(header.getSalesOrg());
+            encoder.writeObject(header.getPartnerList());
+            encoder.writeObject(header.getReqDeliveryDate());
+            encoder.writeObject(header.getShipTo());
+
+
+            encoder.flush();
+            f2.close();
+       );
+        } catch (Exception e)
+        {
+        }
+
+     */
 }
