@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package net.jot.web.server.impl;
+package net.jot.web.server;
 
 import java.util.Hashtable;
 import net.jot.logger.JOTLogger;

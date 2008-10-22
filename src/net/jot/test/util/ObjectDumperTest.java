@@ -8,6 +8,7 @@ package net.jot.test.util;
 import java.math.BigInteger;
 import net.jot.logger.JOTObjectDumper;
 import net.jot.testing.JOTTestable;
+import net.jot.testing.JOTTester;
 
 /**
  *
@@ -24,7 +25,9 @@ public class ObjectDumperTest implements JOTTestable{
         t.v.add(new MyObject());
         t.filIn=new MyInteger();
         t.filIn2=new MyObject2();
-        System.out.println(JOTObjectDumper.dump(t));
+        String dump=JOTObjectDumper.dump(t);
+        //System.out.println(dump);
+        JOTTester.checkIf("dump generated", dump!=null && dump.length()>0);
     }
 
    class MyInteger extends BigInteger

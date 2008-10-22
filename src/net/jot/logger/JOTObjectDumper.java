@@ -158,7 +158,7 @@ public class JOTObjectDumper
                         // do not bother listing constants
                         // also ignore inner classes whihc cause issues
                         Object o2 = fields[i].get(o);
-                        System.out.println(fields[i].getName());
+                        //System.out.println(fields[i].getName());
                         dumpToSB(o2, buffer, padding + TAB, fields[i].getName());
                     }
                 } catch (IllegalAccessException e)

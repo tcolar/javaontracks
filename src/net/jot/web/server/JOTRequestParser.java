@@ -24,8 +24,9 @@ public class JOTRequestParser
 {
     // Ex: GET /test?toto=3&block=4 HTTP/1.1
 
-    public static Pattern REQUEST_PARSER = Pattern.compile("^(\\S+)\\s+([^\\? ]*)(\\?\\S*)?\\s+(HTTP/\\d+\\.\\d+)");
-    public static Pattern HEADER_PATTERN = Pattern.compile("^(\\S+)\\s*:(.*)");
+    private static final Pattern REQUEST_PARSER = Pattern.compile("^(\\S+)\\s+([^\\? ]*)(\\?\\S*)?\\s+(HTTP/\\d+\\.\\d+)");
+    private static final Pattern HEADER_PATTERN = Pattern.compile("^(\\S+)\\s*:(.*)");
+    private final static String JSESSIONID_STR=";jsessionid=";
 
     public static JOTWebRequest parseRequest(Socket socket) throws Exception
     {
@@ -57,18 +58,6 @@ public class JOTRequestParser
         //handler.handleGetRequest(socket, path, params);*/
         }
 
-        // TODO: close the inputstream ??
-        /*reader.close();
-        if (!socket.isClosed())
-        {
-        try
-        {
-        socket.getOutputStream().close();
-        } catch (Exception e2)
-        {
-        
-        }
-        }*/
         if(!valid)
             throw new IllegalArgumentException("Main Request Line missing or not parseable !");
         return request;
@@ -129,6 +118,13 @@ public class JOTRequestParser
         {
             String method = m.group(1);
             String path = URLDecoder.decode(m.group(2), "UTF-8");
+            int index=path.indexOf(JSESSIONID_STR);
+            if(index>=0)
+            {
+                // sessionId in request (probably cookies disabled)
+                request.setRequestedSessionId(path.substring(index+JSESSIONID_STR.length(),path.length()));
+                path=path.substring(0,index);
+            }
             String params = m.group(3);
             if (params != null && params.length() > 0)
             {

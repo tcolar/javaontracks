@@ -59,7 +59,6 @@ public class JOTWebResponse implements HttpServletResponse
     Hashtable headers = new Hashtable();
     // vector of Cookie
     Vector cookies = new Vector();
-    private String sessionID = null;
     // we need the request to encode URL's etc...
     private JOTWebRequest request;
     private static final String MSG_HEAD = "<html><body><table width=100%><tr height=25 bgcolor='#eeeeff'><td><b>ERROR ";
@@ -95,7 +94,7 @@ public class JOTWebResponse implements HttpServletResponse
 
     public String encodeURL(String url)
     {
-        return addSessionIdToURL(url, sessionID);
+        return addSessionIdToURL(url, request.getSessionId());
     }
 
     public String encodeRedirectURL(String url)
@@ -361,7 +360,7 @@ public class JOTWebResponse implements HttpServletResponse
         } catch (MalformedURLException e)
         {
             // if this failed this was a relative url
-            String ctxURL = request.getURL();
+            String ctxURL = request.getRequestURL().toString();
             try
             {
                 // building the new URL using the current request URL as the context
@@ -390,7 +389,7 @@ public class JOTWebResponse implements HttpServletResponse
         {
             return (url);
         }
-        String path = "";
+        String path = url;
         String args = "";
         String anchor = "";
         int urlIndex = url.indexOf('?');
