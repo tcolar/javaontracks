@@ -15,6 +15,7 @@ import java.util.Map;
  * Dumps an whole object hierarchy (fileds, values.. recursively)
  * Useful for debugging.
  *
+ * Note: this is all static (not thread safe), this is just for debugging shouldn't need to be.
  * @author thibautc
  */
 public class JOTObjectDumper
@@ -30,6 +31,7 @@ public class JOTObjectDumper
 
     /**
      * Default: 15
+     * set to prevent infinite loops
      * @param maxRecursiveDepth
      */
     public static void setMaxRecursiveDepth(int maxRecursiveDepth)
@@ -65,7 +67,6 @@ public class JOTObjectDumper
         }
 
         Class clazz = o.getClass();
-        //System.out.println(clazz.getName());
 
         if (sameClass(clazz, Class.class) || sameClass(clazz, Object.class))
         {
@@ -169,5 +170,10 @@ public class JOTObjectDumper
     private static boolean sameClass(Class clazz, Class clazz2)
     {
         return clazz.getName().equals(clazz2.getName());
+    }
+    
+    class TestObject2
+    {
+        String innerVal="innerVal";
     }
 }

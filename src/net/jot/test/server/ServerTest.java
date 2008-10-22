@@ -21,7 +21,7 @@ public class ServerTest implements JOTTestable{
 
     public void jotTest() throws Throwable
     {
-        Socket socket=new Socket("www.google.com",80,InetAddress.getLocalHost(),8044);
+        Socket socket=new Socket("www.google.com",80);
         JOTWebRequest request=JOTRequestParser.getTestRequest(socket, "GET /folder/test#anchor?toto=3&block=4 HTTP/1.1");
         request.getHeaders().put("Host","frenchie:8033");
         JOTWebResponse response=new JOTWebResponse(socket, request);
