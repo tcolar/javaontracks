@@ -15,7 +15,7 @@ import java.util.Map;
  * Dumps an whole object hierarchy (fileds, values.. recursively)
  * Useful for debugging.
  *
- * Note: this is all static (not thread safe), this is just for debugging shouldn't need to be.
+ * Note: this is all static.
  * @author thibautc
  */
 public class JOTObjectDumper
