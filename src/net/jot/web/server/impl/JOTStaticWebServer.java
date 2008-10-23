@@ -2,15 +2,17 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.jot.web.server;
+package net.jot.web.server.impl;
 
 import java.util.Hashtable;
 import net.jot.logger.JOTLogger;
 import net.jot.logger.JOTLoggerLocation;
-import net.jot.web.server.JOTMiniServer;
 
 /**
  * Implements a minimalistic web server (static content)
+ * It just serves content in the root folder and allow browsing/ looking at content
+ * within rootFolder and subfolders.
+ * Only support the http GET method.
  * @author tcolar
  */
 public class JOTStaticWebServer

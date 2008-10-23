@@ -69,7 +69,7 @@ public class JOTFileBrowserSession
 	/** pattern for new/uploaded file names (for security reasons), default:letters,numbers,-,_,. only*/
 	protected String newFilePattern="[\\.a-zA-Z0-9_-]+";
 	/** by default sort by filename in alphabetical order*/
-	protected int sortBy=JOTFileBrowserHelper.SORT_BY_NAME_ASC;
+	protected int sortBy=JOTUtilities.SORT_BY_NAME_ASC;
 		
 	/** warning messages : null = no warning, not null. Warning if a file with same name already exists*/
 	protected String updateWarning="This file already exists: $1<br>Check the 'Overwrite Existing files'  to replace.";

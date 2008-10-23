@@ -16,14 +16,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.MessageDigest;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.Random;
-import java.util.TimeZone;
+import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -31,6 +32,7 @@ import java.util.zip.ZipOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import net.jot.logger.JOTLogger;
+import net.jot.web.filebrowser.JOTFileComparators;
 
 /**
  * Collection of small utilities which aren't worth having their own class :-)
@@ -40,6 +42,16 @@ import net.jot.logger.JOTLogger;
  */
 public class JOTUtilities
 {
+
+    /**
+     * Sorting types for the sort method
+     */
+    public static final int SORT_BY_NAME_ASC = 1;
+    public static final int SORT_BY_NAME_DESC = -1;
+    public static final int SORT_BY_SIZE_ASC = 2;
+    public static final int SORT_BY_SIZE_DESC = -2;
+    public static final int SORT_BY_TSTAMP_ASC = 3;
+    public static final int SORT_BY_TSTAMP_DESC = -3;
 
     /**
      * endode a cell of data into CVS format.
@@ -729,6 +741,38 @@ public class JOTUtilities
             }
         }
         return md5;
+    }
+
+    /**
+     * Sorts the file listing
+     * @return the sorted files
+     * @param sortOrder: use one of the constants here such as SORT_BY_NAME_DESC
+     */
+    public static File[] sortFolderListing(File[] files, int sortOrder)
+    {
+        Comparator comp = JOTFileComparators.NAME_ASC_COMPARATOR;
+        switch (sortOrder)
+        {
+            case SORT_BY_NAME_DESC:
+                comp = JOTFileComparators.NAME_DESC_COMPARATOR;
+                break;
+            case SORT_BY_SIZE_ASC:
+                comp = JOTFileComparators.SIZE_ASC_COMPARATOR;
+                break;
+            case SORT_BY_SIZE_DESC:
+                comp = JOTFileComparators.SIZE_DESC_COMPARATOR;
+                break;
+            case SORT_BY_TSTAMP_ASC:
+                comp = JOTFileComparators.TSTAMP_ASC_COMPARATOR;
+                break;
+            case SORT_BY_TSTAMP_DESC:
+                comp = JOTFileComparators.TSTAMP_DESC_COMPARATOR;
+                break;
+        }
+        Arrays.sort(files, comp);
+        Collection coll = Arrays.asList(files);
+        Vector v = new Vector(coll);
+        return (File[])v.toArray(files);
     }
 }
 

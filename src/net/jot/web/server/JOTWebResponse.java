@@ -12,7 +12,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Locale;
 import java.util.Vector;
-import java.util.regex.Pattern;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -28,7 +27,6 @@ public class JOTWebResponse implements HttpServletResponse
 {
 
     static final JOTLoggerLocation logger = new JOTLoggerLocation(JOTLogger.CAT_SERVER, JOTWebResponse.class);
-    public final static String INFOS = "JavaOnTracks Server 1.0";
     /** The connection socket to the client*/
     private final Socket socket;
     private final static int DEFAULT_BUFFER_SIZE = 5000;
@@ -54,10 +52,6 @@ public class JOTWebResponse implements HttpServletResponse
     Vector cookies = new Vector();
     // we need the request to encode URL's etc...
     private JOTWebRequest request;
-    private static final String MSG_HEAD = "<html><body><table width=100%><tr height=25 bgcolor='#eeeeff'><td><b>ERROR ";
-    private static final String MSG_HEAD2 = "</b></td></tr><tr><td>";
-    private static final String MSG_TAIL = "</td></tr><tr height=15 bgcolor='#eeeeff'><td>" + INFOS + "</td></tr></table></body></html>";
-    private static final Pattern PROTOCOL_PATTERN = Pattern.compile("^\\w+\\://.*");
 
     /**
      * You usually would't create a response on your own ut be provided one by the container.
@@ -471,7 +465,7 @@ public class JOTWebResponse implements HttpServletResponse
     private void sendMessage(String title, String message) throws IOException
     {
         setStatus(statusCode);
-        sendText(MSG_HEAD + title + MSG_HEAD2 + message + MSG_TAIL);
+        sendText(JOTWebHelper.MSG_HEAD +"ERROR "+ title + JOTWebHelper.MSG_HEAD2 + message + JOTWebHelper.MSG_TAIL);
         flushBuffer();
     }
 
@@ -518,7 +512,7 @@ public class JOTWebResponse implements HttpServletResponse
                 PrintWriter p = new PrintWriter(socket.getOutputStream());
                 p.println("HTTP/1.1 " + statusCode);
                 if (!headers.containsKey("Location"))
-                    p.println("Location: " + "TODO");
+                    p.println("Location: " + request.getServletPath());
                 //content-type
                 p.println("Content-encoding: " + encoding);
                 if (contentType != null)
@@ -533,7 +527,7 @@ public class JOTWebResponse implements HttpServletResponse
                 p.println("Status: " + statusCode);
                 if (!headers.containsKey("Server"))
                 {
-                    p.println("Server: " + INFOS);
+                    p.println("Server: " + JOTWebHelper.INFOS);
                 }
                 if (!headers.containsKey("Date"))
                 {

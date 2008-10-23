@@ -729,7 +729,11 @@ public class JOTWebRequest implements HttpServletRequest
         return str;
     }
 
-    String getRawRequestLine()
+    /**
+     * Get the raw requestline as sent from the browser 
+     * @return
+     */
+    public String getRawRequestLine()
     {
         return rawRequestLine;
     }

@@ -4,8 +4,8 @@
  */
 package net.jottools;
 
-import net.jot.web.server.JOTMiniServer;
 import net.jot.utils.JOTUtilities;
+import net.jot.web.server.impl.JOTMiniServer;
 import net.jottools.actions.ConfigView;
 
 /**

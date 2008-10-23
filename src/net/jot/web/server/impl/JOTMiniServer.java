@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.jot.web.server;
+package net.jot.web.server.impl;
 
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -10,6 +10,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 import net.jot.logger.JOTLogger;
 import net.jot.logger.JOTLoggerLocation;
+import net.jot.web.server.JOTServerRequestHandler;
 
 /**
  * Mini generic web server (regular- not j2ee)
