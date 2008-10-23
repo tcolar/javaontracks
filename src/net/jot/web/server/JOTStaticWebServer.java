@@ -32,6 +32,8 @@ public class JOTStaticWebServer
         } catch (Exception e)
         {
             logger.exception("Failed starting the server.", e);
+            System.out.println("Failed starting the server.");
+            e.printStackTrace();
         }
     }
 
@@ -42,6 +44,6 @@ public class JOTStaticWebServer
 
     public static void main(String args[])
     {
-        new JOTStaticWebServer().start(8033,"/tmp/");
+        new JOTStaticWebServer().start(8066,"/tmp/");
     }
 }

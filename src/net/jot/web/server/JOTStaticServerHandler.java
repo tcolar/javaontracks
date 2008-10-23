@@ -8,7 +8,6 @@ package net.jot.web.server;
 import java.util.Hashtable;
 import net.jot.logger.JOTLogger;
 import net.jot.logger.JOTLoggerLocation;
-import net.jot.web.server.JOTWebRequestHandlerBase;
 
 /**
  *

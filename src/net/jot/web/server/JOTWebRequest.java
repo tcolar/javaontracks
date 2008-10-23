@@ -6,6 +6,7 @@ package net.jot.web.server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -29,15 +30,15 @@ import net.jot.logger.JOTLoggerLocation;
 import net.jot.utils.JOTTimezoneUtils;
 
 /**
- * HttpServletRequest impl.
+ * HttpServletRequest impl. (not fully impl. yet)
  * Use JOTRequestParser to parse a socket input into a request.
  * @author thibautc
  */
 public class JOTWebRequest implements HttpServletRequest
 {
-    private static final DateFormat HEADER_FORMAT = new SimpleDateFormat(JOTTimezoneUtils.FORMAT_HEADER);
-    private static final Enumeration EMPTY_ENUM=new Vector().elements();
 
+    private static final DateFormat HEADER_FORMAT = new SimpleDateFormat(JOTTimezoneUtils.FORMAT_HEADER);
+    private static final Enumeration EMPTY_ENUM = new Vector().elements();
     Socket socket = null;
     private String method = "GET";
     private String protocol = null;
@@ -50,14 +51,16 @@ public class JOTWebRequest implements HttpServletRequest
     private int localPort = -1;
     /** headers (header name -> Vector of values(string)) **/
     private Hashtable headers = new Hashtable();
-    // parameters (hash of strings)
+    // parameters (hash of Vector of strings)
     private Hashtable parameters = new Hashtable();
     // vector of Cookie
     private Vector cookies = new Vector();
     private String rawParams;
     private String sessionId;
     private String requestedSessionId;
-    private String contextPath="";
+    private String contextPath = "";
+    private Hashtable attributes = new Hashtable();
+    private String encoding = null;
 
     // TODO: basic authentication ?
     //String user;
@@ -70,10 +73,12 @@ public class JOTWebRequest implements HttpServletRequest
     private String serverName = null;
     private StringBuffer url = new StringBuffer();
     private String scheme = null;
-
-    
     static final JOTLoggerLocation logger = new JOTLoggerLocation(JOTLogger.CAT_SERVER, JOTWebRequest.class);
-    
+    private boolean requestedSIDFromCookies = true;
+    private ServletInputStream in = null;
+    private BufferedReader reader = null;
+    private Vector locales;
+
     /**
      * should be retrieved through JOTRequestParser
      */
@@ -92,7 +97,7 @@ public class JOTWebRequest implements HttpServletRequest
             return scheme;
         }
         //TODO
-        scheme = "http://";
+        scheme = "http";
         return scheme;
     }
 
@@ -106,7 +111,7 @@ public class JOTWebRequest implements HttpServletRequest
         {
             return url;
         }
-        StringBuffer sb = new StringBuffer(getScheme()).append(getServerName());
+        StringBuffer sb = new StringBuffer(getScheme()).append("://").append(getServerName());
         if (getLocalPort() != 80)
         {
             sb.append(":").append(getLocalPort());
@@ -151,7 +156,6 @@ public class JOTWebRequest implements HttpServletRequest
         return protocol;
     }
 
-
     public Cookie[] getCookie(String nameetc)
     {
         return (Cookie[]) cookies.toArray(new Cookie[0]);
@@ -171,7 +175,7 @@ public class JOTWebRequest implements HttpServletRequest
             parseCookieLine(value);
         }
     }
-    
+
     public int getLocalPort()
     {
         return localPort;
@@ -236,7 +240,7 @@ public class JOTWebRequest implements HttpServletRequest
         }
         return serverName;
     }
-    
+
     public String getAuthType()
     {
         // TODO: support this ??
@@ -245,19 +249,21 @@ public class JOTWebRequest implements HttpServletRequest
 
     public Cookie[] getCookies()
     {
-        return (Cookie[])cookies.toArray(new Cookie[0]);
+        return (Cookie[]) cookies.toArray(new Cookie[0]);
     }
 
     public long getDateHeader(String headerName)
     {
-        String header=getHeader(headerName);
-        if(header==null) return -1;
-        Date d=null;
+        String header = getHeader(headerName);
+        if (header == null)
+        {
+            return -1;
+        }
+        Date d = null;
         try
         {
-            d=HEADER_FORMAT.parse(header);
-        }
-        catch(ParseException e)
+            d = HEADER_FORMAT.parse(header);
+        } catch (ParseException e)
         {
             throw new IllegalArgumentException(e);
         }
@@ -266,14 +272,14 @@ public class JOTWebRequest implements HttpServletRequest
 
     public String getHeader(String headerName)
     {
-        Vector v=(Vector)headers.get(headerName);
-        return (v==null || v.size()<1)?null:(String)v.get(0);
+        Vector v = (Vector) headers.get(headerName);
+        return (v == null || v.size() < 1) ? null : (String) v.get(0);
     }
 
     public Enumeration getHeaders(String headerName)
     {
-        Vector v=(Vector)headers.get(headerName);
-        return v==null?EMPTY_ENUM:v.elements();
+        Vector v = (Vector) headers.get(headerName);
+        return v == null ? EMPTY_ENUM : v.elements();
     }
 
     public Enumeration getHeaderNames()
@@ -283,8 +289,8 @@ public class JOTWebRequest implements HttpServletRequest
 
     public int getIntHeader(String headerName)
     {
-        String header=getHeader(headerName);
-        return header==null?-1:new Integer(header).intValue();
+        String header = getHeader(headerName);
+        return header == null ? -1 : new Integer(header).intValue();
     }
 
     public String getPathInfo()
@@ -339,9 +345,23 @@ public class JOTWebRequest implements HttpServletRequest
         return path;
     }
 
-    public HttpSession getSession(boolean arg0)
+    public HttpSession getSession(boolean createIfNew)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        String id = requestedSessionId;
+        if (id == null || !isRequestedSessionIdValid())
+        {
+            id = sessionId;
+        }
+        JOTWebSession session = null;
+        if (createIfNew)
+        {
+            session = JOTSessionManager.getInstance().getSession(sessionId);
+        } else
+        {
+            JOTSessionManager.getInstance().getOrCreateSession(sessionId);
+        }
+        sessionId = session.getId();
+        return session;
     }
 
     public HttpSession getSession()
@@ -351,137 +371,225 @@ public class JOTWebRequest implements HttpServletRequest
 
     public boolean isRequestedSessionIdValid()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return JOTSessionManager.getInstance().getSession(requestedSessionId) != null;
     }
 
     public boolean isRequestedSessionIdFromCookie()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return requestedSIDFromCookies;
     }
 
     public boolean isRequestedSessionIdFromURL()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return !requestedSIDFromCookies;
     }
 
+    /**
+     * @deprecated
+     * @return
+     */
     public boolean isRequestedSessionIdFromUrl()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return isRequestedSessionIdFromURL();
     }
 
-    public Object getAttribute(String arg0)
+    public Object getAttribute(String key)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return attributes.get(key);
     }
 
     public Enumeration getAttributeNames()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return attributes.keys();
     }
 
     public String getCharacterEncoding()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return encoding;
     }
 
-    public void setCharacterEncoding(String arg0) throws UnsupportedEncodingException
+    public void setCharacterEncoding(String encoding) throws UnsupportedEncodingException
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        //TODO: check that encoding is valid
+        this.encoding = encoding;
     }
 
     public int getContentLength()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try
+        {
+            return getInputStream().available();
+        } catch (IOException e)
+        {
+        }
+        return -1;
     }
 
     public String getContentType()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        //TODO: how to determine this ??
+        return null;
     }
 
     public ServletInputStream getInputStream() throws IOException
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (reader != null)
+        {
+            throw new IllegalStateException("Can't use both getInputStream() and getReader()");
+        }
+        if (in == null)
+        {
+            in = (ServletInputStream) socket.getInputStream();
+        }
+        return in;
     }
 
-    public String getParameter(String arg0)
+    public String getParameter(String name)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Vector v = (Vector) parameters.get(name);
+        if (v == null)
+        {
+            return null;
+        }
+        return (String) v.get(0);
     }
 
     public Enumeration getParameterNames()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return parameters.keys();
     }
 
-    public String[] getParameterValues(String arg0)
+    public String[] getParameterValues(String name)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Vector v = (Vector) parameters.get(name);
+        if (v == null)
+        {
+            return null;
+        }
+        return (String[]) v.toArray(new String[0]);
     }
 
     public Map getParameterMap()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return parameters;
     }
 
     public int getServerPort()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return localPort;
     }
 
     public BufferedReader getReader() throws IOException
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (in != null)
+        {
+            throw new IllegalStateException("Can't use both getInputStream() and getReader()");
+        }
+        if (reader == null)
+        {
+            if (encoding == null)
+            {
+                reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            } else
+            {
+                reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), encoding));
+            }
+        }
+        return reader;
     }
 
     public String getRemoteAddr()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return remoteHost;
     }
 
-    public void setAttribute(String arg0, Object arg1)
+    public void setAttribute(String key, Object value)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (value == null)
+        {
+            removeAttribute(key);
+        } else
+        {
+            attributes.put(key, value);
+        }
     }
 
-    public void removeAttribute(String arg0)
+    public void removeAttribute(String key)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        attributes.remove(key);
     }
 
     public Locale getLocale()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (locales == null)
+        {
+            getLocales();
+        }
+        return (Locale) locales.get(0);
     }
 
     public Enumeration getLocales()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (locales == null)
+        {
+            locales = new Vector();
+            Enumeration e = getHeaders("Accept-Language");
+            while (e.hasMoreElements())
+            {
+                String s = (String) e.nextElement();
+                if (s != null)
+                {
+                    String[] vals = s.split(",");
+                    for (int i = 0; i != vals.length; i++)
+                    {
+                        Locale locale = getIndividualLocale(vals[i]);
+                        if (locale != null)
+                        {
+                            locales.add(locale);
+                        }
+                    }
+                }
+            }
+            if (locales.size() == 0)
+            {
+                // if no valid locale, then return default server local as per spec
+                locales.add(Locale.getDefault());
+            }
+        }
+        return locales.elements();
     }
 
     public boolean isSecure()
     {
+        //TODO: how do i know that ??
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     public RequestDispatcher getRequestDispatcher(String arg0)
     {
+        //TODO
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public String getRealPath(String arg0)
+    /**
+     * @deprecated
+     * @param arg0
+     * @return
+     */
+    public String getRealPath(String paht)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public String getLocalName()
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
+        // need to be call with ServletContext.getRealPath
+        return JOTSessionManager.getInstance().getServletContext().getRealPath(path);
     }
 
     public String getLocalAddr()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return localHost;
+    }
+
+    public String getLocalName()
+    {
+        return getServerName();
     }
 
     /**********************************************************
@@ -492,10 +600,21 @@ public class JOTWebRequest implements HttpServletRequest
         rawParams = params;
     }
 
-    void setRequestedSessionId(String id)
+    /**
+     *
+     * @param id
+     * @param fromCookies - if flase : from url
+     */
+    void setRequestedSessionId(String id, boolean fromCookies)
     {
         requestedSessionId = id;
+        requestedSIDFromCookies = fromCookies;
+        if (isRequestedSessionIdValid())
+        {
+            sessionId = id;
+        }
     }
+
     void setSessionId(String id)
     {
         sessionId = id;
@@ -510,6 +629,7 @@ public class JOTWebRequest implements HttpServletRequest
     {
         this.rawParams = rawParams;
     }
+
     void setRemoteHost(String host)
     {
         this.remoteHost = host;
@@ -544,7 +664,8 @@ public class JOTWebRequest implements HttpServletRequest
     {
         this.rawRequestLine = rawRequestLine;
     }
-   public void parseCookieLine(String value)
+
+    public void parseCookieLine(String value)
     {
         //TODO: look at cookie spec some more
         String[] cooks = value.split(";");
@@ -562,6 +683,11 @@ public class JOTWebRequest implements HttpServletRequest
                     val = cookie.substring(index + 1, cookie.length()).trim();
                 }
                 cookies.add(new Cookie(key, val));
+                if (key.equals("JSESSIONID"))
+                {
+                    setRequestedSessionId(val, true);
+                }
+
             }
         }
     }
@@ -607,6 +733,7 @@ public class JOTWebRequest implements HttpServletRequest
     {
         return rawRequestLine;
     }
+
     String getLocalHost()
     {
         return localHost;
@@ -625,8 +752,41 @@ public class JOTWebRequest implements HttpServletRequest
 
     void setContextPath(String path)
     {
-        contextPath=path;
+        contextPath = path;
     }
 
+    private Locale getIndividualLocale(String str)
+    {
+        //We might have something like en-us;q=0.5
 
+        // remove qvalue stuff
+        int i = str.indexOf(';');
+        if (i != -1)
+        {
+            str = str.substring(0, i);
+        }
+        str = str.trim();
+
+        //We might have something like en-us
+        String language = str;
+        String country = "";
+
+        // there might be a "-" followed by a countryname
+        int countrySeparator = language.indexOf('-');
+        Locale locale = null;
+
+        if (countrySeparator != -1)
+        {
+            country = language.substring(countrySeparator + 1, language.length());
+            language = language.substring(0, countrySeparator);
+        }
+        try
+        {
+            locale = new Locale(language, country);
+        } catch (Exception e)
+        {
+            //if parsing failed, this will be null ?
+        }
+        return locale;
+    }
 }

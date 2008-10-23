@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.URLDecoder;
 import java.util.Hashtable;
+import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,7 +54,8 @@ public class JOTRequestParser
                 parseRequestLine(request, line);
             } else if (m2.matches())
             {
-                request.addHeader(m2.group(1), m2.group(2));
+                String key=m2.group(1);
+                request.addHeader(key, m2.group(2));
             }
         //handler.handleGetRequest(socket, path, params);*/
         }
@@ -63,8 +65,16 @@ public class JOTRequestParser
         return request;
     }
 
+    /**
+     * Hashtable of key -> Vector of strings (values)
+     * @param parameters
+     * @return
+     * @throws java.lang.Exception
+     */
     protected static Hashtable parseParameters(String parameters) throws Exception
     {
+        //TODO: parameters with multiple values ??
+
         Hashtable hash = new Hashtable();
         if (parameters != null)
         {
@@ -75,16 +85,33 @@ public class JOTRequestParser
                 int index = p.indexOf("=");
                 if (index != -1)
                 {
-                    hash.put(URLDecoder.decode(p.substring(0, index), "UTF-8"), URLDecoder.decode(p.substring(index + 1, p.length()), "UTF-8"));
+                    addParamToHash(hash,URLDecoder.decode(p.substring(0, index), "UTF-8"), URLDecoder.decode(p.substring(index + 1, p.length()), "UTF-8"));
                 } else
                 {
-                    hash.put(URLDecoder.decode(p, "UTF-8"), "");
+                    addParamToHash(hash,URLDecoder.decode(p, "UTF-8"), "");
                 }
             }
         }
         return hash;
     }
 
+    /**
+     * Deal with params with multiple values
+     * @param hash
+     * @param name
+     * @param value
+     */
+    private static void addParamToHash(Hashtable hash, String name, String value)
+    {
+        Vector v=new Vector();
+        if(hash.containsKey(name))
+        {
+            v=(Vector)hash.get(name);
+        }
+        v.add(value);
+        hash.put(name,v);
+    }
+    
     /**
      * Builds a "fake" request for testing.
      * Does not set any headers, etc.., you can add those manually as needed
@@ -122,7 +149,7 @@ public class JOTRequestParser
             if(index>=0)
             {
                 // sessionId in request (probably cookies disabled)
-                request.setRequestedSessionId(path.substring(index+JSESSIONID_STR.length(),path.length()));
+                request.setRequestedSessionId(path.substring(index+JSESSIONID_STR.length(),path.length()),false);
                 path=path.substring(0,index);
             }
             String params = m.group(3);

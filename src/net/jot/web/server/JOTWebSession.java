@@ -5,100 +5,263 @@
 
 package net.jot.web.server;
 
+import java.util.Date;
 import java.util.Enumeration;
+import java.util.Hashtable;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionBindingEvent;
+import javax.servlet.http.HttpSessionBindingListener;
 import javax.servlet.http.HttpSessionContext;
 
 /**
- *
+ * Represent a web session
  * @author thibautc
  */
-public class JOTWebSession implements HttpSession{
+public class JOTWebSession implements HttpSession
+{
+    private String id;
+    private long creationTime;
+    private long lastAccessTime;
+    /** 30 mn default*/
+    private int maxInactiveInterval=30*60;
+    boolean invalidated=true;
+    private Hashtable attributes=new Hashtable();
+    private boolean isNew=true;
+    
+    /**
+     * use JOTWEbSession(uniqueId) instead
+     */
+    private JOTWebSession(){}
+    /**
+     * Instead, retrieve a session using request.getSession() (JOTSessionManager)
+     * @param id
+     */
+    JOTWebSession(String uniqueId)
+    {
+        this.id=uniqueId;
+        creationTime=new Date().getTime();
+        lastAccessTime=creationTime;
+        invalidated=false;
+    }
 
+    /**
+     * return creation time as long (ms since jan 1 1970)
+     * @see HttpSession
+     */
     public long getCreationTime()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if(invalidated)
+            throw new IllegalStateException("Session was invalidated.");
+        return creationTime;
     }
 
+    /**
+     * return the session ID
+     * @see HttpSession
+     */
     public String getId()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return id;
     }
 
+    /**
+     * return the last time the session was accessed
+     * @see HttpSession
+     */
     public long getLastAccessedTime()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return lastAccessTime;
     }
 
+    /**
+     * @see HttpSession
+     * @return
+     */
     public ServletContext getServletContext()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return JOTSessionManager.getInstance().getServletContext();
     }
 
-    public void setMaxInactiveInterval(int arg0)
+    /**
+     * Set the session expiration time (in Seconds) of inactivity
+     * @param intervalInSec
+     * @see HttpSession
+     */
+    public void setMaxInactiveInterval(int intervalInSec)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        maxInactiveInterval=intervalInSec;
     }
 
+    /**
+     * Get the session expiration time (in Seconds) of inactivity
+     * @param intervalInSec
+     * @see HttpSession
+     */
     public int getMaxInactiveInterval()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return maxInactiveInterval;
     }
 
+    /**
+     * Unsafe and deprecated .. not implemented
+     * @see HttpSession
+     * @deprecated 
+     * @return
+     */
     public HttpSessionContext getSessionContext()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("This is not supported - Deprecated anyhow.");
     }
 
-    public Object getAttribute(String arg0)
+    /**
+     * return a session attribute
+     * @see HttpSession
+     * @param name
+     * @return
+     */
+    public Object getAttribute(String name)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if(invalidated)
+            throw new IllegalStateException("Session was invalidated.");
+        return attributes.get(name);
     }
 
-    public Object getValue(String arg0)
+    /**
+     * @deprecated 
+     * @param name
+     * @see HttpSession
+     * @return
+     */
+    public Object getValue(String name)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return getAttribute(name);
     }
 
+    /**
+     * @see HttpSession
+     * @return
+     */
     public Enumeration getAttributeNames()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if(invalidated)
+            throw new IllegalStateException("Session was invalidated.");
+        return attributes.keys();
     }
 
+    /**
+     * @see HttpSession
+     * @return
+     */
     public String[] getValueNames()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if(invalidated)
+            throw new IllegalStateException("Session was invalidated.");
+        return (String[])attributes.keySet().toArray(new String[0]);
     }
 
-    public void setAttribute(String arg0, Object arg1)
+    /**
+     * @see HttpSession
+     * @return
+     */
+    public void setAttribute(String key, Object value)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if(invalidated)
+            throw new IllegalStateException("Session was invalidated.");
+        attributes.put(key, value);
+        if(value instanceof HttpSessionBindingListener)
+        {
+            HttpSessionBindingEvent evt=new HttpSessionBindingEvent(this, key, value);
+            ((HttpSessionBindingListener)value).valueBound(evt);
+        }
     }
 
-    public void putValue(String arg0, Object arg1)
+    /**
+     * @see HttpSession
+     * @return
+     */
+    public void putValue(String key, Object value)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        setAttribute(key, value);
     }
 
-    public void removeAttribute(String arg0)
+    /**
+     * @see HttpSession
+     * @return
+     */
+    public void removeAttribute(String key)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if(invalidated)
+            throw new IllegalStateException("Session was invalidated.");
+        Object value=attributes.get(key);
+        if(value!=null && value instanceof HttpSessionBindingListener)
+        {
+            HttpSessionBindingEvent evt=new HttpSessionBindingEvent(this, key, value);
+            ((HttpSessionBindingListener)value).valueUnbound(evt);
+            // helps GC
+            value=null;
+        }
+        attributes.remove(key);
     }
 
-    public void removeValue(String arg0)
+    /**
+     * @see HttpSession
+     * @return
+     */
+    public void removeValue(String key)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        removeAttribute(key);
     }
 
+    /**
+     * @see HttpSession
+     * @return
+     */
     public void invalidate()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if(invalidated)
+            throw new IllegalStateException("Session was already invalidated.");
+        Enumeration e=getAttributeNames();
+        while(e.hasMoreElements())
+        {
+            removeAttribute((String)e.nextElement());
+        }
+        //help GC
+        attributes=null;
+        
+        invalidated=true;
     }
 
+    /**
+     *
+     * @see HttpSession
+     * When the server creates a session in response to the first request,
+     * the session is in a new state. So, HttpSession.isNew() will return true.
+     * On the next request, which must include the session ID received from the server (cookies or rewritten url)
+     * the server will associate the request with the session.
+     * The client will then have joined the session, meaning that the session is no longer
+     * in the new state. So, HttpSession.isNew() will return false.
+     * @return
+     */
     public boolean isNew()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if(invalidated)
+            throw new IllegalStateException("Session was invalidated.");
+        return isNew;
     }
 
+    boolean isInvalidated()
+    {
+        return invalidated;
+    }
+
+    void setLastAccessTime(long time)
+    {
+        lastAccessTime=time;
+    }
+
+    void setNew(boolean value)
+    {
+        isNew=value;
+    }
 }

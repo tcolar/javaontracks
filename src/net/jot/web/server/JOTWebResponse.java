@@ -21,13 +21,6 @@ import net.jot.logger.JOTLoggerLocation;
 import net.jot.utils.JOTTimezoneUtils;
 
 /**
- * TODO: write test case for encodeurl, sendredirect, absoluteurl etc..
- * For url's: local, remote, relative(starting with / or not)
- * Test with urls with http:// ftp:// https:// ..
- * Test urls with IP address, starnge port, hostname
- * Test with anchors, parameterrs, jsessionID etc..
- * 
- * 
  * HttpServletResponse impl.
  * @author thibautc
  */
@@ -514,6 +507,12 @@ public class JOTWebResponse implements HttpServletResponse
     {
         if (!isCommited)
         {
+            if(request.getSessionId()!=null)
+            {
+                Cookie cookie=new Cookie("JSESSIONID",request.getSessionId());
+                //cookie.setMaxAge(request.get);
+                cookies.add(cookie);
+            }
             try
             {
                 PrintWriter p = new PrintWriter(socket.getOutputStream());
