@@ -24,9 +24,7 @@ public class JOTSessionManager
     private static final JOTServletContext context=new JOTServletContext();
 
     /**
-     * TODO: synchronized, safe faster to use hashmap instead ? -> research later
-     * 
-     * TODO: when is it safe to automatically remove an expired session (not still used)?? 
+     * TODO: synchronized, faster to use hashmap instead(safe?) ? -> research later
      */
     private Hashtable sessions = new Hashtable();
 
