@@ -12,15 +12,13 @@ import javax.servlet.ServletContext;
 
 /**
  * Manage Web sessions
+ * TODO: session cleanup thread
  * @author thibautc
  */
 public class JOTSessionManager
 {
 
     private static final JOTSessionManager instance = new JOTSessionManager();
-    // seeding with now time and avail memory value combo ~ random seed
-    //private static final String seed=""+Runtime.getRuntime().freeMemory()+""+new Date().getTime();
-    // self seeding should be safer
     private static final SecureRandom random = new SecureRandom();
     private static int uniq = 1;
     private static final JOTServletContext context=new JOTServletContext();

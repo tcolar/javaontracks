@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
-import java.util.Date;
 import java.util.Hashtable;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -20,7 +19,9 @@ import net.jot.web.server.JOTWebHelper;
 import net.jot.web.server.JOTWebRequestHandlerBase;
 
 /**
- *
+ * Note that this is a "simple" http server (not j2ee) and that not all the request methods are implemented
+ * In particular the session and context stuff are not implemented / working.
+ * 
  * @author tcolar
  */
 public class JOTStaticServerHandler extends JOTWebRequestHandlerBase{

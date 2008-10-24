@@ -8,7 +8,6 @@ import java.net.Socket;
 import java.util.Date;
 import net.jot.logger.JOTLogger;
 import net.jot.logger.JOTLoggerLocation;
-import net.jot.web.server.impl.JOTStaticServerHandler;
 
 /**
  * Base implementation of a request handler providing a parsed request object

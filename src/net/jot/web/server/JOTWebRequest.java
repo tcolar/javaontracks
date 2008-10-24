@@ -156,11 +156,6 @@ public class JOTWebRequest implements HttpServletRequest
         return protocol;
     }
 
-    public Cookie[] getCookie(String nameetc)
-    {
-        return (Cookie[]) cookies.toArray(new Cookie[0]);
-    }
-
     protected void addHeader(String key, String value)
     {
         Vector v = new Vector();
