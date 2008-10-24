@@ -54,7 +54,14 @@ public class JOTStaticServerHandler extends JOTWebRequestHandlerBase{
             }
             if(f.isDirectory())
             {
-                sendDirectoryListing(f);
+                if(new File(f,"index.html").exists())
+                {
+                    sendFile(new File(f,"index.html"));
+                }
+                else
+                {
+                    sendDirectoryListing(f);
+                }
             }
             else
             {
