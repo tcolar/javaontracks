@@ -8,7 +8,9 @@ import java.math.BigInteger;
 import java.util.Date;
 import java.util.Hashtable;
 import java.security.SecureRandom;
+import java.util.Enumeration;
 import javax.servlet.ServletContext;
+import net.jot.logger.JOTLogger;
 
 /**
  * Manage Web sessions
@@ -19,10 +21,13 @@ public class JOTSessionManager
 {
 
     private static final JOTSessionManager instance = new JOTSessionManager();
-    private static final SecureRandom random = new SecureRandom();
-    private static int uniq = 1;
-    private static final JOTServletContext context=new JOTServletContext();
-
+    private final SecureRandom random = new SecureRandom();
+    private int uniq = 1;
+    private final JOTServletContext context=new JOTServletContext();
+    private JOTSessionManagerThread thread=new JOTSessionManagerThread();
+    // cleanup every 5mn
+    private final static long CLEANUP_INTERVAL=1000*300;
+    
     /**
      * TODO: synchronized, faster to use hashmap instead(safe?) ? -> research later
      */
@@ -119,5 +124,70 @@ public class JOTSessionManager
     ServletContext getServletContext()
     {
         throw( new UnsupportedOperationException("Not supported yet."));
+    }
+    
+    public void finalize() throws Throwable
+    {
+        shutdown();
+        super.finalize();
+    }
+    
+    public static void shutdown()
+    {
+        if(instance != null)
+            getInstance().thread.shutdown();
+    }
+    /**
+     * session cleanup thread
+     */
+    private class JOTSessionManagerThread extends Thread implements Runnable
+    {
+        volatile boolean stop=false;
+        
+        public JOTSessionManagerThread()
+        {
+            run();
+        }
+        
+        public void run()
+        {
+            while(!stop)
+            {
+                try
+                {
+                    sleep(CLEANUP_INTERVAL);
+                    long start=new Date().getTime();
+                    int startSize=sessions.size();
+                    cleanup();
+                    long end=new Date().getTime();
+                    int endSize=sessions.size();
+                    if(JOTLogger.isDebugEnabled())
+                        JOTLogger.debug(this, "Session cleanup from:"+startSize+" to:"+endSize+" took:"+(end-start)+"ms.");
+                }
+                catch(InterruptedException ie){}
+            }
+        }
+
+        private void cleanup()
+        {
+            Enumeration e=sessions.keys();
+            while(e.hasMoreElements())
+            {
+                String key=(String)e.nextElement();
+                JOTWebSession session=(JOTWebSession)sessions.get(key);
+                if(session.isInvalidated() || session.isExpired())
+                {
+                    sessions.remove(key);
+                    session=null;
+                }
+            }
+        }
+
+        private void shutdown()
+        {
+            interrupt();
+            stop=true;
+        }
+        
     }
 }

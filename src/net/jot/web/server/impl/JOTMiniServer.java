@@ -11,6 +11,7 @@ import java.util.Vector;
 import net.jot.logger.JOTLogger;
 import net.jot.logger.JOTLoggerLocation;
 import net.jot.web.server.JOTServerRequestHandler;
+import net.jot.web.server.JOTSessionManager;
 
 /**
  * Mini generic web server (regular- not j2ee)
@@ -76,6 +77,7 @@ public class JOTMiniServer
                 c.stop();
             }
         }
+        JOTSessionManager.shutdown();
     }
 
 

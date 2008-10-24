@@ -264,4 +264,10 @@ public class JOTWebSession implements HttpSession
     {
         isNew=value;
     }
+    
+    public boolean isExpired()
+    {
+        long now=new Date().getTime()/1000;
+        return getLastAccessedTime()/1000<now-getMaxInactiveInterval();
+    }
 }
