@@ -23,18 +23,19 @@ public class JOTSessionManager
     private static final JOTSessionManager instance = new JOTSessionManager();
     private final SecureRandom random = new SecureRandom();
     private int uniq = 1;
-    private final JOTServletContext context=new JOTServletContext();
-    private JOTSessionManagerThread thread=new JOTSessionManagerThread();
+    private final JOTServletContext context = new JOTServletContext();
+    private JOTSessionManagerThread thread = new JOTSessionManagerThread();
     // cleanup every 5mn
-    private final static long CLEANUP_INTERVAL=1000*300;
-    
+    private final static long CLEANUP_INTERVAL = 1000 * 300;
     /**
      * TODO: synchronized, faster to use hashmap instead(safe?) ? -> research later
      */
     private Hashtable sessions = new Hashtable();
-
+    private boolean inUse=false;
+    
     public static JOTSessionManager getInstance()
     {
+        instance.inUse=true;
         return instance;
     }
 
@@ -123,71 +124,83 @@ public class JOTSessionManager
 
     ServletContext getServletContext()
     {
-        throw( new UnsupportedOperationException("Not supported yet."));
+        throw (new UnsupportedOperationException("Not supported yet."));
     }
-    
+
     public void finalize() throws Throwable
     {
         shutdown();
         super.finalize();
     }
-    
+
     public static void shutdown()
     {
-        if(instance != null)
+        if (instance != null)
+        {
             getInstance().thread.shutdown();
+        }
     }
+
     /**
      * session cleanup thread
      */
     private class JOTSessionManagerThread extends Thread implements Runnable
     {
-        volatile boolean stop=false;
-        
+
+        volatile boolean stop = false;
+
         public JOTSessionManagerThread()
         {
             run();
         }
-        
+
         public void run()
         {
-            while(!stop)
+            while (!stop)
             {
                 try
                 {
                     sleep(CLEANUP_INTERVAL);
-                    long start=new Date().getTime();
-                    int startSize=sessions.size();
-                    cleanup();
-                    long end=new Date().getTime();
-                    int endSize=sessions.size();
-                    if(JOTLogger.isDebugEnabled())
-                        JOTLogger.debug(this, "Session cleanup from:"+startSize+" to:"+endSize+" took:"+(end-start)+"ms.");
+                    if (inUse)
+                    {
+                        //if nobody is using this, no point wasting time.
+                        long start = new Date().getTime();
+                        int startSize = sessions.size();
+                        cleanup();
+                        long end = new Date().getTime();
+                        int endSize = sessions.size();
+                        if (JOTLogger.isDebugEnabled())
+                        {
+                            JOTLogger.debug(this, "Session cleanup from:" + startSize + " to:" + endSize + " took:" + (end - start) + "ms.");
+                        }
+                    }
+                } catch (InterruptedException ie)
+                {
+                    // stop was set.
                 }
-                catch(InterruptedException ie){}
             }
         }
 
         private void cleanup()
         {
-            Enumeration e=sessions.keys();
-            while(e.hasMoreElements())
+            Enumeration e = sessions.keys();
+            while (e.hasMoreElements())
             {
-                String key=(String)e.nextElement();
-                JOTWebSession session=(JOTWebSession)sessions.get(key);
-                if(session.isInvalidated() || session.isExpired())
+                String key = (String) e.nextElement();
+                JOTWebSession session = (JOTWebSession) sessions.get(key);
+                if (session.isInvalidated() || session.isExpired())
                 {
                     sessions.remove(key);
-                    session=null;
+                    session = null;
                 }
             }
         }
 
         private void shutdown()
         {
+            stop = true;
+            // stop sleeping.
             interrupt();
-            stop=true;
         }
-        
     }
 }
