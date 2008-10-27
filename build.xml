@@ -62,7 +62,7 @@
     <target name="jotdoc" depends="jar">
         <delete dir="jotdoc" quiet="true"/>
         <mkdir dir="jotdoc"/>
-        <javadoc sourcepath="src" destdir="jotdoc" packagenames="*" verbose="true" source="true">
+        <javadoc sourcepath="src" destdir="jotdoc" packagenames="*" source="true">
             <doclet name="net.jot.doclet.JOTDoclet" path="classes"/>
             <classpath>
                 <filelist dir="lib">
