@@ -1,0 +1,37 @@
+<!-- todo: show all class alphabetically / or show by package -->
+<!-- todo: rollovers with short package /item description) -->
+<!-- todo: impl. search -->
+<!-- todo: collapse packages (and subs) and collapse all, expand all-->
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="doclet.css">
+    <script type="text/javascript" src="doclet.js"></script>
+  </head>
+  <body>
+    <div class="pkgNav" id="pkgNav">
+    <form name="filterForm" id="filterForm">
+      Pack.:<input id="pkgFilter" type="text" size="15"><br/>
+      Item :<input id="itemFilter" type="text" size="15"><br>
+      <button onclick="applyFilters()">Apply Filters</button>
+    </form>
+    <hr width="200px" align="left"/>
+      <jot:loop over="packages" as="package">
+        <div class="navPackage" id='__<jot:var value="package.name"/>'>
+          <b><jot:var value="package.name"/></b><br/>
+          <jot:loop over="getSortedClasses(package)" as="class">
+            <div id='__<jot:var value="package.name"/>__<jot:var value="class.name"/>'>
+              &nbsp;
+              <img class="navItem" src='<jot:var value="getTypeImage(class)"/>' width="16" height="16"/>
+              <jot:var value="class.name"/><br/>
+            </div>
+          </jot:loop>
+        </div>
+      </jot:loop>
+    </div>
+    <div class="content">
+      dfdsfdsfdsfdsfds
+      fdsfd gffdgfdgfdgfd gfdgfdgfdgfdgdg fdsdsfssdfds fsdf fsdfdsfdfgfdgfdgfdgfgfdgfgfdg fdgfdgfdgfdg fdgfdgfdgf fdgfdgfdgfd gfdgfdgfdgfd gfdgfdgdfgfdg fdgfdgdfgfdgfdgfdgfdg fdgfdgd
+      aaaa
+    </div>
+  </body>
+</html>
