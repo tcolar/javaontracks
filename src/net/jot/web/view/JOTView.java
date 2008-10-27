@@ -32,7 +32,7 @@ import net.jot.web.forms.JOTForm;
  * @author thibautc
  *
  */
-public abstract class JOTView
+public abstract class JOTView implements JOTViewParserData
 {
 
     private boolean provideRequestParameters = false;
@@ -231,5 +231,10 @@ public abstract class JOTView
     protected JOTDataHolder getDataHolder()
     {
         return JOTDataHolderHelper.getDataHolder(request.getSession());
+    }
+    
+    public JOTView getFullView()
+    {
+        return this;
     }
 }

@@ -94,7 +94,7 @@ public class JOTViewParser
      * @return
      * @throws Exception
      */
-    public static String parse(JOTView view, String template, String templateRoot) throws Exception
+    public static String parse(JOTViewParserData view, String template, String templateRoot) throws Exception
     {
         // done as part of caching now, since static.
         //template=doRemoveTags(template);		
@@ -114,7 +114,7 @@ public class JOTViewParser
     }
 
     /** process URL's*/
-    static String doUrls(String template, JOTView view)
+    static String doUrls(String template, JOTViewParserData view)
     {
         Matcher m = URL_PATTERN.matcher(template);
         StringBuffer buf = new StringBuffer();
@@ -123,7 +123,7 @@ public class JOTViewParser
             //String htmlTag=m.group(0);
             String url = m.group(1);
             String newUrl = JOTMainFilter.getContextName() + url;
-            JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "New URL:" + newUrl);
+            JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "New URL:" + newUrl);
             safeAppendReplacement(m, buf, newUrl);
         }
         m.appendTail(buf);
@@ -131,7 +131,7 @@ public class JOTViewParser
         return template;
     }
 
-    static String doIfs(String template, JOTView view, String templateRoot) throws Exception
+    static String doIfs(String template, JOTViewParserData view, String templateRoot) throws Exception
     {
         Matcher m = null;
         while ((m = IF_PATTERN.matcher(template)).find())
@@ -140,7 +140,7 @@ public class JOTViewParser
             String var = m.group(2);
             String openingTag = m.group(1);
             String restOfTemplate = m.group(3);
-            JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Found If " + openingTag);
+            JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Found If " + openingTag);
             boolean negated = false;
             var = var.trim();
             if (var.startsWith("!"))
@@ -153,7 +153,7 @@ public class JOTViewParser
 
             if (index == -1)
             {
-                JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.ERROR_LEVEL, JOTViewParser.class, "View Parsing error, Could not find closing if tag for:" + openingTag + " (" + var + ")");
+                JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.ERROR_LEVEL, JOTView.class, "View Parsing error, Could not find closing if tag for:" + openingTag + " (" + var + ")");
                 throw new Exception("View Parsing error, Could not find closing if tag for:" + openingTag + " (" + var + ")");
             }
 
@@ -181,24 +181,24 @@ public class JOTViewParser
 
             if (!result)
             {
-                JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Removing if content:" + openingTag);
+                JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Removing if content:" + openingTag);
                 // keeping what's is AFTER the tag.
                 safeAppendReplacement(m, buf, restOfTemplate.substring(index, restOfTemplate.length()));
             } else
             {
                 String newTemplate = restOfTemplate.substring(0, index - CLOSE_IF_STRING.length()) + restOfTemplate.substring(index, restOfTemplate.length());
                 newTemplate = parse(view, newTemplate, templateRoot);
-                //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Replacement without tag:"+newTemplate);
+                //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTView.class, "Replacement without tag:"+newTemplate);
                 safeAppendReplacement(m, buf, newTemplate);
             }
             template = buf.toString();
-        //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTViewParser.class, "New template:"+template);
+        //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTView.class, "New template:"+template);
         }//end while
 
         return template;
     }
 
-    static String doIncludes(String template, JOTView view, String templateRoot) throws Exception
+    static String doIncludes(String template, JOTViewParserData view, String templateRoot) throws Exception
     {
         Hashtable variables = view.getVariables();
         Matcher m = INCLUDE_PATTERN.matcher(template);
@@ -207,7 +207,7 @@ public class JOTViewParser
         {
             String htmlTag = m.group(0);
             String file = m.group(1);
-            JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Include:" + file);
+            JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Include:" + file);
             // id the argument exists as a variable, uses that, otherwise expect a file name.
             Vector hash = getVariableHash(file);
             if (hash.size() > 0)
@@ -228,7 +228,7 @@ public class JOTViewParser
             } catch (Exception e)
             {
                 Exception e2 = new Exception("Error while parsing included template in: " + file, e);
-                JOTLogger.logException(JOTLogger.ERROR_LEVEL, JOTViewParser.class, "Error parsing template !", e);
+                JOTLogger.logException(JOTLogger.ERROR_LEVEL, JOTView.class, "Error parsing template !", e);
                 e2.fillInStackTrace();
                 throw (e2);
             }
@@ -241,7 +241,7 @@ public class JOTViewParser
         return buf.toString();
     }
 
-    static String doRangeLoops(String template, JOTView view, String templateRoot) throws Exception
+    static String doRangeLoops(String template, JOTViewParserData view, String templateRoot) throws Exception
     {
         Hashtable variables = view.getVariables();
         Matcher m = null;
@@ -267,7 +267,7 @@ public class JOTViewParser
             {
                 counter = COUNTER_NAME;
             }
-            JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Loop found from:" + from + " to:" + to + " counter:" + counter);
+            JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Loop found from:" + from + " to:" + to + " counter:" + counter);
 
             int loopStartIndex = m.start();
 
@@ -318,7 +318,7 @@ public class JOTViewParser
      * @return
      * @throws Exception
      */
-    static String doLoops(String template, JOTView view, String templateRoot) throws Exception
+    static String doLoops(String template, JOTViewParserData view, String templateRoot) throws Exception
     {
         Hashtable variables = view.getVariables();
         Matcher m = null;
@@ -333,7 +333,7 @@ public class JOTViewParser
             {
                 counter = COUNTER_NAME;
             }
-            JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Loop found :" + loopObjectName + " loop as:" + as + " counter:" + counter);
+            JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Loop found :" + loopObjectName + " loop as:" + as + " counter:" + counter);
 
             int loopStartIndex = m.start();
             int loopEndIndex = findMatchingClosingTag(m.end(), template, GENERIC_LOOP_PATTERN, CLOSE_LOOP_PATTERN, 1);
@@ -355,7 +355,7 @@ public class JOTViewParser
 
                 if (loop == null)
                 {
-                    JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.INFO_LEVEL, JOTViewParser.class, "Loop object is null! :" + loopObjectName);
+                    JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.INFO_LEVEL, JOTView.class, "Loop object is null! :" + loopObjectName);
                 } else if (loop instanceof Collection)
                 {
                     objects = ((Collection) loop).toArray();
@@ -375,7 +375,7 @@ public class JOTViewParser
                     // loop values
                     Object obj = objects[i];
                     //store the "As" value temp.
-                    //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.DEBUG_LEVEL, JOTViewParser.class, "Setting loop var :"+as+" -> "+obj);					
+                    //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.DEBUG_LEVEL, JOTView.class, "Setting loop var :"+as+" -> "+obj);
                     variables.put(as, obj);
                     // and the counter value 
                     variables.put(counter, new Integer(i));
@@ -386,8 +386,8 @@ public class JOTViewParser
                     variables.remove(counter);
                 }
             }
-            //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.DEBUG_LEVEL, JOTViewParser.class, "Loop content :"+loopContent);					
-            //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.DEBUG_LEVEL, JOTViewParser.class, "New Loop content :"+newLoopContent);					
+            //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.DEBUG_LEVEL, JOTView.class, "Loop content :"+loopContent);
+            //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.DEBUG_LEVEL, JOTView.class, "New Loop content :"+newLoopContent);
 
             template = template.substring(0, loopStartIndex) + newLoopContent + template.substring(loopEndIndex, template.length());
         }
@@ -400,7 +400,7 @@ public class JOTViewParser
      * @param view
      * @return
      */
-    static String do1LineTags(String template, JOTView view)
+    static String do1LineTags(String template, JOTViewParserData view)
     {
         Hashtable tags = view.getTags();
         Matcher m = TAG_PATTERN_1LINE.matcher(template);
@@ -410,7 +410,7 @@ public class JOTViewParser
             String htmlTag = m.group(0);
             String jotId = m.group(1);
             jotId = jotId.trim();
-            JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Tag(1liner):" + htmlTag + " with jotid found, jotid:" + jotId);
+            JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Tag(1liner):" + htmlTag + " with jotid found, jotid:" + jotId);
             JOTViewTag tag = (JOTViewTag) tags.get(jotId);
 
             if (tag == null)
@@ -424,7 +424,7 @@ public class JOTViewParser
                 if (!tag.isVisible())
                 {
                     // removing the block
-                    JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Removing invisible 1liner tag:" + jotId);
+                    JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Removing invisible 1liner tag:" + jotId);
                     safeAppendReplacement(m, buf, "");
                 } else
                 {
@@ -432,11 +432,11 @@ public class JOTViewParser
                     String replacement = m2.replaceFirst("");
 
                     replacement = replaceTagProperties(replacement, tag.getTagProperties(), true);
-                    replacement = JOTViewParser.replaceFlags(replacement, tag.getFlags(), true);
+                    replacement = replaceFlags(replacement, tag.getFlags(), true);
 
                     if (tag.getContent() != null)
                     {
-                        JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.INFO_LEVEL, JOTViewParser.class, "Cannot replace content of 1liner tags." + jotId);
+                        JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.INFO_LEVEL, JOTView.class, "Cannot replace content of 1liner tags." + jotId);
                     }
 
                     safeAppendReplacement(m, buf, replacement);
@@ -457,7 +457,7 @@ public class JOTViewParser
      * @return
      * @throws Exception
      */
-    static String doTags(String template, JOTView view, String templateRoot) throws Exception
+    static String doTags(String template, JOTViewParserData view, String templateRoot) throws Exception
     {
         Hashtable tags = view.getTags();
 
@@ -471,10 +471,10 @@ public class JOTViewParser
             String tagName = m.group(2);
             String restOfTemplate = m.group(4);
 
-            JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Found Tag: " + openingTag);
+            JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Found Tag: " + openingTag);
 
-            //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Tag Name: "+tagName);
-            //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTViewParser.class, "jotId: "+jotId);
+            //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTView.class, "Tag Name: "+tagName);
+            //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTView.class, "jotId: "+jotId);
 
             String closeTagString = "</" + tagName + ">";
             Pattern closeTag = Pattern.compile(closeTagString, PATTERN_FLAGS);
@@ -482,12 +482,12 @@ public class JOTViewParser
 
             if (index == -1)
             {
-                JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.ERROR_LEVEL, JOTViewParser.class, "View Parsing error, Could not find closing tag for:" + openingTag + " (" + jotId + ")");
+                JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.ERROR_LEVEL, JOTView.class, "View Parsing error, Could not find closing tag for:" + openingTag + " (" + jotId + ")");
                 throw new Exception("View Parsing error, Could not find closing tag for:" + openingTag + " (" + jotId + ")");
             }
 
             String tagContent = restOfTemplate.substring(0, index);
-            //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Tag content:"+restOfTemplate.substring(0,index));
+            //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTView.class, "Tag content:"+restOfTemplate.substring(0,index));
 
             JOTViewTag tag = (JOTViewTag) tags.get(jotId);
 
@@ -495,7 +495,7 @@ public class JOTViewParser
             {
                 if (!tag.isVisible())
                 {
-                    JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Removing  invisible block:" + jotId);
+                    JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Removing  invisible block:" + jotId);
                     // keeping what's is AFTER the tag.
                     safeAppendReplacement(m, buf, restOfTemplate.substring(index, restOfTemplate.length()));
                 } else
@@ -506,11 +506,11 @@ public class JOTViewParser
                     openingTag = replaceTagProperties(openingTag, tag.getTagProperties(), false);
 
                     String replacement = openingTag;
-                    replacement = JOTViewParser.replaceFlags(replacement, tag.getFlags(), false);
+                    replacement = replaceFlags(replacement, tag.getFlags(), false);
 
                     if (tag.getContent() != null)
                     {
-                        JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Replacing block content of:" + jotId);
+                        JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Replacing block content of:" + jotId);
                         // replace old content by newContent
                         replacement += parse(view, tag.getContent(), templateRoot);
                     } else
@@ -535,7 +535,7 @@ public class JOTViewParser
 
 
             template = buf.toString();
-        //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTViewParser.class, "New template:"+template);
+        //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTView.class, "New template:"+template);
         }//end while
 
         return template;
@@ -566,7 +566,7 @@ public class JOTViewParser
             {
                 // leave in quotes
                 openingTag = m.replaceFirst(key + "=\"" + value + "\"");
-                JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Replacing tag property:" + key);
+                JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Replacing tag property:" + key);
             } else
             {
                 m = unquoted.matcher(openingTag);
@@ -574,7 +574,7 @@ public class JOTViewParser
                 {
                     // put in quotes for safety
                     openingTag = m.replaceFirst(key + "=\"" + value + "\"");
-                    JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Replacing tag property:" + key);
+                    JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Replacing tag property:" + key);
                 } else
                 {
                     m = singlequoted.matcher(openingTag);
@@ -582,7 +582,7 @@ public class JOTViewParser
                     {
                         // leave in single quotes
                         openingTag = m.replaceFirst(key + "=\"" + value + "\"");
-                        JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Replacing tag property:" + key);
+                        JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Replacing tag property:" + key);
                     } else
                     {
                         int offset = 1;
@@ -594,7 +594,7 @@ public class JOTViewParser
                         }
 
                         openingTag = openingTag.substring(0, openingTag.length() - offset) + " " + key + "=\"" + value + "\"" + closingTag;
-                        JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Adding tag property:" + key);
+                        JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Adding tag property:" + key);
                     }
                 }
             }
@@ -609,7 +609,7 @@ public class JOTViewParser
      * @return
      * @throws Exception
      */
-    static String do1LineBlocks(String template, JOTView view) throws Exception
+    static String do1LineBlocks(String template, JOTViewParserData view) throws Exception
     {
         StringBuffer buf = new StringBuffer();
         Hashtable blocks = view.getBlocks();
@@ -619,20 +619,20 @@ public class JOTViewParser
         {
             String jotId = m.group(1);
             jotId = jotId.trim();
-            JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Found block (1 liner), jotid:" + jotId);
+            JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Found block (1 liner), jotid:" + jotId);
             JOTViewBlock block = (JOTViewBlock) blocks.get(jotId);
 
             if (block == null || !block.isVisible())
             {
                 // removing the block
-                JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Removing invisible block:" + jotId);
+                JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Removing invisible block:" + jotId);
                 safeAppendReplacement(m, buf, "");
             } else
             {
                 if (block.getContent() != null)
                 {
                     // replacing by content
-                    JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Replacing block content of:" + jotId);
+                    JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Replacing block content of:" + jotId);
                     safeAppendReplacement(m, buf, block.getContent());
                 }
             }
@@ -649,7 +649,7 @@ public class JOTViewParser
      * @return
      * @throws Exception
      */
-    static String doBlocks(String template, JOTView view, String templateRoot) throws Exception
+    static String doBlocks(String template, JOTViewParserData view, String templateRoot) throws Exception
     {
         Hashtable blocks = view.getBlocks();
 
@@ -661,17 +661,17 @@ public class JOTViewParser
             jotId = jotId.trim();
             String openingTag = m.group(1);
             String restOfTemplate = m.group(3);
-            JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Found block " + openingTag);
+            JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Found block " + openingTag);
 
             int index = findMatchingClosingTag(0, restOfTemplate, OPEN_BLOCK_PATTERN, CLOSE_BLOCK_PATTERN, 1);
 
             if (index == -1)
             {
-                JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.ERROR_LEVEL, JOTViewParser.class, "View Parsing error, Could not find closing tag for:" + openingTag + " (" + jotId + ")");
+                JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.ERROR_LEVEL, JOTView.class, "View Parsing error, Could not find closing tag for:" + openingTag + " (" + jotId + ")");
                 throw new Exception("View Parsing error, Could not find closing block tag for:" + openingTag + " (" + jotId + ")");
             }
 
-            //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Block content:"+restOfTemplate.substring(0,index));
+            //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTView.class, "Block content:"+restOfTemplate.substring(0,index));
 
             JOTViewBlock block = (JOTViewBlock) blocks.get(jotId);
 
@@ -680,20 +680,20 @@ public class JOTViewParser
                 // keeping all but the opening/closing tags
                 String newTemplate = restOfTemplate.substring(0, index - CLOSE_BLOCK_STRING.length()) + restOfTemplate.substring(index, restOfTemplate.length());
                 newTemplate = parse(view, newTemplate, templateRoot);
-                //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Replacement without tag:"+newTemplate);
+                //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTView.class, "Replacement without tag:"+newTemplate);
                 safeAppendReplacement(m, buf, newTemplate);
             } else
             {
                 if (!block.isVisible())
                 {
-                    JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Removing invisible block:" + jotId);
+                    JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Removing invisible block:" + jotId);
                     // keeping what's is AFTER the tag.
                     safeAppendReplacement(m, buf, restOfTemplate.substring(index, restOfTemplate.length()));
                 } else
                 {
                     if (block.getContent() != null)
                     {
-                        JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Replacing block content of:" + jotId);
+                        JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Replacing block content of:" + jotId);
                         // replace old content by newContent
                         // keeping what's is AFTER the tag.
                         String newContent = parse(view, block.getContent(), templateRoot);
@@ -702,7 +702,7 @@ public class JOTViewParser
                 }
             }
             template = buf.toString();
-        //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTViewParser.class, "New template:"+template);
+        //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTView.class, "New template:"+template);
         }//end while
 
         return template;
@@ -715,7 +715,7 @@ public class JOTViewParser
      * @return
      * @throws Exception
      */
-    static String doVariables(String template, JOTView view) throws Exception
+    static String doVariables(String template, JOTViewParserData view) throws Exception
     {
         Hashtable variables = view.getVariables();
 
@@ -729,14 +729,14 @@ public class JOTViewParser
             {
                 defaultVal = m.group(3).trim();
             }
-            JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Var found:" + varName + " default:" + defaultVal);
+            JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Var found:" + varName + " default:" + defaultVal);
             Vector varHash = getVariableHash(varName);
 
             if (varHash.size() > 0)
             {
                 Object obj = variables.get(varHash.get(0));
                 Object value = getVariableValue(view, varHash, obj, defaultVal);
-                JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Var value: " + value);
+                JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Var value: " + value);
                 safeAppendReplacement(m, buf, value.toString());
             }
 
@@ -798,7 +798,7 @@ public class JOTViewParser
     public static String doRemoveTags(String template)
     {
         Matcher m = REMOVE_PATTERN.matcher(template);
-        JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Removing all <jot:remove> tags content.");
+        JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Removing all <jot:remove> tags content.");
         template = m.replaceAll("");
         return template;
     }
@@ -811,9 +811,9 @@ public class JOTViewParser
      * @return
      * @throws Exception
      */
-    static Object getVariableValue(JOTView view, Vector varHash, Object obj, String defaultVal) throws Exception
+    static Object getVariableValue(JOTViewParserData view, Vector varHash, Object obj, String defaultVal) throws Exception
     {
-        JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.DEBUG_LEVEL, JOTViewParser.class, "hash: " + varHash + " obj:" + obj);
+        JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.DEBUG_LEVEL, JOTView.class, "hash: " + varHash + " obj:" + obj);
 
         if (obj == null)
         {
@@ -841,14 +841,14 @@ public class JOTViewParser
                     //maybe we have a user function call
 
                     obj = evaluateObject(view, view, call);
-                    JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.DEBUG_LEVEL, JOTViewParser.class, "call: " + call);
+                    JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.DEBUG_LEVEL, JOTView.class, "call: " + call);
                 }
             }
         }
 
         if (obj != null)
         {
-            //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Replacing variable:"+varHash.get(0));
+            //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTView.class, "Replacing variable:"+varHash.get(0));
             for (int i = 1; i < varHash.size(); i++)
             {
                 String name = ((String) varHash.get(i)).trim();
@@ -857,24 +857,24 @@ public class JOTViewParser
                 Object prevObject = obj;
                 // look for a method
                 obj = evaluateObject(view, obj, name);
-                JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.DEBUG_LEVEL, JOTViewParser.class, "call2: " + name + " obj:" + obj);
+                JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.DEBUG_LEVEL, JOTView.class, "call2: " + name + " obj:" + obj);
 
                 if (obj == null && name.indexOf("(") == -1)
                 {
                     field = lookForField(prevObject, name);
                     if (field != null)
                     {
-                        JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Replacing var, Retrieveing Field: " + field.toString());
+                        JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Replacing var, Retrieveing Field: " + field.toString());
                         obj = field.get(prevObject);
-                        JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.DEBUG_LEVEL, JOTViewParser.class, "call3: " + name + " obj:" + obj);
+                        JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.DEBUG_LEVEL, JOTView.class, "call3: " + name + " obj:" + obj);
                     } else
                     {
-                        JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "NO Field: " + name);
+                        JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "NO Field: " + name);
                     }
                 }
                 if (obj == null)
                 {
-                    JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.INFO_LEVEL, JOTViewParser.class, "Replacing var, no such field/method: " + name + " (" + varHash + ")");
+                    JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.INFO_LEVEL, JOTView.class, "Replacing var, no such field/method: " + name + " (" + varHash + ")");
                     break;
                 }
 
@@ -882,11 +882,11 @@ public class JOTViewParser
         }
         if (obj == null)
         {
-            JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.DEBUG_LEVEL, JOTViewParser.class, "Variable value could not be retrieved for: " + varHash + " , will use default:" + defaultVal);
+            JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.DEBUG_LEVEL, JOTView.class, "Variable value could not be retrieved for: " + varHash + " , will use default:" + defaultVal);
             obj = defaultVal;
         }
 
-        JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.DEBUG_LEVEL, JOTViewParser.class, "Variable value: " + obj);
+        JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.DEBUG_LEVEL, JOTView.class, "Variable value: " + obj);
 
         return obj;
     }
@@ -899,7 +899,7 @@ public class JOTViewParser
      * @return
      * @throws java.lang.Exception
      */
-    static Object evaluateObject(JOTView view, Object parent, String call) throws Exception
+    static Object evaluateObject(JOTViewParserData view, Object parent, String call) throws Exception
     {
         Object obj = null;
         if (call != null)
@@ -913,16 +913,16 @@ public class JOTViewParser
             {
                 method = call.substring(0, start);
                 String params = call.substring(start + 1, end);
-                JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.DEBUG_LEVEL, JOTViewParser.class, "PARAMS: " + params);
+                JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.DEBUG_LEVEL, JOTView.class, "PARAMS: " + params);
                 Matcher matcher = PARAMS_PATTERN.matcher(params);
                 Vector parameters = new Vector();
                 while (matcher.find())
                 {
                     String param = matcher.group(1);
-                    JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.DEBUG_LEVEL, JOTViewParser.class, "PARAM: " + param);
+                    JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.DEBUG_LEVEL, JOTView.class, "PARAM: " + param);
                     if (param != null && param.length() > 0)
                     {
-                        JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.DEBUG_LEVEL, JOTViewParser.class, "Found method param:" + param);
+                        JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.DEBUG_LEVEL, JOTView.class, "Found method param:" + param);
                         Vector hash = getVariableHash(param);
                         Object o = view.getVariables().get(hash.get(0));
                         Object value = getVariableValue(view, hash, o, param);
@@ -938,7 +938,7 @@ public class JOTViewParser
                     values[i] = parameters.get(i);
                 }
             }
-            JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Method:" + method + " classes:" + classes + " values:" + values);
+            JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Method:" + method + " classes:" + classes + " values:" + values);
 
             Method m = lookForMethod(parent, method, classes);
             if (m != null)
@@ -963,8 +963,8 @@ public class JOTViewParser
             f = obj.getClass().getField(field);
         } catch (Exception e)
         {
-            JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "No such field: " + e.getMessage());
-        //JOTLogger.logException(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTViewParser.class, "No such field: "+field,e);				
+            JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "No such field: " + e.getMessage());
+        //JOTLogger.logException(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTView.class, "No such field: "+field,e);
         }
         return f;
     }
@@ -991,7 +991,7 @@ public class JOTViewParser
             m = obj.getClass().getMethod(method, classes);
         } catch (Exception e)
         {
-            JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "No such method: " + e);
+            JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "No such method: " + e);
         }
         if (m == null && !method.startsWith("get"))
         {
@@ -1002,7 +1002,7 @@ public class JOTViewParser
                 m = obj.getClass().getMethod(method, classes);
             } catch (Exception e)
             {
-                JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "No such method: " + e);
+                JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "No such method: " + e);
             }
         }
 
@@ -1054,7 +1054,7 @@ public class JOTViewParser
      * @return
      * @throws Exception
      */
-    public static String parseTemplate(JOTView view, String templateRoot, String templateFile) throws Exception
+    public static String parseTemplate(JOTViewParserData view, String templateRoot, String templateFile) throws Exception
     {
         File f = new File(JOTUtilities.endWithSlash(templateRoot) + templateFile);
         long startTime = new GregorianCalendar().getTime().getTime();
@@ -1062,7 +1062,7 @@ public class JOTViewParser
         String templateString = JOTTemplateCache.getTemplate(f.getAbsolutePath());
         String template = parse(view, templateString, templateRoot);
         long endTime = new GregorianCalendar().getTime().getTime();
-        JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.DEBUG_LEVEL, JOTViewParser.class, "Parsing of template: " + f.getAbsolutePath() + " took " + (endTime - startTime) + "ms");
+        JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.DEBUG_LEVEL, JOTView.class, "Parsing of template: " + f.getAbsolutePath() + " took " + (endTime - startTime) + "ms");
         return template;
     }
 
@@ -1120,7 +1120,7 @@ public class JOTViewParser
                 {
                     //we need to remove the flag
                     openingTag = m.replaceFirst("");
-                    JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Removing flag:" + key);
+                    JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Removing flag:" + key);
                 }
             } else
             {
@@ -1135,14 +1135,14 @@ public class JOTViewParser
                         closingTag = "/>";
                     }
                     openingTag = openingTag.substring(0, openingTag.length() - offset) + " " + key + closingTag;
-                    JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Adding flag:" + key);
+                    JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Adding flag:" + key);
                 }
             }
         }
         return openingTag;
     }
 
-    private static String doWidgets(String template, JOTView view)
+    private static String doWidgets(String template, JOTViewParserData view)
     {
         StringBuffer buf = new StringBuffer();
 
@@ -1155,7 +1155,7 @@ public class JOTViewParser
             {
                 args=m.group(3);
             }
-            JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Found widget: " + code);
+            JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Found widget: " + code);
 
             Object instance;
             try
@@ -1164,19 +1164,19 @@ public class JOTViewParser
                 instance = clazz.newInstance();
             } catch (Exception e)
             {
-                JOTLogger.logException(JOTLogger.CAT_FLOW, JOTLogger.ERROR_LEVEL, JOTViewParser.class, "Failed to instantiate widget class: " + code, e);
+                JOTLogger.logException(JOTLogger.CAT_FLOW, JOTLogger.ERROR_LEVEL, JOTView.class, "Failed to instantiate widget class: " + code, e);
                 // do nothing
                 return buf.toString();
             }
             if (instance instanceof JOTWidgetBase)
             {
                 JOTWidgetBase widget = (JOTWidgetBase) instance;
-                widget.init(view);
+                widget.init(view.getFullView());
                 String widgetHtml = widget.render(args);
                 safeAppendReplacement(m, buf, widgetHtml);
             } else
             {
-                JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.ERROR_LEVEL, JOTViewParser.class, "Widget instance failed ! not a JOTWidegetView instance !: " + code);
+                JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.ERROR_LEVEL, JOTView.class, "Widget instance failed ! not a JOTWidegetView instance !: " + code);
             }
         }
         m.appendTail(buf);

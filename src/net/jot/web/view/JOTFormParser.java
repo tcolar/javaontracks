@@ -32,7 +32,7 @@ public class JOTFormParser extends JOTViewParser
          * @return
          * @throws java.lang.Exception
          */
-	public static String doForms(String template, JOTView view, String templateRoot) throws Exception
+	public static String doForms(String template, JOTViewParserData view, String templateRoot) throws Exception
 	{
 	
 		Hashtable forms=view.getForms();
@@ -128,7 +128,7 @@ public class JOTFormParser extends JOTViewParser
          * @return
          * @throws java.lang.Exception
          */
-	public static String doElements(Hashtable elements, String content, JOTView view, String templateRoot) throws Exception
+	public static String doElements(Hashtable elements, String content, JOTViewParserData view, String templateRoot) throws Exception
 	{
 		Enumeration keys=elements.keys();
 		while(keys.hasMoreElements())
@@ -210,7 +210,7 @@ public class JOTFormParser extends JOTViewParser
          * @return
          * @throws java.lang.Exception
          */
-	protected static String handleTag(JOTView view, String templateRoot, String openPattern, String closePattern, String content, JOTFormElement element) throws Exception
+	protected static String handleTag(JOTViewParserData view, String templateRoot, String openPattern, String closePattern, String content, JOTFormElement element) throws Exception
 	{
 		if(openPattern!=null)
 		{
