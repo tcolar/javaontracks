@@ -1,3 +1,4 @@
+
 <project name="JavaOnTracks" default="jar" basedir=".">
     <description>build file for JavaOnTracks</description>
     
@@ -58,4 +59,19 @@
         </javadoc>
     </target>
     
+    <target name="jotdoc" depends="jar">
+        <delete dir="jotdoc" quiet="true"/>
+        <mkdir dir="jotdoc"/>
+        <javadoc sourcepath="src" destdir="jotdoc" packagenames="*" verbose="true" source="true">
+            <doclet name="net.jot.doclet.JOTDoclet" path="classes"/>
+            <classpath>
+                <filelist dir="lib">
+                    <file name="servlet-api.jar"/>
+                </filelist>
+                <filelist dir="/usr/lib/jvm/java-1.5.0-sun/lib">
+                    <file name="tools.jar"/>
+                </filelist>
+            </classpath>
+        </javadoc>
+    </target>
 </project>
