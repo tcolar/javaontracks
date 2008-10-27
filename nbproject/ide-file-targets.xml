@@ -9,6 +9,7 @@
             <classpath>
                 <pathelement path="lib/servlet-api.jar"/>
                 <pathelement location="dist/javaOnTracks.jar"/>
+                <pathelement path="/usr/lib/jvm/java-1.5.0-sun/lib/tools.jar"/>
             </classpath>
         </java>
     </target>
