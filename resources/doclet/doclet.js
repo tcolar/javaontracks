@@ -16,29 +16,29 @@ function applyFilters()
         if(id!=null && id.indexOf("__")==0){
             if(id.toLowerCase().indexOf(pkg)==-1){
                 child.style.display='none';
-                }
+            }
             else{
                 var anyChild=false;
                 var items=child.childNodes;
-                for (j = 0; j < items.length; j++){}
-                var it=items[j];
-                var iid=it.id;
-                if(iid!=null && iid.indexOf(id+"__")==0){
-                    iid=iid.substring(id.length);
-                    if(iid.toLowerCase().indexOf(item)==-1)
-                        it.style.display='none';
-                    else{
-                        anyChild=true;
-                        it.style.display='block';
+                for (j = 0; j < items.length; j++){
+                    var it=items[j];
+                    var iid=it.id;
+                    if(iid!=null && iid.indexOf(id+"__")==0){
+                        iid=iid.substring(id.length);
+                        if(iid.toLowerCase().indexOf(item)==-1)
+                            it.style.display='none';
+                        else{
+                            anyChild=true;
+                            it.style.display='block';
+                        }
                     }
-                }
-            }  
-            if(anyChild)
-                child.style.display='block';
-            else
-                child.style.display='none';
+                } // end item loop
+                if(anyChild)
+                    child.style.display='block';
+                else
+                    child.style.display='none';
+            } // end visible package
         }
     }
 }
-
 
