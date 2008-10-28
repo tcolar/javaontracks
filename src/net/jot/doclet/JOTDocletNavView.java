@@ -5,6 +5,7 @@
 package net.jot.doclet;
 
 import com.sun.javadoc.ClassDoc;
+import com.sun.tools.javadoc.AnnotationTypeDocImpl;
 import com.sun.tools.javadoc.ClassDocImpl;
 import com.sun.tools.javadoc.PackageDocImpl;
 import java.util.Arrays;
@@ -24,6 +25,10 @@ public class JOTDocletNavView extends JOTLightweightView
         ClassDoc[] clazzes = pack.allClasses();
         Arrays.sort(clazzes);
         return clazzes;
+    }
+    public String getTypeImage(AnnotationTypeDocImpl annot)
+    {
+        return "img/annotation.png";
     }
     
     public String getTypeImage(ClassDocImpl clazz)

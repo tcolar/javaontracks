@@ -28,7 +28,7 @@ import net.jot.web.view.JOTViewParser;
 public class JOTDoclet extends AbstractDoclet
 {
 
-    public static final String RES_ROOT = "NetBeansProjects/javaontracks/resources/doclet/";
+    public static final String RES_ROOT = "/home/thibautc/NetBeansProjects/javaontracks/resources/doclet/";
     public static final String OUT_ROOT = "/tmp/";
     public ConfigurationImpl configuration = (ConfigurationImpl) configuration();
 
