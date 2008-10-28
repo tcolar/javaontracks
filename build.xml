@@ -62,7 +62,8 @@
     <target name="jotdoc" depends="jar">
         <delete dir="jotdoc" quiet="true"/>
         <mkdir dir="jotdoc"/>
-        <javadoc sourcepath="src" destdir="jotdoc" packagenames="*" source="true">
+        <!--<javadoc sourcepath="src" destdir="jotdoc" packagenames="*" source="true">-->
+        <javadoc sourcepath="/home/tcolar/jdksrc/j2se/src/share/classes/" destdir="jotdoc" packagenames="*" source="true" maxmemory="500M">
             <doclet name="net.jot.doclet.JOTDoclet" path="classes"/>
             <classpath>
                 <filelist dir="lib">
