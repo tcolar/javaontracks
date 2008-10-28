@@ -9,11 +9,10 @@
   </head>
   <body>
     <div class="pkgNav" id="pkgNav">
-    <form name="filterForm" id="filterForm">
       Pack.:<input id="pkgFilter" type="text" size="15"><br/>
       Item :<input id="itemFilter" type="text" size="15"><br>
       <button onclick="applyFilters()">Apply Filters</button>
-    </form>
+      <button onclick="resetFilters()">Reset</button>
     <hr width="200px" align="left"/>
       <jot:loop over="packages" as="package">
         <div class="navPackage" id='__<jot:var value="package.name"/>'>

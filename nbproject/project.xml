@@ -99,7 +99,7 @@
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/1">
             <compilation-unit>
                 <package-root>src</package-root>
-                <classpath mode="compile">lib/servlet-api.jar:test_libs/hsqldb.jar:/usr/lib/jvm/java-1.5.0-sun/lib/tools.jar</classpath>
+                <classpath mode="compile">lib/servlet-api.jar:test_libs/hsqldb.jar:../../../../usr/lib/jvm/java-1.5.0-sun/lib/tools.jar:../../../../usr/lib/jvm/java-6-sun/lib/tools.jar</classpath>
                 <built-to>dist/javaOnTracks.jar</built-to>
                 <source-level>1.4</source-level>
             </compilation-unit>
