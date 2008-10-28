@@ -1,7 +1,8 @@
-body{font-family: Arial;font-size:14px}
+body{font-family: Arial;font-size:14px;width:100%;margin:0px;padding:0px}
 .navPackage{}
 .navItem{}
+.pkgName{background-color:#F8E8A8;font-weight:bold;width:300px;}
 
-.pkgNav{width:30%;float:left}
-.content{float:right;width:70%;background-color:#eeeeee}
+.pkgNav{float:left;padding:2px}
+.content{background-color:#eeeeee;margin-left: 300px;padding:2px}
 

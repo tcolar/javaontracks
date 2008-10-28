@@ -16,7 +16,7 @@
     <hr width="200px" align="left"/>
       <jot:loop over="packages" as="package">
         <div class="navPackage" id='__<jot:var value="package.name"/>'>
-          <b><jot:var value="package.name"/></b><br/>
+          <div class="pkgName"><jot:var value="package.name"/></div>
           <jot:loop over="getSortedClasses(package)" as="class">
             <div id='__<jot:var value="package.name"/>__<jot:var value="class.name"/>'>
               &nbsp;
