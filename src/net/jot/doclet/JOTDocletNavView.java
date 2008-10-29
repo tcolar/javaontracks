@@ -9,7 +9,7 @@ import com.sun.tools.javadoc.AnnotationTypeDocImpl;
 import com.sun.tools.javadoc.ClassDocImpl;
 import com.sun.tools.javadoc.PackageDocImpl;
 import java.util.Arrays;
-import net.jot.web.view.JOTLightweightView;
+import net.jot.web.views.JOTLightweightView;
 
 /**
  *

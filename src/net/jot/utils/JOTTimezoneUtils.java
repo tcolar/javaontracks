@@ -14,7 +14,7 @@ import java.util.TimeZone;
 import java.util.Vector;
 
 /**
- *
+ * Provides utilities for working with times and converting timezones.
  * @author thibautc
  */
 public class JOTTimezoneUtils

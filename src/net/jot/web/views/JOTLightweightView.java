@@ -2,8 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.jot.web.view;
+package net.jot.web.views;
 
+import net.jot.web.view.*;
 import java.util.Hashtable;
 import net.jot.web.forms.JOTForm;
 
