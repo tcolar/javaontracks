@@ -1,0 +1,20 @@
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="doclet.css">
+    <script type="text/javascript" src="doclet.js"></script>
+  </head>
+  <body>
+    <jot:loop over="packages" as="package">
+      <jot:var value="getTreeOffset(package)"/>
+      <a class="tooltip">
+        - <jot:var value="package.name"/>
+        <div class="ttContent">
+          <jot:var value="getShortDescription(package)"/>
+        </div>
+      </a>
+      <br/>
+    </jot:loop>
+    <!-- allow room for last tootltip -->
+    <div style="height:50px">&nbsp;</div>
+  </body>
+</html>

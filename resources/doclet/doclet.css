@@ -6,3 +6,8 @@ body{font-family: Arial;font-size:14px;width:100%;margin:0px;padding:0px}
 .pkgNav{float:left;padding:2px}
 .content{background-color:#eeeeee;margin-left: 300px;padding:2px}
 
+a.tooltip{position:relative;}
+a.tooltip div{width:400px}
+a.tooltip div.ttContent{display:none;}
+a.tooltip:hover{}
+a.tooltip:hover div.ttContent{z-index: 99;position:absolute;top:20px;left:0px;background-color: #eeeeff;border: 3px;border-color: #0000ff;border-style: ridge;display:block;position:absolute;padding: 3px;max-width:400px;min-height:20px;}
