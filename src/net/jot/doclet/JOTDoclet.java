@@ -118,18 +118,25 @@ public class JOTDoclet extends AbstractDoclet
     protected void generatePackageList(ClassTree tree) throws Exception
     {
         File navigator = new File(OUT_ROOT + "nav.html");
+        File packTree = new File(OUT_ROOT + "packages.html");
         PrintWriter writer = null;
-        JOTDocletNavView view = new JOTDocletNavView();
         try
         {
             writer = new PrintWriter(navigator);
 
             PackageDoc[] packages = configuration.packages;
             Arrays.sort(packages);
+    
+            JOTDocletNavView view = new JOTDocletNavView();
             view.addVariable(JOTDocletNavView.PACKAGES, packages);
-
             String html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl/nav.html");
             writer.print(html);
+            writer.close();
+
+            writer = new PrintWriter(packTree);
+            html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl/packages.html");
+            writer.print(html);
+            
         } catch (FileNotFoundException e)
         {
             throw (e);
