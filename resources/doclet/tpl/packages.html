@@ -4,10 +4,18 @@
     <script type="text/javascript" src="doclet.js"></script>
   </head>
   <body>
+    <div class="topBar">
+      <a class="topItem" href="tree.html">Full package Tree</a>
+      <a class="topItem" href="#">Direct link to this page</a>
+    </div>
+    <div style="height:5px"> </div>
+    <div class="title">Packages Tree</div>
+    <div style="height:5px"> </div>
     <jot:loop over="packages" as="package">
       <jot:var value="getTreeOffset(package)"/>
-      <a class="tooltip">
-        - <jot:var value="package.name"/>
+      <img src="img/pkg.png" height="14" width="14"/>
+      <a class="tooltip" href='<jot:var value="getItemLink(package)"/>'>
+        <jot:var value="package.name"/>
         <div class="ttContent">
           <jot:var value="getShortDescription(package)"/>
         </div>

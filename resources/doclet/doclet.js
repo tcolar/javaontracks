@@ -1,3 +1,17 @@
+function showFullDescription(bool)
+{
+    if(bool==true)
+    {
+        document.getElementById("shortDesc").style.display='none';
+        document.getElementById("fullDesc").style.display='block';
+    }
+    else
+    {
+        document.getElementById("shortDesc").style.display='block';
+        document.getElementById("fullDesc").style.display='none';
+    }
+}
+
 function resetFilters()
 {
     document.getElementById("pkgFilter").value="";

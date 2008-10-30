@@ -1,13 +1,32 @@
-body{font-family: Arial;font-size:14px;width:100%;margin:0px;padding:0px}
+body{font-family: Arial;font-size:16px;width:100%;margin:0px;padding:0px}
+table{font-weight:normal;font-size:16px;}
 .navPackage{}
 .navItem{}
-.pkgName{background-color:#F8E8A8;font-weight:bold;width:300px;}
+.pkgName{background-color:#F8E8A8;font-weight:bold;width:300px}
+
+/*pack. dummary*/
+.pkgSumItem{font-weight:bold;background-color:#eeeeee;padding:4px}
+.pkgSumDesc{background-color:#eeeeee;padding:4px}
+.pkgSumInfos{background-color:#d6f4c3;margin:4px;font-size:16px;}
 
 .pkgNav{float:left;padding:2px}
 .content{background-color:#eeeeee;margin-left: 300px;padding:2px}
 
-a.tooltip{position:relative;}
+.filter{position:relative;left:46px;}
+
+.title{font-weight:bold;font-size:22px;background-color:#c0dde7;margin:2px;}
+.topBar{background-color:#F8E8A8;margin:2px;height:20px}
+
+a.topItem{position:relative;top:2px;background-color:#FFFF88;margin-left:5px;margin-right:5px;margin-top:2px;margin-bottom:2px}
+a.topItem:hover{background-color:#DDEEEE}
+
+.moto{padding-left:5px;background-color:#FFFF88;color:#BB0000}
+
+a.regular{text-decoration:none;color:#000000}
+a.regular:hover{background-color:#ddeeee}
+
+a.tooltip{text-decoration:none;position:relative;color:#000000;font-size:16px}
 a.tooltip div{width:400px}
 a.tooltip div.ttContent{display:none;}
-a.tooltip:hover{}
+a.tooltip:hover{background-color:#ddeeee}
 a.tooltip:hover div.ttContent{z-index: 99;position:absolute;top:20px;left:0px;background-color: #eeeeff;border: 3px;border-color: #0000ff;border-style: ridge;display:block;position:absolute;padding: 3px;max-width:400px;min-height:20px;}
