@@ -5,10 +5,13 @@
 package net.jot.doclet;
 
 import com.sun.javadoc.ClassDoc;
+import com.sun.javadoc.Doc;
+import com.sun.javadoc.PackageDoc;
 import com.sun.tools.javadoc.AnnotationTypeDocImpl;
 import com.sun.tools.javadoc.ClassDocImpl;
 import com.sun.tools.javadoc.PackageDocImpl;
 import java.util.Arrays;
+import net.jot.JOTInitializer;
 import net.jot.web.views.JOTLightweightView;
 
 /**
@@ -20,7 +23,34 @@ public class JOTDocletNavView extends JOTLightweightView
 
     public final static String PACKAGES = "packages";
 
+    public JOTDocletNavView()
+    {
+        addVariable("jotversion", JOTInitializer.VERSION);
+    }
+
+    public String getItemLink(PackageDocImpl pack)
+    {
+        return JOTDoclet.getPkgFolder(pack)+"package-summary.html";
+    }
+    public String getItemLink(AnnotationTypeDocImpl pack)
+    {
+        return "";
+    }
+    public String getItemLink(ClassDocImpl pack)
+    {
+        return "";
+    }
+    
+    public ClassDoc[] getSortedClasses()
+    {
+        PackageDoc pack=(PackageDoc)getVariables().get("curitem");
+        return getSortedClasses(pack);        
+    }
     public ClassDoc[] getSortedClasses(PackageDocImpl pack)
+    {
+        return getSortedClasses((PackageDoc) pack);
+    }
+    public ClassDoc[] getSortedClasses(PackageDoc pack)
     {
         ClassDoc[] clazzes = pack.allClasses();
         Arrays.sort(clazzes);
@@ -29,29 +59,44 @@ public class JOTDocletNavView extends JOTLightweightView
 
     public String getTypeImage(AnnotationTypeDocImpl annot)
     {
-        return "img/annotation.png";
+        return getPathToRoot()+"img/annotation.png";
+    }
+
+    public String getPathToRoot()
+    {
+        String path="";
+        PackageDoc pack=(PackageDoc)getVariables().get("curitem");
+        if(pack!=null)
+        {
+            for(int i=0;i!=pack.name().split("\\.").length;i++)
+                path+="../";
+        }
+        return path;
     }
 
     public String getTypeImage(ClassDocImpl clazz)
     {
         if (clazz.isOrdinaryClass())
         {
-            return "img/class.png";
+            if(! clazz.isAbstract())
+                return getPathToRoot()+"img/class.png";
+            else
+                return getPathToRoot()+"img/abstract.png";
         } else if (clazz.isInterface())
         {
-            return "img/interface.png";
+            return getPathToRoot()+"img/interface.png";
         } else if (clazz.isEnum())
         {
-            return "img/enum.png";
+            return getPathToRoot()+"img/enum.png";
         } else if (clazz.isError() || clazz.isException())
         {
-            return "img/error.png";
+            return getPathToRoot()+"img/error.png";
         } else if (clazz.isAnnotationType())
         {
-            return "img/annotation.png";
+            return getPathToRoot()+"img/annotation.png";
         }
         //default;
-        return "img/class.png";
+        return getPathToRoot()+"img/class.png";
     }
 
     public String getTreeOffset(PackageDocImpl pack)
@@ -65,7 +110,24 @@ public class JOTDocletNavView extends JOTLightweightView
         return result;
     }
 
+    public String getShortDescription()
+    {
+        Doc pack=(Doc)getVariables().get("curitem");
+        return getShortDescription(pack);
+    }
+    public String getShortDescription(ClassDocImpl pack)
+    {
+        return getShortDescription((Doc)pack);
+    }
+    public String getShortDescription(AnnotationTypeDocImpl pack)
+    {
+        return getShortDescription((Doc)pack);
+    }
     public String getShortDescription(PackageDocImpl pack)
+    {
+        return getShortDescription((Doc)pack);
+    }
+    public String getShortDescription(Doc pack)
     {
         String text=getFullDescription(pack);
         if (text.indexOf(".") > 0)
@@ -76,10 +138,29 @@ public class JOTDocletNavView extends JOTLightweightView
         {
             text="---- No Doc ----";
         }
+        // remove html tags, since we might only have the opening one on line 1 .. which then breaks our nice fancy page.
+        text=text.replaceAll("\\<.*?>","");
         return text;
     }
 
+    public String getFullDescription()
+    {
+        Doc pack=(Doc)getVariables().get("curitem");
+        return getFullDescription(pack);
+    }
+    public String getFullDescription(ClassDocImpl pack)
+    {
+        return getFullDescription((Doc)pack);
+    }
+    public String getFullDescription(AnnotationTypeDocImpl pack)
+    {
+        return getFullDescription((Doc)pack);
+    }
     public String getFullDescription(PackageDocImpl pack)
+    {
+        return getFullDescription((Doc)pack);
+    }
+    public String getFullDescription(Doc pack)
     {
         String text = pack.getRawCommentText();
         if (containsHtml(text))

@@ -70,6 +70,17 @@ public class JOTDoclet extends AbstractDoclet
         }
     }
 
+    static String getPkgFolder(PackageDoc pack)
+    {
+        String[] subs = pack.name().split("\\.");
+        String folder = "";
+        for (int j = 0; j != subs.length; j++)
+        {
+            folder += subs[j] + File.separator;
+        }
+        return folder;
+    }
+
     private void startGeneration(RootDoc root) throws Exception
     {
         if (root.classes().length == 0)
@@ -117,8 +128,8 @@ public class JOTDoclet extends AbstractDoclet
 
     protected void generatePackageList(ClassTree tree) throws Exception
     {
-        File navigator = new File(OUT_ROOT + "nav.html");
-        File packTree = new File(OUT_ROOT + "packages.html");
+        File navigator = new File(OUT_ROOT + "overview-frame.html");
+        File packTree = new File(OUT_ROOT + "overview-summary.html");
         PrintWriter writer = null;
         try
         {
@@ -126,17 +137,37 @@ public class JOTDoclet extends AbstractDoclet
 
             PackageDoc[] packages = configuration.packages;
             Arrays.sort(packages);
-    
+
+            // write nav
+            System.out.println(navigator.getAbsolutePath());
             JOTDocletNavView view = new JOTDocletNavView();
             view.addVariable(JOTDocletNavView.PACKAGES, packages);
             String html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl/nav.html");
             writer.print(html);
             writer.close();
 
+            // write package tree
+            System.out.println(packTree.getAbsolutePath());
             writer = new PrintWriter(packTree);
             html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl/packages.html");
             writer.print(html);
-            
+            writer.close();
+
+            // write individual package pages
+            for (int i = 0; i != packages.length; i++)
+            {
+                PackageDoc pack = packages[i];
+                view.addVariable("curitem", pack);
+                String folder = getPkgFolder(pack);
+                new File(OUT_ROOT + folder).mkdirs();
+                File packFile = new File(OUT_ROOT + folder + "package-summary.html");
+                System.out.println(packFile.getAbsolutePath());
+                writer = new PrintWriter(packFile);
+                html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl/package.html");
+                writer.print(html);
+                writer.close();
+            }
+
         } catch (FileNotFoundException e)
         {
             throw (e);
