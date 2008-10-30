@@ -63,14 +63,14 @@
         <delete dir="jotdoc" quiet="true"/>
         <mkdir dir="jotdoc"/>
         <!-- JOT code : ~ 48k-->
-        <javadoc sourcepath="src" destdir="jotdoc" packagenames="*" source="true">
+        <!--<javadoc sourcepath="src" destdir="jotdoc" packagenames="*" source="true">-->
 	<!-- on my machine it needed up to 1.5G of memory to genertate this-->
         <!-- all jdk code: ~ 3MB -->
         <!--<javadoc sourcepath="/home/thibautc/NetBeansProjects/jdk1.6/j2se/src/share/classes/" destdir="jotdoc" packagenames="*" linksource="true" maxmemory="2048m">-->
         <!-- java+javax code: ~ 700k -->
         <!--<javadoc sourcepath="/home/thibautc/NetBeansProjects/jdk1.6/j2se/src/share/classes/" destdir="jotdoc" packagenames="java.*,javax.*" linksource="true" maxmemory="1448m">-->
         <!-- java code: ~ 300k -->
-        <!--<javadoc sourcepath="/home/thibautc/NetBeansProjects/jdk1.6/j2se/src/share/classes/" destdir="jotdoc" packagenames="java.*" linksource="true" maxmemory="800m">-->
+        <javadoc sourcepath="/home/thibautc/NetBeansProjects/jdk1.6/j2se/src/share/classes/" destdir="jotdoc" packagenames="java.*" linksource="true" maxmemory="800m">
         <!-- sap code: ~ 2MB - zipped: 98k -->
         <!--<javadoc sourcepath="/home/thibautc/NetBeansProjects/sap_crm_java/src/" destdir="jotdoc" packagenames="*" source="1.4" maxmemory="2048m" linksource="true">-->
             <doclet name="net.jot.doclet.JOTDoclet" path="classes"/>
