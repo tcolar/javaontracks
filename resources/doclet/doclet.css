@@ -1,6 +1,6 @@
 body{font-family: Arial;font-size:16px;width:100%;margin:0px;padding:0px}
 table{font-weight:normal;font-size:16px;}
-.navPackage{}
+.navPackage{white-space: nowrap;}
 .navItem{}
 .pkgName{background-color:#F8E8A8;font-weight:bold;width:300px}
 
