@@ -20,10 +20,11 @@ public class JOTReflectionUtils
 
     /**
      * Try to find a pulic Method of the given name and given parameter values/types.
-     * First calls Class.getMethod(), however this doesn't work unless args exactly match signature (no sperclass!!)
-     * Try to manually find a match (including aparms superclasses)
+     * First calls Class.getMethod(), however this doesn't work unless args exactly match signature (no superclass/interfaces!!)
+     * Try to manually find a match (including params superclasses/interfaces - anyhting "instanceOf")
      * Finds the first matching method - if there are many matches it will just return the first found !
-     * If no match found try finding one recursively in the superclass(es)
+     * If no matches found try finding one recursively in the superclass(es)
+     * 
      * @param obj (the object instance in which we are looking for a method)
      * @param method the name of the method
      * @param values the parameter values
