@@ -164,6 +164,9 @@ public class JOTDoclet extends AbstractDoclet
                 System.out.println(packFile.getAbsolutePath());
                 writer = new PrintWriter(packFile);
                 html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl/package.html");
+
+                view.getJDOCTags();
+
                 writer.print(html);
                 writer.close();
             }
