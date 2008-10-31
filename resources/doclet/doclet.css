@@ -29,4 +29,4 @@ a.tooltip{text-decoration:none;position:relative;color:#000000;font-size:16px}
 a.tooltip div{width:400px}
 a.tooltip div.ttContent{display:none;}
 a.tooltip:hover{background-color:#ddeeee}
-a.tooltip:hover div.ttContent{z-index: 99;position:absolute;top:20px;left:0px;background-color: #eeeeff;border: 3px;border-color: #0000ff;border-style: ridge;display:block;position:absolute;padding: 3px;max-width:400px;min-height:20px;}
+a.tooltip:hover div.ttContent{z-index: 99;position:absolute;left:50px;top:20px;background-color: #eeeeff;border: 3px;border-color: #0000ff;border-style: ridge;display:block;position:absolute;padding: 3px;max-width:400px;min-height:20px;}
