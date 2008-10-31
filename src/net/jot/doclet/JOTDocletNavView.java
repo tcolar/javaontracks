@@ -7,127 +7,174 @@ package net.jot.doclet;
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.Doc;
 import com.sun.javadoc.PackageDoc;
+import com.sun.javadoc.SeeTag;
 import com.sun.javadoc.Tag;
+import com.sun.tools.doclets.formats.html.HtmlDocletWriter;
 import com.sun.tools.javadoc.AnnotationTypeDocImpl;
-import com.sun.tools.javadoc.ClassDocImpl;
 import com.sun.tools.javadoc.PackageDocImpl;
 import java.util.Arrays;
-import net.jot.JOTInitializer;
+import java.util.Vector;
 import net.jot.web.views.JOTLightweightView;
 
 /**
- *
+ * View object passed from the doclet to the Template parser.
+ * Contains data and methods used by the parser to fill in tne pacge variables.
  * @author thibautc
  */
-public class JOTDocletNavView extends JOTLightweightView {
+public class JOTDocletNavView extends JOTLightweightView
+{
 
+    /**
+     * We will leverage some of the standard javadoc features
+     * In particualr comments parsing/formatting.
+     */
+    private HtmlDocletWriter docWriter;
+
+    public JOTDocletNavView(HtmlDocletWriter docWriter)
+    {
+        this.docWriter = docWriter;
+    }
     public final static String PACKAGES = "packages";
 
-    public JOTDocletNavView() {
-        addVariable("jotversion", JOTInitializer.VERSION);
-    }
-
-    public String getItemLink(PackageDocImpl pack) {
+    public String getItemLink(PackageDocImpl pack)
+    {
         return JOTDoclet.getPkgFolder(pack) + "package-summary.html";
     }
 
-    public String getItemLink(AnnotationTypeDocImpl pack) {
+    public String getItemLink(AnnotationTypeDocImpl pack)
+    {
         return "";
     }
 
-    public String getItemLink(ClassDoc pack) {
+    public String getItemLink(ClassDoc pack)
+    {
         return "";
     }
 
-    public ClassDoc[] getSortedClasses() {
+    public ClassDoc[] getSortedClasses()
+    {
         PackageDoc pack = (PackageDoc) getVariables().get("curitem");
         return getSortedClasses(pack);
     }
 
-    public ClassDoc[] getSortedClasses(PackageDoc pack) {
+    public ClassDoc[] getSortedClasses(PackageDoc pack)
+    {
         ClassDoc[] clazzes = pack.allClasses();
         Arrays.sort(clazzes);
         return clazzes;
     }
 
-    public String getPathToRoot() {
+    public String getPathToRoot()
+    {
         String path = "";
         PackageDoc pack = (PackageDoc) getVariables().get("curitem");
-        if (pack != null) {
-            for (int i = 0; i != pack.name().split("\\.").length; i++) {
+        if (pack != null)
+        {
+            for (int i = 0; i != pack.name().split("\\.").length; i++)
+            {
                 path += "../";
             }
         }
         return path;
     }
 
-    public String getTypeImage(ClassDoc clazz) {
-        if (clazz.isOrdinaryClass()) {
-            if (!clazz.isAbstract()) {
+    public String getTypeImage(ClassDoc clazz)
+    {
+        if (clazz.isOrdinaryClass())
+        {
+            if (!clazz.isAbstract())
+            {
                 return getPathToRoot() + "img/class.png";
-            } else {
+            } else
+            {
                 return getPathToRoot() + "img/abstract.png";
             }
-        } else if (clazz.isInterface()) {
+        } else if (clazz.isInterface())
+        {
             return getPathToRoot() + "img/interface.png";
-        } else if (clazz.isEnum()) {
+        } else if (clazz.isEnum())
+        {
             return getPathToRoot() + "img/enum.png";
-        } else if (clazz.isError() || clazz.isException()) {
+        } else if (clazz.isError() || clazz.isException())
+        {
             return getPathToRoot() + "img/error.png";
-        } else if (clazz.isAnnotationType()) {
+        } else if (clazz.isAnnotationType())
+        {
             return getPathToRoot() + "img/annotation.png";
         }
         //default;
         return getPathToRoot() + "img/class.png";
     }
 
-    public String getTreeOffset(Doc pack) {
+    public String getTreeOffset(Doc pack)
+    {
         String result = "";
         int nb = pack.name().split("\\.").length;
-        for (int i = 1; i < nb; i++) {
+        for (int i = 1; i < nb; i++)
+        {
             result += "&nbsp;&nbsp;&nbsp;&nbsp;";
         }
         return result;
     }
 
-    public String getShortDescription() {
+    public String getShortDescription()
+    {
         Doc pack = (Doc) getVariables().get("curitem");
         return getShortDescription(pack);
     }
 
-    public String getShortDescription(Doc pack) {
-        String text = getFullDescription(pack);
-        //java spacs says
-        text = getFirstSentence(text);
-        // remove html tags, since we might only have the opening one on line 1 .. which then breaks our nice fancy page.
-        text = text.replaceAll("\\<.*?>", "");
+    public String getShortDescription(Doc pack)
+    {
+        String text = docWriter.commentTagsToString(null, pack, pack.firstSentenceTags(), true);
         return text;
     }
 
-    public void getJDOCTags() {
+    public Vector getSeeTags()
+    {
+        // adjust the path, so the links get build correctly
+        docWriter.relativePath=getPathToRoot();
         Doc pack = (Doc) getVariables().get("curitem");
-        Tag[] tags = pack.tags();
-        for (int i = 0; i != tags.length; i++) {
-            System.out.println(tags[i].kind() + " " +
-                    tags[i].name() + " " + tags[i].toString());
+        Tag[] tags = pack.tags("see");
+        Vector results = new Vector();
+        for (int i = 0; i != tags.length; i++)
+        {
+            SeeTag tag = (SeeTag) tags[i];
+            
+            String link = docWriter.seeTagToString(tag);
+  
+            results.add(link);
         }
+        return results;
     }
 
-    public String getFullDescription() {
+    public String getJDOCTags(String tagName)
+    {
+        Doc pack = (Doc) getVariables().get("curitem");
+        Tag[] tags = pack.tags(tagName);
+        String results = "";
+        for (int i = 0; i != tags.length; i++)
+        {
+            results += tags[i].text() + "<br/>";
+        }
+        return results;
+    }
+
+    public String getFullDescription()
+    {
         Doc pack = (Doc) getVariables().get("curitem");
         return getFullDescription(pack);
     }
 
-    public String getFullDescription(Doc pack) {
-        String text = pack.commentText();
-        if (text == null) {
+    public String getFullDescription(Doc pack)
+    {
+        String text = docWriter.commentTagsToString(null, pack, pack.inlineTags(), false);
+
+        if (text == null)
+        {
             text = "";
         }
-        if (containsHtml(text)) {
-            if (text != null && text.indexOf(".") > 0) {
-                text = text.substring(0, text.indexOf("."));
-            }
-        } else {
+        if (!containsBreaks(text))
+        {
             /**
              * If there is no html tag, it's probably a raw text comments that would gain
              * fromm converting line feeds into <br/>
@@ -137,26 +184,15 @@ public class JOTDocletNavView extends JOTLightweightView {
         return text;
     }
 
-    private boolean containsHtml(String txt) {
-        // kinda lame
-        return txt.replaceAll("<br/>","\n").indexOf("/>") != -1;
+    public String getStrippedShortDescription(Doc pack)
+    {
+        // short description without any html tags whch messthings up when bot closed on first line.
+        return getShortDescription(pack).replaceAll("\\<.*>", "");
     }
 
-    private String getFirstSentence(String text) {
-        //System.out.println(text);
-        if (text.indexOf(". ") > 0) {
-            text = text.substring(0, text.indexOf(". "));
-        } else if (text.indexOf(".\n") > 0) {
-            text = text.substring(0, text.indexOf(".\n"));
-        } else if (text.indexOf("<br/>") > 0) {
-            text = text.substring(0, text.indexOf("<br/>"));
-        } else if (text.indexOf(".\t") > 0) {
-            text = text.substring(0, text.indexOf(".\t"));
-        }
-
-        if (text.length() == 0) {
-            text = "---- No Doc ----";
-        }
-        return text;
+    private boolean containsBreaks(String txt)
+    {
+        // kinda lame
+        return txt.indexOf("<br/>") != -1 || txt.indexOf("<BR/>") != -1 || txt.indexOf("<p>") != -1 || txt.indexOf("<P>") != -1;
     }
 }

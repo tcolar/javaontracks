@@ -10,6 +10,7 @@ import com.sun.javadoc.LanguageVersion;
 import com.sun.javadoc.PackageDoc;
 import com.sun.javadoc.RootDoc;
 import com.sun.tools.doclets.formats.html.ConfigurationImpl;
+import com.sun.tools.doclets.formats.html.HtmlDocletWriter;
 import com.sun.tools.doclets.internal.toolkit.AbstractDoclet;
 import com.sun.tools.doclets.internal.toolkit.Configuration;
 import com.sun.tools.doclets.internal.toolkit.util.ClassTree;
@@ -17,12 +18,16 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import net.jot.JOTInitializer;
 import net.jot.logger.JOTLogger;
 import net.jot.utils.JOTUtilities;
 import net.jot.web.view.JOTViewParser;
 
 /**
- *
+ * Custom Javadoc Doclet (Javadoc Generator)
+ * It looks better than standard javadoc (IMHO), and is more modern (CSS based)
+ * It allows package filtering (using javascript)
+ * It's alos template base (JOT templates) so it's real easy to customize the output.
  * @author thibautc
  */
 public class JOTDoclet extends AbstractDoclet
@@ -31,6 +36,7 @@ public class JOTDoclet extends AbstractDoclet
     public static final String RES_ROOT = "/home/thibautc/NetBeansProjects/javaontracks/resources/doclet/";
     public static final String OUT_ROOT = "/tmp/";
     public ConfigurationImpl configuration = (ConfigurationImpl) configuration();
+    HtmlDocletWriter docWriter;
 
     public static boolean start(RootDoc root)
     {
@@ -47,6 +53,7 @@ public class JOTDoclet extends AbstractDoclet
         configuration.root = root;
         try
         {
+            docWriter=new HtmlDocletWriter(configuration,null);
             doclet.startGeneration(root);
         } catch (Exception exc)
         {
@@ -54,6 +61,13 @@ public class JOTDoclet extends AbstractDoclet
             return false;
         }
         return true;
+    }
+
+    private void addViewConstants(JOTDocletNavView view)
+    {
+        view.addVariable("docTitle", configuration.doctitle);
+        view.addVariable("windowTitle", configuration.windowtitle);
+        view.addVariable("jotversion", JOTInitializer.VERSION);
     }
 
     private void copyResources()
@@ -137,19 +151,20 @@ public class JOTDoclet extends AbstractDoclet
 
             PackageDoc[] packages = configuration.packages;
             Arrays.sort(packages);
-            JOTDocletNavView view = new JOTDocletNavView();
-            
+            JOTDocletNavView view = new JOTDocletNavView(docWriter);
+            addViewConstants(view);
+
             // write nav
             System.out.println(navigator.getAbsolutePath());
             view.addVariable(JOTDocletNavView.PACKAGES, packages);
-            String html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl"+File.separator+"nav.html");
+            String html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + "nav.html");
             writer.print(html);
             writer.close();
 
             // write package tree
             System.out.println(packTree.getAbsolutePath());
             writer = new PrintWriter(packTree);
-            html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl"+File.separator+"packages.html");
+            html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + "packages.html");
             writer.print(html);
             writer.close();
 
@@ -163,9 +178,7 @@ public class JOTDoclet extends AbstractDoclet
                 File packFile = new File(OUT_ROOT + folder + "package-summary.html");
                 System.out.println(packFile.getAbsolutePath());
                 writer = new PrintWriter(packFile);
-                html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl"+File.separator+"package.html");
-
-                view.getJDOCTags();
+                html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + "package.html");
 
                 writer.print(html);
                 writer.close();
@@ -235,12 +248,4 @@ public class JOTDoclet extends AbstractDoclet
     protected void generateClassFiles(ClassDoc[] arg0, ClassTree arg1)
     {
     }
-    /**
-     * testing
-     * @param args
-     */
-    /*public static void main(String args[])
-    {
-    start(null);
-    }*/
 }

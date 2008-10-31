@@ -221,7 +221,7 @@ public class JOTViewParser
             }
 
             File f = new File(JOTUtilities.endWithSlash(templateRoot) + file);
-
+            
             String include = JOTTemplateCache.getTemplate(f.getAbsolutePath());
             try
             {

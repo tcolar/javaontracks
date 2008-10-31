@@ -5,6 +5,7 @@
 package net.jot.utils;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Hashtable;
 import net.jot.logger.JOTLogger;
 import net.jot.web.view.JOTView;
@@ -16,7 +17,7 @@ import net.jot.web.view.JOTView;
 public class JOTReflectionUtils
 {
 
-    private static Hashtable methodCache = new Hashtable();
+    private static final HashMap methodCache = new HashMap();
 
     /**
      * Try to find a pulic Method of the given name and given parameter values/types.
@@ -146,7 +147,10 @@ public class JOTReflectionUtils
         if (!methodCache.containsKey(signature))
         {
             Method m = findMethod(obj, method, values);
-            methodCache.put(signature, m);
+            synchronized(methodCache)
+            {
+                methodCache.put(signature, m);
+            }
             JOTLogger.log(JOTLogger.CAT_MAIN, JOTLogger.TRACE_LEVEL, JOTView.class, "Caching method as : " + signature);
         }
         Method m=(Method) methodCache.get(signature);
