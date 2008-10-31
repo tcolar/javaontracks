@@ -9,6 +9,14 @@ table{font-weight:normal;font-size:16px;}
 .pkgSumDesc{background-color:#eeeeee;padding:4px}
 .pkgSumInfos{background-color:#d6f4c3;margin:4px;font-size:16px;}
 
+.docTitle{color:#BB0000;font-weight:bold;position:absolute;right:5px;top:2px}
+
+.seeTags{background-color:#d6f4c3;padding:4px;}
+.seeTag{background-color:#f6ffe3;line-height:150%}
+
+.tagTitle{text-align:center;height:18px;padding:2px;font-weight:bold}
+.tagBox{padding:3px;min-width:100px;float:left;border-color:black;border-style:solid;border-width:1px;margin-left:7px}
+
 .pkgNav{float:left;padding:2px}
 .content{background-color:#eeeeee;margin-left: 300px;padding:2px}
 
@@ -20,7 +28,7 @@ table{font-weight:normal;font-size:16px;}
 a.topItem{position:relative;top:2px;background-color:#FFFF88;margin-left:5px;margin-right:5px;margin-top:2px;margin-bottom:2px}
 a.topItem:hover{background-color:#DDEEEE}
 
-.moto{padding-left:5px;background-color:#FFFF88;color:#BB0000}
+.moto{background-color:#FFFF88;color:#BB0000;width:300px;font-size:14px}
 
 a.regular{text-decoration:none;color:#000000}
 a.regular:hover{background-color:#ddeeee}

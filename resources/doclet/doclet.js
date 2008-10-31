@@ -12,6 +12,11 @@ function showFullDescription(bool)
     }
 }
 
+function setWindowTitle(title)
+{
+    window.top.document.title=title;
+}
+
 function resetFilters()
 {
     document.getElementById("pkgFilter").value="";

@@ -2,22 +2,28 @@
   <head>
     <link rel="stylesheet" type="text/css" href="doclet.css">
     <script type="text/javascript" src="doclet.js"></script>
+    <title>Overview (<jot:var value="windowTitle"/>)</title>
+    <script language="javascript">
+        setWindowTitle('Overview (<jot:var value="windowTitle"/>)');
+    </script>
   </head>
   <body>
-    <div class="topBar">
-      <a class="topItem" href="tree.html">Full package Tree</a>
-      <a class="topItem" href="#">Direct link to this page</a>
-    </div>
-    <div style="height:5px"> </div>
+    <jot:include file="tpl/topbar.inc.html"/>
+    <div style="height:3px"> </div>
     <div class="title">Packages Tree</div>
-    <div style="height:5px"> </div>
+    <!--
+    <jot:remove>
+    <jot:include file="tpl/summary.inc.html"/>
+    </jot:remove>
+    -->
+    <div style="height:3px"> </div>
     <jot:loop over="packages" as="package">
       <jot:var value="getTreeOffset(package)"/>
       <img src="img/pkg.png" height="14" width="14"/>
       <a class="tooltip" href='<jot:var value="getItemLink(package)"/>'>
         <jot:var value="package.name"/>
         <div class="ttContent">
-          <jot:var value="getShortDescription(package)"/>
+          <jot:var value="getStrippedShortDescription(package)"/>
         </div>
       </a>
       <br/>
