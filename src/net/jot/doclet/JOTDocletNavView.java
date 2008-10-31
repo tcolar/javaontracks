@@ -171,16 +171,19 @@ public class JOTDocletNavView extends JOTLightweightView {
 
     private boolean containsHtml(String txt) {
         // kinda lame
-        return txt.indexOf("/>") != -1;
+        return txt.replaceAll("<br/>","\n").indexOf("/>") != -1;
     }
 
     private String getFirstSentence(String text) {
+        //System.out.println(text);
         if (text.indexOf(". ") > 0) {
-            text = text.substring(0, text.indexOf("."));
+            text = text.substring(0, text.indexOf(". "));
         } else if (text.indexOf(".\n") > 0) {
-            text = text.substring(0, text.indexOf("."));
+            text = text.substring(0, text.indexOf(".\n"));
+        } else if (text.indexOf("<br/>") > 0) {
+            text = text.substring(0, text.indexOf("<br/>"));
         } else if (text.indexOf(".\t") > 0) {
-            text = text.substring(0, text.indexOf("."));
+            text = text.substring(0, text.indexOf(".\t"));
         }
 
         if (text.length() == 0) {
