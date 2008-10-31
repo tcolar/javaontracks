@@ -35,7 +35,7 @@ public class JOTDocletNavView extends JOTLightweightView {
         return "";
     }
 
-    public String getItemLink(ClassDocImpl pack) {
+    public String getItemLink(ClassDoc pack) {
         return "";
     }
 
@@ -44,18 +44,10 @@ public class JOTDocletNavView extends JOTLightweightView {
         return getSortedClasses(pack);
     }
 
-    public ClassDoc[] getSortedClasses(PackageDocImpl pack) {
-        return getSortedClasses((PackageDoc) pack);
-    }
-
     public ClassDoc[] getSortedClasses(PackageDoc pack) {
         ClassDoc[] clazzes = pack.allClasses();
         Arrays.sort(clazzes);
         return clazzes;
-    }
-
-    public String getTypeImage(AnnotationTypeDocImpl annot) {
-        return getPathToRoot() + "img/annotation.png";
     }
 
     public String getPathToRoot() {
@@ -69,7 +61,7 @@ public class JOTDocletNavView extends JOTLightweightView {
         return path;
     }
 
-    public String getTypeImage(ClassDocImpl clazz) {
+    public String getTypeImage(ClassDoc clazz) {
         if (clazz.isOrdinaryClass()) {
             if (!clazz.isAbstract()) {
                 return getPathToRoot() + "img/class.png";
@@ -89,7 +81,7 @@ public class JOTDocletNavView extends JOTLightweightView {
         return getPathToRoot() + "img/class.png";
     }
 
-    public String getTreeOffset(PackageDocImpl pack) {
+    public String getTreeOffset(Doc pack) {
         String result = "";
         int nb = pack.name().split("\\.").length;
         for (int i = 1; i < nb; i++) {
@@ -101,18 +93,6 @@ public class JOTDocletNavView extends JOTLightweightView {
     public String getShortDescription() {
         Doc pack = (Doc) getVariables().get("curitem");
         return getShortDescription(pack);
-    }
-
-    public String getShortDescription(ClassDocImpl pack) {
-        return getShortDescription((Doc) pack);
-    }
-
-    public String getShortDescription(AnnotationTypeDocImpl pack) {
-        return getShortDescription((Doc) pack);
-    }
-
-    public String getShortDescription(PackageDocImpl pack) {
-        return getShortDescription((Doc) pack);
     }
 
     public String getShortDescription(Doc pack) {
@@ -136,18 +116,6 @@ public class JOTDocletNavView extends JOTLightweightView {
     public String getFullDescription() {
         Doc pack = (Doc) getVariables().get("curitem");
         return getFullDescription(pack);
-    }
-
-    public String getFullDescription(ClassDocImpl pack) {
-        return getFullDescription((Doc) pack);
-    }
-
-    public String getFullDescription(AnnotationTypeDocImpl pack) {
-        return getFullDescription((Doc) pack);
-    }
-
-    public String getFullDescription(PackageDocImpl pack) {
-        return getFullDescription((Doc) pack);
     }
 
     public String getFullDescription(Doc pack) {

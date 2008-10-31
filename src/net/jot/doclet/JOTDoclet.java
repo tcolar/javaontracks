@@ -137,19 +137,19 @@ public class JOTDoclet extends AbstractDoclet
 
             PackageDoc[] packages = configuration.packages;
             Arrays.sort(packages);
-
+            JOTDocletNavView view = new JOTDocletNavView();
+            
             // write nav
             System.out.println(navigator.getAbsolutePath());
-            JOTDocletNavView view = new JOTDocletNavView();
             view.addVariable(JOTDocletNavView.PACKAGES, packages);
-            String html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl/nav.html");
+            String html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl"+File.separator+"nav.html");
             writer.print(html);
             writer.close();
 
             // write package tree
             System.out.println(packTree.getAbsolutePath());
             writer = new PrintWriter(packTree);
-            html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl/packages.html");
+            html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl"+File.separator+"packages.html");
             writer.print(html);
             writer.close();
 
@@ -163,7 +163,7 @@ public class JOTDoclet extends AbstractDoclet
                 File packFile = new File(OUT_ROOT + folder + "package-summary.html");
                 System.out.println(packFile.getAbsolutePath());
                 writer = new PrintWriter(packFile);
-                html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl/package.html");
+                html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl"+File.separator+"package.html");
 
                 view.getJDOCTags();
 
