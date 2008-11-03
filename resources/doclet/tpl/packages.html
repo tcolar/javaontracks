@@ -11,11 +11,7 @@
     <jot:include file="tpl/topbar.inc.html"/>
     <div style="height:3px"> </div>
     <div class="title">Packages Tree</div>
-    <!--
-    <jot:remove>
     <jot:include file="tpl/summary.inc.html"/>
-    </jot:remove>
-    -->
     <div style="height:3px"> </div>
     <jot:loop over="packages" as="package">
       <jot:var value="getTreeOffset(package)"/>
