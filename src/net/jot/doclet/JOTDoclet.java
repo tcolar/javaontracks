@@ -163,6 +163,7 @@ public class JOTDoclet extends AbstractDoclet
 
             // write package tree
             System.out.println(packTree.getAbsolutePath());
+            view.addVariable("curitem", configuration.root);
             writer = new PrintWriter(packTree);
             html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + "packages.html");
             writer.print(html);

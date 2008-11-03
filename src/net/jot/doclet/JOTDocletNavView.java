@@ -12,6 +12,7 @@ import com.sun.javadoc.Tag;
 import com.sun.tools.doclets.formats.html.HtmlDocletWriter;
 import com.sun.tools.javadoc.AnnotationTypeDocImpl;
 import com.sun.tools.javadoc.PackageDocImpl;
+import com.sun.tools.javadoc.RootDocImpl;
 import java.util.Arrays;
 import java.util.Vector;
 import net.jot.web.views.JOTLightweightView;
@@ -195,4 +196,5 @@ public class JOTDocletNavView extends JOTLightweightView
         // kinda lame
         return txt.indexOf("<br/>") != -1 || txt.indexOf("<BR/>") != -1 || txt.indexOf("<p>") != -1 || txt.indexOf("<P>") != -1;
     }
+
 }
