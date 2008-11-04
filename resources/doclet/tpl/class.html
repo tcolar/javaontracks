@@ -1,76 +1,99 @@
+<!-- TODO: add all the anchors -->
 <html>
-<head>
-  <link rel="stylesheet" type="text/css" href='<jot:var value="getPathToRoot"/>doclet.css'>
-  <script type="text/javascript" src='<jot:var value="getPathToRoot"/>doclet.js'></script>
-  <title><jot:var value="curitem.name"/> (<jot:var value="windowTitle"/>)</title>
-  <script language="javascript">
-      setWindowTitle('<jot:var value="curitem.containingPackage.name"/>.<jot:var value="curitem.name"/> (<jot:var value="windowTitle"/>)');
-  </script>
-</head>
-<body>
-<jot:include file="tpl/topbar.inc.html"/>
-<div style="height:5px"> </div>
-<div class="title">&nbsp;<img class="navItem" src='<jot:var value="getTypeImage(curitem)"/>' width="16" height="16"/>
-  <span class="smallPackName"><jot:var value="curitem.containingPackage.name"/>.</span><jot:var value="curitem.name"/>
-</div>
-<div style="height:3px"> </div>
-<jot:include file="tpl/tags.inc.html"/>
-<div style="height:3px;clear:both"> </div>
-<div id="classInfos">
-<div class="tagBox" style="background-color:#f2f3c9">
-<div class="tagTitle" style="background-color:#e2e3b9">Hierarchy</div>
-<jot:loop over="getHierarchy()" as="item">
-  <jot:loop from="0" to="cpt">&nbsp;&nbsp;&nbsp;&nbsp;</jot:loop>
-  <span class="smallPackName"><img class="navItem" src='<jot:var value="getTypeImage(item)"/>' width="16" height="16"/>&nbsp;<a class="regular" href='<jot:var value="getItemLink(item)"/>'><jot:var value="item.name"/></a></span><br/>
-</jot:loop>
-</div>
-<div class="tagBox" style="background-color:#c6d0f4">
-  <div class="tagTitle" style="background-color:#b6e0e4">Implements</div>
-  <jot:loop over="curitem.interfaces()" as="item">
-    <span class="smallPackName"><img class="navItem" src='<jot:var value="getTypeImage(item)"/>' width="16" height="16"/>&nbsp;<a class="regular" href='<jot:var value="getItemLink(item)"/>'><jot:var value="item.name"/></a></span><br/>
-  </jot:loop>
-</div>
-<div class="tagBox" style="background-color:#d9c6ec;max-width:400px">
-  <div class="tagTitle" style="background-color:#c9b6dc">Subclasses</div>
-  <div id="subClasses">
-    <jot:if eval="hasMoreClasses()">
-      <a class="more" href="#" onclick="showAllSubclasses(true)">See ALL subclasses</a><br/>
-    </jot:if>
-    <jot:loop over="getSubClasses()" as="item">
-      <span class="smallPackName"><img class="navItem" src='<jot:var value="getTypeImage(item)"/>' width="16" height="16"/>&nbsp;<a class="regular" href='<jot:var value="getItemLink(item)"/>'><jot:var value="item.name"/></a></span><br/>
-    </jot:loop>
-  </div>
-  <div id="allSubClasses" style="display:none">
-    <a class="more" href="#" onclick="showAllSubclasses(false)">See DIRECT subclasses</a><br/>
-    <jot:loop over="getAllSubClasses()" as="item">
-      <span class="smallPackName"><img class="navItem" src='<jot:var value="getTypeImage(item)"/>' width="16" height="16"/>&nbsp;<a class="regular" href='<jot:var value="getItemLink(item)"/>'><jot:var value="item.name"/></a></span><br/>
-    </jot:loop>
-  </div>
-</div>
-</div>
-<div style="height:3px;clear:both"> </div>
-<jot:include file="tpl/summary.inc.html"/>
-<div style="height:3px"> </div>
-<div class="constructors">
-  <div class="tagTitle" style="background-color:#eeeebb">Constructors</div>
-  <jot:loop over="getConstructors()" as="constructor">
-    <div class="item">
-      <jot:var value="constructor.name"/><jot:var value="getParamString(constructor)"/><br/>
-      <div class="itemDesc" id='constructor_short_<jot:var value="cpt"/>'>
-        <jot:if eval="hasMoreInfos(constructor)">
-          <a class="more" href="#" onclick='showElem("constructor_short_<jot:var value="cpt"/>",false);showElem("constructor_full_<jot:var value="cpt"/>",true)'>More Infos</a>&nbsp;
-        </jot:if>
-        <jot:var value="getShortDescription(constructor)"/>
-      </div>
-      <jot:if eval="hasMoreInfos(constructor)">
-        <div class="itemDesc" id='constructor_full_<jot:var value="cpt"/>' style="display:none">
-          <a class="more" href="#" onclick='showElem("constructor_short_<jot:var value="cpt"/>",true);showElem("constructor_full_<jot:var value="cpt"/>",false)'>Less Infos</a>&nbsp;
-          <jot:var value="getFullDescription(constructor)"/>
-          <!-- TODO: parameters, throws, modifiers(protected, dinal etc...) -->
-        </div>
-      </jot:if>
+  <head>
+    <link rel="stylesheet" type="text/css" href='<jot:var value="getPathToRoot"/>doclet.css'>
+    <script type="text/javascript" src='<jot:var value="getPathToRoot"/>doclet.js'></script>
+    <title><jot:var value="curitem.name"/> (<jot:var value="windowTitle"/>)</title>
+    <script language="javascript">
+        setWindowTitle('<jot:var value="curitem.containingPackage.name"/>.<jot:var value="curitem.name"/> (<jot:var value="windowTitle"/>)');
+    </script>
+  </head>
+  <body>
+    <jot:include file="tpl/topbar.inc.html"/>
+    <div style="height:5px"> </div>
+    <div class="title">&nbsp;<img class="navItem" src='<jot:var value="getTypeImage(curitem)"/>' width="16" height="16"/>
+      <span class="smallPackName"><jot:var value="curitem.containingPackage.name"/>.</span><jot:var value="curitem.name"/>
     </div>
-  </jot:loop>
-</div>
-</body>
+    <div style="height:3px"> </div>
+    <jot:include file="tpl/tags.inc.html"/>
+    <div style="height:3px;clear:both"> </div>
+    <div id="classInfos">
+      <div class="tagBox" style="background-color:#f2f3c9">
+        <div class="tagTitle" style="background-color:#e2e3b9">Hierarchy</div>
+        <jot:loop over="getHierarchy()" as="item">
+          <jot:loop from="0" to="cpt">&nbsp;&nbsp;&nbsp;&nbsp;</jot:loop>
+          <span class="smallPackName"><img class="navItem" src='<jot:var value="getTypeImage(item)"/>' width="16" height="16"/>&nbsp;<a class="regular" href='<jot:var value="getItemLink(item)"/>'><jot:var value="item.name"/></a></span><br/>
+        </jot:loop>
+      </div>
+      <div class="tagBox" style="background-color:#c6d0f4">
+        <div class="tagTitle" style="background-color:#b6e0e4">Implements</div>
+        <jot:loop over="curitem.interfaces()" as="item">
+          <span class="smallPackName"><img class="navItem" src='<jot:var value="getTypeImage(item)"/>' width="16" height="16"/>&nbsp;<a class="regular" href='<jot:var value="getItemLink(item)"/>'><jot:var value="item.name"/></a></span><br/>
+        </jot:loop>
+      </div>
+      <div class="tagBox" style="background-color:#d9c6ec;max-width:400px">
+        <div class="tagTitle" style="background-color:#c9b6dc">Subclasses</div>
+        <div id="subClasses">
+          <jot:if eval="hasMoreClasses()">
+            <a class="more" onclick="showAllSubclasses(true)">See ALL subclasses</a><br/>
+          </jot:if>
+          <jot:loop over="getSubClasses()" as="item">
+            <span class="smallPackName"><img class="navItem" src='<jot:var value="getTypeImage(item)"/>' width="16" height="16"/>&nbsp;<a class="regular" href='<jot:var value="getItemLink(item)"/>'><jot:var value="item.name"/></a></span><br/>
+          </jot:loop>
+        </div>
+        <div id="allSubClasses" style="display:none">
+          <a class="more" onclick="showAllSubclasses(false)">See DIRECT subclasses</a><br/>
+          <jot:loop over="getAllSubClasses()" as="item">
+            <span class="smallPackName"><img class="navItem" src='<jot:var value="getTypeImage(item)"/>' width="16" height="16"/>&nbsp;<a class="regular" href='<jot:var value="getItemLink(item)"/>'><jot:var value="item.name"/></a></span><br/>
+          </jot:loop>
+        </div>
+      </div>
+    </div>
+    <div style="height:3px;clear:both"> </div>
+    <jot:include file="tpl/summary.inc.html"/>
+    <div style="height:3px"> </div>
+    <div class="constructors">
+      <div class="tagTitle" style="background-color:#eeeebb">Constructors</div>
+      <jot:loop over="getConstructors()" as="constructor">
+        <div class="item">
+          <jot:var value="getModifiersString(constructor)"/><b><jot:var value="constructor.name"/></b><jot:var value="getParamString(constructor)"/><br/>
+          <div class="itemDesc" id='constructor_short_<jot:var value="cpt"/>'>
+            <jot:if eval="hasMoreInfos(constructor)">
+              <a class="more" onclick='showElem("constructor_short_<jot:var value="cpt"/>",false);showElem("constructor_full_<jot:var value="cpt"/>",true)'>More Infos</a>&nbsp;
+            </jot:if>
+            <jot:var value="getShortDescription(constructor)"/>
+          </div>
+          <jot:if eval="hasMoreInfos(constructor)">
+            <div class="itemDesc" id='constructor_full_<jot:var value="cpt"/>' style="display:none">
+              <a class="more" onclick='showElem("constructor_short_<jot:var value="cpt"/>",true);showElem("constructor_full_<jot:var value="cpt"/>",false)'>Less Infos</a>&nbsp;
+              <jot:var value="getFullDescription(constructor)"/>
+              <!-- TODO: parameters, throws, modifiers(protected, dinal etc...) -->
+            </div>
+          </jot:if>
+        </div>
+      </jot:loop>
+    </div>
+    <div style="height:8px"> </div>
+    <div class="methods">
+      <div class="tagTitle" style="background-color:#dddddd">Methods</div>
+      <jot:loop over="getMethods()" as="method">
+        <div class="item">
+          <jot:var value="getModifiersString(method)"/><b><jot:var value="method.name"/></b><jot:var value="getParamString(method)"/><br/>
+          <div class="itemDesc" id='method_short_<jot:var value="cpt"/>'>
+            <jot:if eval="hasMoreInfos(method)">
+              <a class="more" onclick='showElem("method_short_<jot:var value="cpt"/>",false);showElem("method_full_<jot:var value="cpt"/>",true)'>More Infos</a>&nbsp;
+            </jot:if>
+            <jot:var value="getShortDescription(method)"/>
+          </div>
+          <jot:if eval="hasMoreInfos(method)">
+            <div class="itemDesc" id='method_full_<jot:var value="cpt"/>' style="display:none">
+              <a class="more" onclick='showElem("method_short_<jot:var value="cpt"/>",true);showElem("method_full_<jot:var value="cpt"/>",false)'>Less Infos</a>&nbsp;
+              <jot:var value="getFullDescription(method)"/>
+              <!-- TODO: parameters, throws, modifiers(protected, dinal etc...) -->
+            </div>
+          </jot:if>
+        </div>
+      </jot:loop>
+    </div>
+  </body>
 </html>

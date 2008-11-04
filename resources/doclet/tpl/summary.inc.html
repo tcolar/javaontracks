@@ -3,13 +3,13 @@
     <div class="tagTitle" style="background-color:#c6e4b3">Description</div>
     <div id="shortDesc">
       <jot:if eval="hasMoreInfos()">
-        <a class="more" href="#" onclick="showFullDescription(true)">[More Infos]</a>&nbsp;
+        <a class="more" onclick="showFullDescription(true)">[More Infos]</a>&nbsp;
       </jot:if>
       <jot:var value="getShortDescription()"/>
     </div>
     <jot:if eval="hasMoreInfos()">
       <div id="fullDesc" style="display:none">
-        <a class="more" href="#" onclick="showFullDescription(false)">[Less Infos]</a>&nbsp;
+        <a class="more" onclick="showFullDescription(false)">[Less Infos]</a>&nbsp;
         <jot:var value="getFullDescription()"/>
       </div>
     </jot:if>
