@@ -9,7 +9,6 @@ http://www.javaontracks.net
 package net.jot;
 
 import net.jot.logger.JOTLogger;
-import net.jot.persistance.JOTFSIndexManager;
 import net.jot.persistance.JOTPersistanceManager;
 import net.jot.prefs.JOTPreferenceInterface;
 import net.jot.prefs.JOTPreferences;
@@ -23,6 +22,7 @@ import net.jot.prefs.JOTPreferences;
  * In the case of a Java app(not webapp), you HAVE TO call this manually:
  * Call init() when you start your app (very first thing, befor you use any other JOT features)
  * Call destroy() when you stop your app (last thing)
+ * 
  * @author tcolar
  */
 public class JOTInitializer

@@ -165,6 +165,7 @@ public class JOTDoclet extends AbstractDoclet
             writer.close();
 
             // write package tree
+            view.reset();
             System.out.println(packTree.getAbsolutePath());
             view.addVariable("curitem", configuration.root);
             writer = new PrintWriter(packTree);
@@ -175,6 +176,7 @@ public class JOTDoclet extends AbstractDoclet
             // write individual package pages
             for (int i = 0; i != packages.length; i++)
             {
+                view.reset();
                 PackageDoc pack = packages[i];
                 view.addVariable("curitem", pack);
                 String folder = getPkgFolder(pack);
@@ -191,6 +193,7 @@ public class JOTDoclet extends AbstractDoclet
                 ClassDoc[] items = view.getSortedClasses(pack);
                 for (int j = 0; j != items.length; j++)
                 {
+                    view.reset();
                     ClassDoc item = items[j];
                     view.addVariable("curitem", item);
                     File itemFile = new File(OUT_ROOT + folder + item.name()+".html");
