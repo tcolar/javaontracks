@@ -1,15 +1,21 @@
 function showFullDescription(bool)
 {
-    if(bool==true)
-    {
-        document.getElementById("shortDesc").style.display='none';
-        document.getElementById("fullDesc").style.display='block';
-    }
+    showElem("shortDesc", ! bool);
+    showElem("fullDesc",bool);
+}
+
+function showAllSubclasses(bool)
+{
+    showElem("subClasses", ! bool);
+    showElem("allSubClasses",bool);
+}
+
+function showElem(id, show)
+{
+    if(show==true)
+        document.getElementById(id).style.display='block';
     else
-    {
-        document.getElementById("shortDesc").style.display='block';
-        document.getElementById("fullDesc").style.display='none';
-    }
+        document.getElementById(id).style.display='none';        
 }
 
 function setWindowTitle(title)

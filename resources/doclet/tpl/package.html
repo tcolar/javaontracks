@@ -15,14 +15,12 @@
     <jot:include file="tpl/tags.inc.html"/>
     <div style="height:3px;clear:both"> </div>
     <jot:include file="tpl/summary.inc.html"/>
-    <div style="height:2px"> </div>
-    <jot:include file="tpl/seeTags.inc.html"/>
     <div style="height:3px"> </div>
-    <table border="0" width="100%"/>
+    <table border="0" width="100%">
       <jot:loop over="getSortedClasses()" as="class">
         <tr><td nowrap class="pkgSumItem">
             <img class="navItem" src='<jot:var value="getTypeImage(class)"/>' width="16" height="16"/>
-            <a class="regular" href="#"><jot:var value="class.name"/></a>
+            <a class="regular" href='<jot:var value="getItemLink(class)"/>'><jot:var value="class.name"/></a>
           </td>
           <td class="pkgSumDesc">
             <jot:var value="getShortDescription(class)"/>

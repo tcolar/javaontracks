@@ -1,12 +1,23 @@
 <div class="pkgSumInfos">
   <div style="padding:4px">
+    <div class="tagTitle" style="background-color:#c6e4b3">Description</div>
     <div id="shortDesc">
-      <b><a href="#" onclick="showFullDescription(true)">See Full Desciption</a></b><br/>
+      <jot:if eval="hasMoreInfos()">
+        <a class="more" href="#" onclick="showFullDescription(true)">[More Infos]</a>&nbsp;
+      </jot:if>
       <jot:var value="getShortDescription()"/>
     </div>
-    <div id="fullDesc" style="display:none">
-      <b><a href="#" onclick="showFullDescription(false)">Hide Full Desciption</a></b><br/>
-      <jot:var value="getFullDescription()"/>
+    <jot:if eval="hasMoreInfos()">
+      <div id="fullDesc" style="display:none">
+        <a class="more" href="#" onclick="showFullDescription(false)">[Less Infos]</a>&nbsp;
+        <jot:var value="getFullDescription()"/>
+      </div>
+    </jot:if>
+    <div class="seeTags">
+      <b>See also:</b> &nbsp;&nbsp;
+      <jot:loop over="seeTags" as="tag">
+        <font class="seeTag"><jot:var value="tag"/></font>
+      </jot:loop>
     </div>
   </div>
 </div>
