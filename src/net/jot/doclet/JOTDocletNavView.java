@@ -142,15 +142,15 @@ public class JOTDocletNavView extends JOTLightweightView
         return str;
     }
 
-    /**
-     * Vompares full desc. to 1line des to see wether more infos avail.
-     * @return
-     */
     public boolean hasMoreInfos()
     {
         Doc doc = (Doc) getVariables().get("curitem");
         return hasMoreInfos(doc);
     }
+    /**
+     * Compares full desc. to short desc. to see wether more infos avail.
+     * @return
+     */
     public boolean hasMoreInfos(Doc doc)
     {
         return docWriter.commentTagsToString(null, doc, doc.inlineTags(), false).length() > docWriter.commentTagsToString(null, doc, doc.firstSentenceTags(), true).length();
