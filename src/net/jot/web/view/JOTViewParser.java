@@ -290,7 +290,7 @@ public class JOTViewParser
                 step = -1;
             }
 
-            for (int i = start; i != stop + step; i += step)
+            for (int i = start; i != stop; i += step)
             {
                 variables.put(counter, new Integer(i));
                 // recurse to deal with builtin loops/variables

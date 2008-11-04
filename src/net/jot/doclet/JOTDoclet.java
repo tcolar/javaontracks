@@ -37,7 +37,8 @@ public class JOTDoclet extends AbstractDoclet
     public static final String OUT_ROOT = "/tmp/";
     public ConfigurationImpl configuration = (ConfigurationImpl) configuration();
     HtmlDocletWriter docWriter;
-
+    ClassTree classTree=null;
+    
     public static boolean start(RootDoc root)
     {
         JOTDoclet doclet = new JOTDoclet();
@@ -53,7 +54,7 @@ public class JOTDoclet extends AbstractDoclet
         configuration.root = root;
         try
         {
-            docWriter=new HtmlDocletWriter(configuration,null);
+            docWriter = new HtmlDocletWriter(configuration, null);
             doclet.startGeneration(root);
         } catch (Exception exc)
         {
@@ -65,6 +66,7 @@ public class JOTDoclet extends AbstractDoclet
 
     private void addViewConstants(JOTDocletNavView view)
     {
+        view.addVariable("classTree", classTree);
         view.addVariable("docTitle", configuration.doctitle);
         view.addVariable("windowTitle", configuration.windowtitle);
         view.addVariable("jotversion", JOTInitializer.VERSION);
@@ -105,8 +107,9 @@ public class JOTDoclet extends AbstractDoclet
         configuration.setOptions();
         configuration.getDocletSpecificMsg().notice("doclet.build_version",
                 configuration.getDocletSpecificBuildDate());
-        ClassTree classtree = new ClassTree(configuration, configuration.nodeprecated);
+        classTree = new ClassTree(configuration, configuration.nodeprecated);
 
+        
         /*generateClassFiles(root, classtree);
         if (configuration.sourcepath != null && configuration.sourcepath.length() > 0)
         {
@@ -124,7 +127,7 @@ public class JOTDoclet extends AbstractDoclet
 
         //PackageListWriter.generate(configuration);
         //generatePackageFiles(classtree);
-        generatePackageList(classtree);
+        generatePackageList(classTree);
 
         //generateOtherFiles(root, classtree);
         configuration.tagletManager.printReport();
@@ -183,6 +186,20 @@ public class JOTDoclet extends AbstractDoclet
 
                 writer.print(html);
                 writer.close();
+
+                //package items pages
+                ClassDoc[] items = view.getSortedClasses(pack);
+                for (int j = 0; j != items.length; j++)
+                {
+                    ClassDoc item = items[j];
+                    view.addVariable("curitem", item);
+                    File itemFile = new File(OUT_ROOT + folder + item.name()+".html");
+                    System.out.println(itemFile.getAbsolutePath());
+                    writer = new PrintWriter(itemFile);
+                    html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + "class.html");
+                    writer.print(html);
+                    writer.close();
+                }
             }
 
         } catch (FileNotFoundException e)

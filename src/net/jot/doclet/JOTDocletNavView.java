@@ -5,15 +5,17 @@
 package net.jot.doclet;
 
 import com.sun.javadoc.ClassDoc;
+import com.sun.javadoc.ConstructorDoc;
 import com.sun.javadoc.Doc;
 import com.sun.javadoc.PackageDoc;
+import com.sun.javadoc.Parameter;
 import com.sun.javadoc.SeeTag;
 import com.sun.javadoc.Tag;
 import com.sun.tools.doclets.formats.html.HtmlDocletWriter;
-import com.sun.tools.javadoc.AnnotationTypeDocImpl;
+import com.sun.tools.doclets.internal.toolkit.util.ClassTree;
 import com.sun.tools.javadoc.PackageDocImpl;
-import com.sun.tools.javadoc.RootDocImpl;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Vector;
 import net.jot.web.views.JOTLightweightView;
 
@@ -39,17 +41,12 @@ public class JOTDocletNavView extends JOTLightweightView
 
     public String getItemLink(PackageDocImpl pack)
     {
-        return JOTDoclet.getPkgFolder(pack) + "package-summary.html";
+        return getPathToRoot()+JOTDoclet.getPkgFolder(pack) + "package-summary.html";
     }
 
-    public String getItemLink(AnnotationTypeDocImpl pack)
+    public String getItemLink(ClassDoc doc)
     {
-        return "";
-    }
-
-    public String getItemLink(ClassDoc pack)
-    {
-        return "";
+        return getPathToRoot()+JOTDoclet.getPkgFolder(doc.containingPackage())+doc.name()+".html";
     }
 
     public ClassDoc[] getSortedClasses()
@@ -65,13 +62,48 @@ public class JOTDocletNavView extends JOTLightweightView
         return clazzes;
     }
 
+    public Vector getHierarchy()
+    {
+        Vector results=new Vector();
+        ClassDoc doc = (ClassDoc) getVariables().get("curitem");        
+        while(doc!=null)
+        {
+            results.add(0, doc);
+            doc=doc.superclass();
+        }
+        return results;
+    }
+
+    public List getSubClasses()
+    {
+        ClassDoc doc = (ClassDoc) getVariables().get("curitem");
+        ClassTree tree=(ClassTree) getVariables().get("classTree");
+        if(tree.subs(doc, false).size()>25)
+            return new Vector().subList(0, 0);
+        return tree.subs(doc, false);
+    }
+    
+    public List getAllSubClasses()
+    {
+        ClassDoc doc = (ClassDoc) getVariables().get("curitem");
+        ClassTree tree=(ClassTree) getVariables().get("classTree");
+        if(tree.allSubs(doc, false).size()>100)
+            return new Vector().subList(0, 0);
+        return tree.allSubs(doc, false);
+    }
+
     public String getPathToRoot()
     {
         String path = "";
-        PackageDoc pack = (PackageDoc) getVariables().get("curitem");
-        if (pack != null)
+        Doc doc = (Doc) getVariables().get("curitem");
+        if (doc != null)
         {
-            for (int i = 0; i != pack.name().split("\\.").length; i++)
+            String name=doc.name();
+            if(doc instanceof ClassDoc)
+            {
+                name=((ClassDoc)doc).containingPackage().name();
+            }
+            for (int i = 0; i != name.split("\\.").length; i++)
             {
                 path += "../";
             }
@@ -79,6 +111,51 @@ public class JOTDocletNavView extends JOTLightweightView
         return path;
     }
 
+    public ConstructorDoc[] getConstructors()
+    {
+        ClassDoc doc = (ClassDoc) getVariables().get("curitem");
+        ConstructorDoc[] docs=doc.constructors(false);
+        Arrays.sort(docs);
+        return docs;
+    }
+    
+    public String getParamString(ConstructorDoc doc)
+    {
+        String str="(";
+        Parameter[] params=doc.parameters();
+        for(int i=0;i!=params.length;i++)
+        {
+            if(str.length()>1)
+                str+=", ";
+            if(params[i].type().asClassDoc()!=null)
+            {
+                String link=getItemLink(params[i].type().asClassDoc());
+                str+="<a class='regular' href='"+link+"'><font class='type'>"+params[i].type().simpleTypeName()+"</font></a>";
+            }
+            else
+            {
+                str+="<font class='type'>"+params[i].typeName()+"</font>";
+            }
+            str+=" "+params[i].name();
+        }
+        str+=")";
+        return str;
+    }
+
+    /**
+     * Vompares full desc. to 1line des to see wether more infos avail.
+     * @return
+     */
+    public boolean hasMoreInfos()
+    {
+        Doc doc = (Doc) getVariables().get("curitem");
+        return hasMoreInfos(doc);
+    }
+    public boolean hasMoreInfos(Doc doc)
+    {
+        return docWriter.commentTagsToString(null, doc, doc.inlineTags(), false).length() > docWriter.commentTagsToString(null, doc, doc.firstSentenceTags(), true).length();
+    }
+    
     public String getTypeImage(ClassDoc clazz)
     {
         if (clazz.isOrdinaryClass())
@@ -107,10 +184,10 @@ public class JOTDocletNavView extends JOTLightweightView
         return getPathToRoot() + "img/class.png";
     }
 
-    public String getTreeOffset(Doc pack)
+    public String getTreeOffset(Doc doc)
     {
         String result = "";
-        int nb = pack.name().split("\\.").length;
+        int nb = doc.name().split("\\.").length;
         for (int i = 1; i < nb; i++)
         {
             result += "&nbsp;&nbsp;&nbsp;&nbsp;";
@@ -124,9 +201,9 @@ public class JOTDocletNavView extends JOTLightweightView
         return getShortDescription(pack);
     }
 
-    public String getShortDescription(Doc pack)
+    public String getShortDescription(Doc doc)
     {
-        String text = docWriter.commentTagsToString(null, pack, pack.firstSentenceTags(), true);
+        String text = docWriter.commentTagsToString(null, doc, doc.firstSentenceTags(), true);
         return text;
     }
 
@@ -162,13 +239,13 @@ public class JOTDocletNavView extends JOTLightweightView
 
     public String getFullDescription()
     {
-        Doc pack = (Doc) getVariables().get("curitem");
-        return getFullDescription(pack);
+        Doc doc = (Doc) getVariables().get("curitem");
+        return getFullDescription(doc);
     }
 
-    public String getFullDescription(Doc pack)
+    public String getFullDescription(Doc doc)
     {
-        String text = docWriter.commentTagsToString(null, pack, pack.inlineTags(), false);
+        String text = docWriter.commentTagsToString(null, doc, doc.inlineTags(), false);
 
         if (text == null)
         {
@@ -185,10 +262,10 @@ public class JOTDocletNavView extends JOTLightweightView
         return text;
     }
 
-    public String getStrippedShortDescription(Doc pack)
+    public String getStrippedShortDescription(Doc doc)
     {
         // short description without any html tags whch messthings up when bot closed on first line.
-        return getShortDescription(pack).replaceAll("\\<.*>", "");
+        return getShortDescription(doc).replaceAll("\\<.*>", "");
     }
 
     private boolean containsBreaks(String txt)
