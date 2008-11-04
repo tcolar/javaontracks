@@ -7,13 +7,16 @@ package net.jot.doclet;
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.ConstructorDoc;
 import com.sun.javadoc.Doc;
+import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.PackageDoc;
 import com.sun.javadoc.Parameter;
+import com.sun.javadoc.ProgramElementDoc;
 import com.sun.javadoc.SeeTag;
 import com.sun.javadoc.Tag;
 import com.sun.tools.doclets.formats.html.HtmlDocletWriter;
 import com.sun.tools.doclets.internal.toolkit.util.ClassTree;
 import com.sun.tools.javadoc.PackageDocImpl;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -114,11 +117,11 @@ public class JOTDocletNavView extends JOTLightweightView
 
     public List getAllSubClasses()
     {
-        if(allSubs==null)
+        if (allSubs == null)
         {
             ClassDoc doc = (ClassDoc) getVariables().get("curitem");
             ClassTree tree = (ClassTree) getVariables().get("classTree");
-            allSubs=getSubClassesCopy(doc, tree, true);
+            allSubs = getSubClassesCopy(doc, tree, true);
         }
         return allSubs;
     }
@@ -150,26 +153,80 @@ public class JOTDocletNavView extends JOTLightweightView
         return docs;
     }
 
+    public MethodDoc[] getMethods()
+    {
+        ClassDoc doc = (ClassDoc) getVariables().get("curitem");
+        MethodDoc[] docs = doc.methods(true);
+        Arrays.sort(docs);
+        return docs;
+    }
+
+    public String getModifiersString(ProgramElementDoc doc)
+    {
+        String modifs = "";
+        int modif = doc.modifierSpecifier();
+        if (Modifier.isPrivate(modif))
+        {
+            modifs += "<span class='private'>private</span>";
+        } else if (Modifier.isProtected(modif))
+        {
+            modifs += "<span class='protected'>protected</span>";
+        } else if (Modifier.isPublic(modif))
+        {
+            modifs += "<span class='public'>public</span>";
+        } else
+        {
+            modifs += "<span class='protected'>pack-private</span>";
+        }
+        if (Modifier.isAbstract(modif))
+        {
+            modifs += "<span class='abstract'>abstract</span>";
+        }
+        if (Modifier.isFinal(modif))
+        {
+            modifs += "<span class='final'>final</span>";
+
+        }
+        if (Modifier.isStatic(modif))
+        {
+            modifs += "<span class='static'>static</span>";
+
+        }
+        if (Modifier.isSynchronized(modif))
+        {
+            modifs += "<span class='synchronized'>synchronized</span>";
+
+        }
+        if (Modifier.isNative(modif))
+        {
+            modifs += "<span class='native'>native</span>";
+
+        }
+        if (Modifier.isTransient(modif))
+        {
+            modifs += "<span class='transient'>transient</span>";
+        }
+        if (Modifier.isVolatile(modif))
+        {
+            modifs += "<span class='volatile'>volatile</span>";
+        }
+        return modifs;
+    }
+
     public String getParamString(ConstructorDoc doc)
     {
         String str = "(";
         Parameter[] params = doc.parameters();
-        for (int i = 0; i != params.length; i++)
-        {
-            if (str.length() > 1)
-            {
-                str += ", ";
-            }
-            if (params[i].type().asClassDoc() != null)
-            {
-                String link = getItemLink(params[i].type().asClassDoc());
-                str += "<a class='regular' href='" + link + "'><font class='type'>" + params[i].type().simpleTypeName() + "</font></a>";
-            } else
-            {
-                str += "<font class='type'>" + params[i].typeName() + "</font>";
-            }
-            str += " " + params[i].name();
-        }
+        str = str + processParams(params);
+        str += ")";
+        return str;
+    }
+    
+    public String getParamString(MethodDoc doc)
+    {
+        String str = "(";
+        Parameter[] params = doc.parameters();
+        str = str + processParams(params);
         str += ")";
         return str;
     }
@@ -305,5 +362,27 @@ public class JOTDocletNavView extends JOTLightweightView
     {
         // kinda lame
         return txt.indexOf("<br/>") != -1 || txt.indexOf("<BR/>") != -1 || txt.indexOf("<p>") != -1 || txt.indexOf("<P>") != -1;
+    }
+
+    private String processParams(Parameter[] params)
+    {
+        String str = "";
+        for (int i = 0; i != params.length; i++)
+        {
+            if (str.length() > 1)
+            {
+                str += ", ";
+            }
+            if (params[i].type().asClassDoc() != null)
+            {
+                String link = getItemLink(params[i].type().asClassDoc());
+                str += "<a class='regular' href='" + link + "'><font class='type'>" + params[i].type().simpleTypeName() + "</font></a>";
+            } else
+            {
+                str += "<font class='type'>" + params[i].typeName() + "</font>";
+            }
+            str += " " + params[i].name();
+        }
+        return str;
     }
 }

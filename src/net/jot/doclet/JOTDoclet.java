@@ -47,7 +47,8 @@ public class JOTDoclet extends AbstractDoclet
 
     public boolean start(JOTDoclet doclet, RootDoc root)
     {
-        JOTLogger.init("/tmp/jotdoclet.log", JOTLogger.ALL_LEVELS, null);
+        String[] levels={""+JOTLogger.CRITICAL_LEVEL,""+JOTLogger.ERROR_LEVEL,""+JOTLogger.WARNING_LEVEL};
+        JOTLogger.init("/tmp/jotdoclet.log", levels , null);
 
         copyResources();
 
