@@ -13,6 +13,7 @@ import com.sun.javadoc.Parameter;
 import com.sun.javadoc.ProgramElementDoc;
 import com.sun.javadoc.SeeTag;
 import com.sun.javadoc.Tag;
+import com.sun.javadoc.Type;
 import com.sun.tools.doclets.formats.html.HtmlDocletWriter;
 import com.sun.tools.doclets.internal.toolkit.util.ClassTree;
 import com.sun.tools.javadoc.PackageDocImpl;
@@ -86,6 +87,16 @@ public class JOTDocletNavView extends JOTLightweightView
         return results;
     }
 
+    public String getShortDescription(JOTDocletMethodHolder holder)
+    {
+        return getShortDescription(holder.getDoc());
+    }
+
+    public String getFullDescription(JOTDocletMethodHolder holder)
+    {
+        return getFullDescription(holder.getDoc());
+    }
+
     public Boolean hasMoreClasses()
     {
         return new Boolean(getAllSubClasses().size() > getSubClasses().size());
@@ -153,12 +164,52 @@ public class JOTDocletNavView extends JOTLightweightView
         return docs;
     }
 
-    public MethodDoc[] getMethods()
+    public JOTDocletMethodHolder[] getMethods()
     {
         ClassDoc doc = (ClassDoc) getVariables().get("curitem");
-        MethodDoc[] docs = doc.methods(true);
-        Arrays.sort(docs);
-        return docs;
+        Vector myDocs = new Vector();
+        MethodDoc[] docs = doc.methods(false);
+        for (int i = 0; i != docs.length; i++)
+        {
+            myDocs.add(new JOTDocletMethodHolder(docs[i], null));
+        }
+        doc = doc.superclass();
+        /*while (doc != null && ! doc.name().equalsIgnoreCase("object"))
+        {
+
+        //TODO: only if !private, !final, !overriden
+        // and !package private && !=package
+
+        docs = doc.methods(false);
+        for (int i = 0; i != docs.length; i++)
+        {
+        myDocs.add(new JOTDocletMethodHolder(docs[i], doc));
+        }
+        doc = doc.superclass();
+        }*/
+        JOTDocletMethodHolder[] docArray = (JOTDocletMethodHolder[]) myDocs.toArray(new JOTDocletMethodHolder[0]);
+        Arrays.sort(docArray);
+        return docArray;
+    }
+
+    public String getModifiersString(JOTDocletMethodHolder holder)
+    {
+        return getModifiersString(holder.getDoc());
+    }
+
+    public String getReturnString(JOTDocletMethodHolder holder)
+    {
+        Type type = holder.getDoc().returnType();
+        String str="";
+        if (type.asClassDoc() != null)
+        {
+            String link = getItemLink(type.asClassDoc());
+            str = "<a class='regular' href='" + link + "'><font class='type'>" + type.simpleTypeName() + "</font></a>";
+        } else
+        {
+            str = "<font class='type'>" + type.simpleTypeName() + "</font>";
+        }
+        return str;
     }
 
     public String getModifiersString(ProgramElementDoc doc)
@@ -221,20 +272,25 @@ public class JOTDocletNavView extends JOTLightweightView
         str += ")";
         return str;
     }
-    
-    public String getParamString(MethodDoc doc)
+
+    public String getParamString(JOTDocletMethodHolder holder)
     {
         String str = "(";
-        Parameter[] params = doc.parameters();
+        Parameter[] params = holder.getDoc().parameters();
         str = str + processParams(params);
         str += ")";
         return str;
     }
 
-    public Boolean hasMoreInfos()
+    public boolean hasMoreInfos(JOTDocletMethodHolder holder)
+    {
+        return hasMoreInfos(holder.getDoc());
+    }
+
+    public boolean hasMoreInfos()
     {
         Doc doc = (Doc) getVariables().get("curitem");
-        return new Boolean(hasMoreInfos(doc));
+        return hasMoreInfos(doc);
     }
 
     /**
@@ -384,5 +440,11 @@ public class JOTDocletNavView extends JOTLightweightView
             str += " " + params[i].name();
         }
         return str;
+    }
+
+    public String getInheritedFromItem(JOTDocletMethodHolder holder)
+    {
+        String link = getItemLink(holder.getSuperClass());
+        return "<a class='regular' href='" + link + "'><font class='type'>" + holder.getSuperClass().name() + "</font></a>";
     }
 }
