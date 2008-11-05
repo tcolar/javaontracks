@@ -78,7 +78,11 @@
       <div class="tagTitle" style="background-color:#dddddd">Methods</div>
       <jot:loop over="getMethods()" as="method">
         <div class="item">
-          <jot:var value="getModifiersString(method)"/><b><jot:var value="method.name"/></b><jot:var value="getParamString(method)"/><br/>
+            <jot:var value="getModifiersString(method)"/> <jot:var value="getReturnString(method)"/> <b><jot:var value="method.name"/></b><jot:var value="getParamString(method)"/>
+            <jot:if eval="! method.isLocal">
+              <span class="inherited">[Inherited From <jot:var value="getInheritedFromItem(method)"/>]</span>
+            </jot:if>
+          <br/>
           <div class="itemDesc" id='method_short_<jot:var value="cpt"/>'>
             <jot:if eval="hasMoreInfos(method)">
               <a class="more" onclick='showElem("method_short_<jot:var value="cpt"/>",false);showElem("method_full_<jot:var value="cpt"/>",true)'>More Infos</a>&nbsp;

@@ -51,6 +51,8 @@ a.tooltip div.ttContent{display:none;}
 a.tooltip:hover{background-color:#ddeeee}
 a.tooltip:hover div.ttContent{z-index: 99;position:absolute;left:50px;top:20px;background-color: #eeeeff;border: 3px;border-color: #0000ff;border-style: ridge;display:block;position:absolute;padding: 3px;max-width:400px;min-height:20px;}
 
+span.inherited{background-color:#dddddd;margin-left:20px}
+
 span.private{color:red;padding-right:4px}
 span.public{padding-right:4px}
 span.protected{color:orange;padding-right:4px}
