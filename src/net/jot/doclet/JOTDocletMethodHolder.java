@@ -14,8 +14,13 @@ import com.sun.javadoc.MethodDoc;
  */
 public class JOTDocletMethodHolder implements Comparable
 {
+    /** if the method comes from a superclass, which one*/
     private ClassDoc inSuperClass=null;
     private MethodDoc doc;
+    /** if the method is overriding one in a superclass, which one*/
+    private ClassDoc overridenIn;
+    // where the method is specified (ex: abstract method/interface)
+    private ClassDoc specifiedIn;
 
     public JOTDocletMethodHolder(MethodDoc doc, ClassDoc inSuperClass)
     {
@@ -31,6 +36,14 @@ public class JOTDocletMethodHolder implements Comparable
     {
         return inSuperClass==null;
     }
+    public boolean isOverride()
+    {
+        return overridenIn!=null;
+    }
+    public boolean isSpecified()
+    {
+        return specifiedIn!=null;
+    }
     public ClassDoc getSuperClass()
     {
         return inSuperClass;
@@ -45,5 +58,21 @@ public class JOTDocletMethodHolder implements Comparable
     {
         JOTDocletMethodHolder m=(JOTDocletMethodHolder)m2;
         return doc.compareTo(m.getDoc());
+    }
+
+    public ClassDoc getOverridenIn() {
+        return overridenIn;
+    }
+
+    public ClassDoc getSpecifiedIn() {
+        return specifiedIn;
+    }
+
+    void setOverridenIn(ClassDoc doc) {
+        overridenIn=doc;
+    }
+
+    void setSpecifiedIn(ClassDoc doc) {
+        specifiedIn=doc;
     }
 }
