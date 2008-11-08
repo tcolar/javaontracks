@@ -5,7 +5,7 @@
     <script type="text/javascript" src='<jot:var value="getPathToRoot"/>doclet.js'></script>
     <title><jot:var value="curitem.name"/> (<jot:var value="windowTitle"/>)</title>
     <script language="javascript">
-        setWindowTitle('<jot:var value="curitem.containingPackage.name"/>.<jot:var value="curitem.name"/> (<jot:var value="windowTitle"/>)');
+        setWindowTitle('<jot:var value="curitem.name"/> (<jot:var value="windowTitle"/>)');
     </script>
   </head>
   <body>
@@ -81,6 +81,12 @@
             <jot:var value="getModifiersString(method)"/> <jot:var value="getReturnString(method)"/> <b><jot:var value="method.name"/></b><jot:var value="getParamString(method)"/>
             <jot:if eval="! method.isLocal">
               <span class="inherited">[Inherited From <jot:var value="getInheritedFromItem(method)"/>]</span>
+            </jot:if>
+            <jot:if eval="method.isOverride">
+              <span class="overrides">[Overrides <jot:var value="getOverridenInItem(method)"/>]</span>              
+            </jot:if>
+            <jot:if eval="method.isSpecified">
+              <span class="specified">[Specified in <jot:var value="getSpecifiedInItem(method)"/>]</span>              
             </jot:if>
           <br/>
           <div class="itemDesc" id='method_short_<jot:var value="cpt"/>'>
