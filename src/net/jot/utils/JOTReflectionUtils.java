@@ -113,7 +113,7 @@ public class JOTReflectionUtils
             params += "]";
             if (m == null)
             {
-                JOTLogger.log(JOTLogger.CAT_MAIN, JOTLogger.WARNING_LEVEL, JOTView.class, "No such method: " + method + params);
+                JOTLogger.log(JOTLogger.CAT_MAIN, JOTLogger.WARNING_LEVEL, JOTReflectionUtils.class, "No such method: " + method + params);
             }
         }
         if (JOTLogger.isTraceEnabled())
@@ -126,7 +126,7 @@ public class JOTReflectionUtils
             params += "]";
             if (m != null)
             {
-                JOTLogger.log(JOTLogger.CAT_MAIN, JOTLogger.TRACE_LEVEL, JOTView.class, "Found mathing method: " + method + params);
+                JOTLogger.log(JOTLogger.CAT_MAIN, JOTLogger.TRACE_LEVEL, JOTReflectionUtils.class, "Found mathing method: " + method + params);
             }
         }
         return m;

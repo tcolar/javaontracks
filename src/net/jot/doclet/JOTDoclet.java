@@ -169,6 +169,7 @@ public class JOTDoclet extends AbstractDoclet
             view.reset();
             System.out.println(packTree.getAbsolutePath());
             view.addVariable("curitem", configuration.root);
+            view.addVariable("curpage","overview-summary.html");
             writer = new PrintWriter(packTree);
             html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + "packages.html");
             writer.print(html);
@@ -181,6 +182,7 @@ public class JOTDoclet extends AbstractDoclet
                 PackageDoc pack = packages[i];
                 view.addVariable("curitem", pack);
                 String folder = getPkgFolder(pack);
+                view.addVariable("curpage",folder+"package-summary.html");
                 new File(OUT_ROOT + folder).mkdirs();
                 File packFile = new File(OUT_ROOT + folder + "package-summary.html");
                 System.out.println(packFile.getAbsolutePath());
@@ -197,6 +199,7 @@ public class JOTDoclet extends AbstractDoclet
                     view.reset();
                     ClassDoc item = items[j];
                     view.addVariable("curitem", item);
+                    view.addVariable("curpage",folder + item.name()+".html");
                     File itemFile = new File(OUT_ROOT + folder + item.name()+".html");
                     System.out.println(itemFile.getAbsolutePath());
                     writer = new PrintWriter(itemFile);

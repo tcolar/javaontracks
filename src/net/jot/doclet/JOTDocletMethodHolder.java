@@ -49,7 +49,7 @@ public class JOTDocletMethodHolder implements Comparable
         return inSuperClass;
     }
 
-    public String getName()
+    public String name()
     {
         return doc.name();
     }

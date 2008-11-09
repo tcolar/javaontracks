@@ -11,10 +11,12 @@ import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.PackageDoc;
 import com.sun.javadoc.Parameter;
 import com.sun.javadoc.ProgramElementDoc;
+import com.sun.javadoc.RootDoc;
 import com.sun.javadoc.SeeTag;
 import com.sun.javadoc.Tag;
 import com.sun.javadoc.Type;
 import com.sun.tools.doclets.formats.html.HtmlDocletWriter;
+import com.sun.tools.doclets.formats.html.LinkInfoImpl;
 import com.sun.tools.doclets.internal.toolkit.util.ClassTree;
 import com.sun.tools.javadoc.PackageDocImpl;
 import java.lang.reflect.Modifier;
@@ -53,10 +55,48 @@ public class JOTDocletNavView extends JOTLightweightView {
         return getPathToRoot() + JOTDoclet.getPkgFolder(pack) + "package-summary.html";
     }
 
+    public String getItemLink(ClassDoc doc, int context) {
+            LinkInfoImpl lnInfo=new LinkInfoImpl(context,doc,"",null);
+            return getHref(docWriter.getLink(lnInfo));
+    }
     public String getItemLink(ClassDoc doc) {
-        return getPathToRoot() + JOTDoclet.getPkgFolder(doc.containingPackage()) + doc.name() + ".html";
+        return getItemLink(doc, LinkInfoImpl.CONTEXT_CLASS);
+    }
+    public String getItemLink(JOTDocletMethodHolder holder) {
+        return getItemLink(holder, LinkInfoImpl.CONTEXT_CLASS);
+    }
+    public String getItemLink(JOTDocletMethodHolder holder, int context) {
+            LinkInfoImpl lnInfo=new LinkInfoImpl(context,holder.getDoc().containingClass(),"",null);
+            return getHref(docWriter.getLink(lnInfo))+"#"+getSignature(holder.getDoc());
     }
 
+    public String getDirectLink()
+    {        
+        return getDirectLink((String)null);
+    }
+    public String getDirectLink(JOTDocletMethodHolder handler)
+    {
+        return getDirectLink(getAnchorName(handler));
+    }
+    public String getDirectLink(ConstructorDoc doc)
+    {
+        return getDirectLink(getAnchorName(doc));
+    }
+    public String getDirectLink(String anchor)
+    {
+        String curPage = (String) getVariables().get("curpage");
+        return getPathToRoot()+"index.html?page="+curPage+(anchor==null?"":"#"+anchor);
+    }
+
+    public String getAnchorName(JOTDocletMethodHolder handler)
+    {
+        return getSignature(handler.getDoc());
+    }
+    public String getAnchorName(ConstructorDoc doc)
+    {
+        return getSignature(doc);
+    }
+            
     public ClassDoc[] getSortedClasses() {
         PackageDoc pack = (PackageDoc) getVariables().get("curitem");
         return getSortedClasses(pack);
@@ -99,7 +139,26 @@ public class JOTDocletNavView extends JOTLightweightView {
         return subs;
     }
 
+    private String getHref(String link) {
+        //System.out.println(link);
+        int i=link.indexOf("HREF=\"")+6;
+        if(i>=6)
+            return link.substring(i,link.indexOf("\"",i));
+        else
+            return link;
+    }
+
+    public String getAnchorImage()
+    {
+        return "<img border=0 src='"+getPathToRoot()+"img/anchor.png'>";
+    }
+
     private String getSignature(MethodDoc doc) {
+        String sig = doc.name() + doc.flatSignature();
+        //System.out.println(sig);
+        return sig;
+    }
+    private String getSignature(ConstructorDoc doc) {
         String sig = doc.name() + doc.flatSignature();
         //System.out.println(sig);
         return sig;
@@ -128,7 +187,7 @@ public class JOTDocletNavView extends JOTLightweightView {
     public String getPathToRoot() {
         String path = "";
         Doc doc = (Doc) getVariables().get("curitem");
-        if (doc != null) {
+        if (doc != null && ! (doc instanceof RootDoc)) {
             String name = doc.name();
             if (doc instanceof ClassDoc) {
                 name = ((ClassDoc) doc).containingPackage().name();
