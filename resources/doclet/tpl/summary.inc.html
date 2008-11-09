@@ -1,6 +1,9 @@
 <div class="pkgSumInfos">
   <div style="padding:4px">
-    <div class="tagTitle" style="background-color:#c6e4b3">Description</div>
+    <div class="tagTitle" style="background-color:#c6e4b3">
+    <a target="_top" class="anchor" NAME="summary" href='<jot:var value="getDirectLink(`summary`)"/>'><jot:var value="getAnchorImage"/></a>
+      Description
+    </div>
     <div id="shortDesc">
       <jot:if eval="hasMoreInfos()">
         <a class="more" onclick="showFullDescription(true)">[More Infos]</a>&nbsp;
@@ -15,7 +18,7 @@
     </jot:if>
     <div class="seeTags">
       <b>See also:</b> &nbsp;&nbsp;
-      <jot:loop over="seeTags" as="tag">
+      <jot:loop over="getSeeTags" as="tag">
         <font class="seeTag"><jot:var value="tag"/></font>
       </jot:loop>
     </div>

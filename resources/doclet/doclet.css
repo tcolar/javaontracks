@@ -55,6 +55,8 @@ span.inherited{background-color:#ddeedd;margin-left:20px}
 span.overrides{background-color:#ddddee;margin-left:20px}
 span.specified{background-color:#eedddd;margin-left:20px}
 
+a.anchor{}
+
 span.private{color:red;padding-right:4px}
 span.public{padding-right:4px}
 span.protected{color:orange;padding-right:4px}

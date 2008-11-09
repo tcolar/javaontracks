@@ -53,9 +53,13 @@
     <jot:include file="tpl/summary.inc.html"/>
     <div style="height:3px"> </div>
     <div class="constructors">
-      <div class="tagTitle" style="background-color:#eeeebb">Constructors</div>
+      <div class="tagTitle" style="background-color:#eeeebb">
+              <a target="_top" class="anchor" NAME="constructor_summary" href='<jot:var value="getDirectLink(`constructor_summary`)"/>'><jot:var value="getAnchorImage"/></a>
+          Constructors
+      </div>
       <jot:loop over="getConstructors()" as="constructor">
         <div class="item">
+                <a target="_top" class="anchor" NAME='<jot:var value="getAnchorName(constructor)"/>' href='<jot:var value="getDirectLink(constructor)"/>'><jot:var value="getAnchorImage"/></a>
           <jot:var value="getModifiersString(constructor)"/><b><jot:var value="constructor.name"/></b><jot:var value="getParamString(constructor)"/><br/>
           <div class="itemDesc" id='constructor_short_<jot:var value="cpt"/>'>
             <jot:if eval="hasMoreInfos(constructor)">
@@ -75,9 +79,13 @@
     </div>
     <div style="height:8px"> </div>
     <div class="methods">
-      <div class="tagTitle" style="background-color:#dddddd">Methods</div>
+      <div class="tagTitle" style="background-color:#dddddd">
+              <a target="_top" class="anchor" NAME="method_summary" href='<jot:var value="getDirectLink(`method_summary`)"/>'><jot:var value="getAnchorImage"/></a>
+        Methods
+      </div>
       <jot:loop over="getMethods()" as="method">
         <div class="item">
+                <a target="_top" class="anchor" NAME='<jot:var value="getAnchorName(method)"/>' href='<jot:var value="getDirectLink(method)"/>'><jot:var value="getAnchorImage"/></a>
             <jot:var value="getModifiersString(method)"/> <jot:var value="getReturnString(method)"/> <b><jot:var value="method.name"/></b><jot:var value="getParamString(method)"/>
             <jot:if eval="! method.isLocal">
               <span class="inherited">[Inherited From <jot:var value="getInheritedFromItem(method)"/>]</span>

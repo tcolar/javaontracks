@@ -24,12 +24,12 @@
   </div>
   <jot:loop over="packages" as="package">
     <div class="navPackage" id='__<jot:var value="package.name"/>'>
-      <div class="pkgName"><img src="img/pkg.png" width="14" height="14"/><a target="content" class="regular" href='<jot:var value="getItemLink(package)"/>'><jot:var value="package.name"/></a></div>
+      <div class="pkgName"><img src="img/pkg.png" width="14" height="14"/><a target="jotcontent" class="regular" href='<jot:var value="getItemLink(package)"/>'><jot:var value="package.name"/></a></div>
       <jot:loop over="getSortedClasses(package)" as="class">
         <div id='__<jot:var value="package.name"/>__<jot:var value="class.name"/>'>
           &nbsp;
           <img class="navItem" src='<jot:var value="getTypeImage(class)"/>' width="16" height="16"/>
-          <a target="content" class="regular" href='<jot:var value="getItemLink(class)"/>'><jot:var value="class.name"/></a><br/>
+          <a target="jotcontent" class="regular" href='<jot:var value="getItemLink(class)"/>'><jot:var value="class.name"/></a><br/>
         </div>
       </jot:loop>
     </div>

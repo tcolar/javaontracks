@@ -1,9 +1,29 @@
 <html>
   <head>
+    <script language="javascript">
+        // direct link to page
+        var customPage="overview-summary.html";
+        var url=window.location.href;
+        var index=url.indexOf("page=")+5;
+        if(index>=5)
+        {
+            var index2=url.indexOf("&",index);
+            if(index2==-1)
+                index2=url.length;
+            customPage=url.substring(index,index2);
+            // just give a bit of time for the rest of the page to load.
+            setTimeout("setPage()",250);
+        }
+
+        function setPage()
+        {
+            document.getElementById("jotcontent").src=customPage;
+        }
+    </script>
   </head>
   <FRAMESET COLS="320,*">
-    <FRAME NAME="nav" frameborder="0" SRC="overview-frame.html"/>
-    <FRAME NAME="content" frameborder="0" SRC="overview-summary.html"/>
+    <FRAME id="jotnav" NAME="jotnav" frameborder="0" SRC="overview-frame.html"/>
+    <FRAME id="jotcontent" NAME="jotcontent" frameborder="0" SRC=""/>
     <NOFRAMES><a href="overview-frame.html">Nav</a> <a href="overview-summary.html">Packages</a></NOFRAMES>
   </FRAMESET>
 </html>
