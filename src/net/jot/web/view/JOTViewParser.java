@@ -64,6 +64,7 @@ public class JOTViewParser {
     protected static final Pattern TAG_PATTERN = Pattern.compile("(<([^> ]*)\\s+jotid=\"([^\"]+)\"[^>]*>)(.*)", PATTERN_FLAGS);
     protected static final Pattern LOOP_PATTERN = Pattern.compile("<jot:loop\\s+over=\"([^\"]+)\"\\s+as=\"([^\"]+)\"\\s*(counter=\"([^\"]+)\")?\\s*>", PATTERN_FLAGS);
     protected static final Pattern VAR_PATTERN = Pattern.compile("<jot:var\\s+value=\"([^\"]+)\"\\s*(default=\"([^\"]+)\")?\\s*/>", PATTERN_FLAGS);
+    protected static final Pattern VAR_PATTERN2 = Pattern.compile("\\$\\{([^}]+)\\}", Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.CANON_EQ);
     protected static final Pattern URL_PATTERN = Pattern.compile("<jot:url\\s+path=\"([^\"]+)\"\\s*/>", PATTERN_FLAGS);
     protected static final Pattern INCLUDE_PATTERN = Pattern.compile("<jot:include\\s+file=\"([^\"]+)\"\\s*/>", PATTERN_FLAGS);
     protected static final Pattern RANGE_LOOP_PATTERN = Pattern.compile("<jot:loop\\s+from=\"([^\"]+)\"\\s+to=\"([^\"]+)\"\\s*(counter=\"([^\"]+)\")?\\s*>", PATTERN_FLAGS);
@@ -108,6 +109,7 @@ public class JOTViewParser {
         template = doIfs(template, view, templateRoot);
         template = doRangeLoops(template, view, templateRoot);
         template = doVariables(template, view);
+        template = doVariables2(template, view);
         template = JOTFormParser.doForms(template, view, templateRoot);
         return template;
     }
@@ -666,6 +668,29 @@ public class JOTViewParser {
         return buf.toString();
     }
 
+    static String doVariables2(String template, JOTViewParserData view) throws Exception {
+        Hashtable variables = view.getVariables();
+
+        Matcher m = VAR_PATTERN2.matcher(template);
+        StringBuffer buf = new StringBuffer();
+        while (m.find()) {
+            String defaultVal = MISSING_VALUE;
+            String varName = m.group(1).trim();
+            JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Var found:" + varName + " default:" + defaultVal);
+            Vector varHash = getVariableHash(varName);
+
+            if (varHash.size() > 0) {
+                Object obj = variables.get(varHash.get(0));
+                Object value = getVariableValue(view, varHash, obj, defaultVal);
+                JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Var value: " + value);
+                safeAppendReplacement(m, buf, value.toString());
+            }
+
+        }
+
+        m.appendTail(buf);
+        return buf.toString();
+    }
     /**
      * Standard java appendReplacement() use the $sign to do block replace stuff.
      * Anyhow i don't use that, but if my replacement string ass $ sign(or bacquote) in it will mess things up
