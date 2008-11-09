@@ -1,16 +1,16 @@
 <html>
   <head>
-    <link rel="stylesheet" type="text/css" href='<jot:var value="getPathToRoot"/>doclet.css'>
-    <script type="text/javascript" src='<jot:var value="getPathToRoot"/>doclet.js'></script>
-    <title><jot:var value="curitem.name"/> (<jot:var value="windowTitle"/>)</title>
-    <script language="javascript">
-        setWindowTitle('<jot:var value="curitem.name"/> (<jot:var value="windowTitle"/>)');
+    <link rel="stylesheet" type="text/css" href='${getPathToRoot}doclet.css'>
+    <script type="text/javascript" src='${getPathToRoot}doclet.js'></script>
+    <title>${curitem.name} (${windowTitle"$})</title>
+    <script type="tex/javascript">
+        setWindowTitle('${curitem.name} (${windowTitle})');
     </script>
   </head>
   <body>
     <jot:include file="tpl/topbar.inc.html"/>
     <div style="height:5px"> </div>
-    <div class="title">&nbsp;<img src='<jot:var value="getPathToRoot"/>img/pkg.png' height="16" width="16"/>&nbsp;Package: <jot:var value="curitem.name"/></div>
+    <div class="title">&nbsp;<img src='${getPathToRoot}img/pkg.png' height="16" width="16"/>&nbsp;Package: ${curitem.name}</div>
     <div style="height:3px"> </div>
     <jot:include file="tpl/tags.inc.html"/>
     <div style="height:3px;clear:both"> </div>
@@ -19,11 +19,11 @@
     <table border="0" width="100%">
       <jot:loop over="getSortedClasses()" as="class">
         <tr><td nowrap class="pkgSumItem">
-            <img class="navItem" src='<jot:var value="getTypeImage(class)"/>' width="16" height="16"/>
-            <a class="regular" href='<jot:var value="getItemLink(class)"/>'><jot:var value="class.name"/></a>
+            <img class="navItem" src='${getTypeImage(class)}' width="16" height="16"/>
+            <a class="regular" href='${getItemLink(class)}'>${class.name}</a>
           </td>
           <td class="pkgSumDesc">
-            <jot:var value="getShortDescription(class)"/>
+            ${getShortDescription(class)}
         </td></tr>
       </jot:loop>
     </table>

@@ -2,9 +2,9 @@
   <head>
     <link rel="stylesheet" type="text/css" href="doclet.css">
     <script type="text/javascript" src="doclet.js"></script>
-    <title>Overview (<jot:var value="windowTitle"/>)</title>
-    <script language="javascript">
-        setWindowTitle('Overview (<jot:var value="windowTitle"/>)');
+    <title>Overview (${windowTitle})</title>
+    <script type="text/javascript">
+        setWindowTitle('Overview (${windowTitle}');
     </script>
   </head>
   <body>
@@ -14,12 +14,12 @@
     <jot:include file="tpl/summary.inc.html"/>
     <div style="height:3px"> </div>
     <jot:loop over="packages" as="package">
-      <jot:var value="getTreeOffset(package)"/>
+      ${getTreeOffset(package)}
       <img src="img/pkg.png" height="14" width="14"/>
-      <a class="tooltip" href='<jot:var value="getItemLink(package)"/>'>
-        <jot:var value="package.name"/>
+      <a class="tooltip" href='${getItemLink(package)}'>
+        ${package.name}
         <div class="ttContent">
-          <jot:var value="getStrippedShortDescription(package)"/>
+          ${getStrippedShortDescription(package)}
         </div>
       </a>
       <br/>
