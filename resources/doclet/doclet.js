@@ -1,3 +1,16 @@
+function toogleAll(parent,startingWith)
+{
+    var childs=document.getElementById(parent).childNodes;
+    for (i = 0; i < childs.length; i++){
+        var child=childs[i];
+        var id=child.id;
+        if(id!=null && id.indexOf(startingWith)==0){
+            var newValue=child.style.display=='none'?true:false;
+            showElem(id,newValue);
+        }
+    }
+}
+
 function showFullDescription(bool)
 {
     showElem("shortDesc", ! bool);

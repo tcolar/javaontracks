@@ -84,12 +84,18 @@
       </jot:loop>
     </div>
     <div style="height:8px"> </div>
-    <div class="methods">
+    <div id="methods" class="methods">
       <div class="tagTitle" style="background-color:#dddddd">
               <a target="_top" class="anchor" NAME="method_summary" href="${getDirectLink('method_summary')}">${getAnchorImage}</a>
-        Methods
+              Methods
+      </div>
+      <div class="item">
+          <a class="more" onclick="toogleAll('methods','__m_inerited_')">Hide/Show inherited methods</a>
       </div>
       <jot:loop over="getMethods()" as="method">
+        <jot:if eval="! method.isLocal">
+            <div id="__m_inerited_${cpt}" display="block">
+        </jot:if>
         <div class="item">
                 <a target="_top" class="anchor" NAME='${getAnchorName(method)}' href='${getDirectLink(method)}'>${getAnchorImage}</a>
             ${getModifiersString(method)} ${getReturnString(method)} <b>${method.name}</b>${getParamString(method)}
@@ -113,10 +119,12 @@
             <div class="itemDesc" id='method_full_${cpt}' style="display:none">
               <a onclick='showElem("method_short_${cpt}",true);showElem("method_full_${cpt}",false)'><img border="0" src="${${getPathToRoot}img/minus.png"></a>&nbsp;
               ${getFullDescription(method)}
-              <!-- TODO: parameters, throws, modifiers(protected, dinal etc...) -->
             </div>
           </jot:if>
         </div>
+        <jot:if eval="! method.isLocal">
+            </div>
+        </jot:if>
       </jot:loop>
     </div>
     <div style="height:8px"> </div>

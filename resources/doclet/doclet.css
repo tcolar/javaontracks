@@ -45,7 +45,7 @@ a.regular{text-decoration:underline;color:#000000}
 a.regular:hover{background-color:#ddeeee}
 
 a.more{text-decoration:underline;color:#FFFFFF;font-weight:bold;background-color:#0000ee}
-a.more:hover{background-color:#0000dd}
+a.more:hover{cursor:pointer;background-color:#0000dd}
 
 a.tooltip{text-decoration:none;position:relative;color:#000000;font-size:16px}
 a.tooltip div{width:400px}
@@ -62,10 +62,10 @@ a.anchor{}
 span.private{color:red;padding-right:4px}
 span.public{padding-right:4px}
 span.protected{color:orange;padding-right:4px}
-span.abstract{color:fuchsia;padding-right:4px}
-span.final{color:red;padding-right:4px}
-span.static{color:olive;padding-right:4px}
-span.synchronized{color:maroon;padding-right:4px}
+span.abstract{color:fuchsia;padding-right:4px;font-weight:bold}
+span.final{color:red;padding-right:4px;font-weight:bold}
+span.static{color:green;padding-right:4px;font-weight:bold}
+span.synchronized{color:blue;padding-right:4px;font-weight:bold}
 span.native{color:teal;padding-right:4px}
 span.transient{color:teal;padding-right:4px}
 span.volatile{color:teal;padding-right:4px}
