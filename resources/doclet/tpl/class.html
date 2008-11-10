@@ -69,13 +69,13 @@
           ${getModifiersString(constructor)}<b>${constructor.name}</b>${getParamString(constructor)}<br/>
           <div class="itemDesc" id='constructor_short_${cpt}'>
             <jot:if eval="hasMoreInfos(constructor)">
-              <a class="more" onclick='showElem("constructor_short_${cpt}",false);showElem("constructor_full_${cpt}",true)'>More Infos</a>&nbsp;
+              <a onclick='showElem("constructor_short_${cpt}",false);showElem("constructor_full_${cpt}",true)'><img border="0" src="${${getPathToRoot}img/plus.png"></a>&nbsp;
             </jot:if>
             ${getShortDescription(constructor)}
           </div>
           <jot:if eval="hasMoreInfos(constructor)">
             <div class="itemDesc" id='constructor_full_${cpt}' style="display:none">
-              <a class="more" onclick='showElem("constructor_short_${cpt}",true);showElem("constructor_full_${cpt}",false)'>Less Infos</a>&nbsp;
+              <a onclick='showElem("constructor_short_${cpt}",true);showElem("constructor_full_${cpt}",false)'><img border="0" src="${${getPathToRoot}img/minus.png"></a>&nbsp;
               ${getFullDescription(constructor)}
               <!-- TODO: parameters, throws, modifiers(protected, dinal etc...) -->
             </div>
@@ -105,13 +105,13 @@
           <br/>
           <div class="itemDesc" id='method_short_${cpt}'>
             <jot:if eval="hasMoreInfos(method)">
-              <a class="more" onclick='showElem("method_short_${cpt}",false);showElem("method_full_${cpt}",true)'>More Infos</a>&nbsp;
+              <a onclick='showElem("method_short_${cpt}",false);showElem("method_full_${cpt}",true)'><img border="0" src="${${getPathToRoot}img/plus.png"></a>&nbsp;
             </jot:if>
             ${getShortDescription(method)}
           </div>
           <jot:if eval="hasMoreInfos(method)">
             <div class="itemDesc" id='method_full_${cpt}' style="display:none">
-              <a class="more" onclick='showElem("method_short_${cpt}",true);showElem("method_full_${cpt}",false)'>Less Infos</a>&nbsp;
+              <a onclick='showElem("method_short_${cpt}",true);showElem("method_full_${cpt}",false)'><img border="0" src="${${getPathToRoot}img/minus.png"></a>&nbsp;
               ${getFullDescription(method)}
               <!-- TODO: parameters, throws, modifiers(protected, dinal etc...) -->
             </div>

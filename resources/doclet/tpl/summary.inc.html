@@ -6,13 +6,13 @@
     </div>
     <div id="shortDesc">
       <jot:if eval="hasMoreInfos()">
-        <a class="more" onclick="showFullDescription(true)">[More Infos]</a>&nbsp;
+        <a onclick="showFullDescription(true)"><img border="0" src="${${getPathToRoot}img/plus.png"></a>&nbsp;
       </jot:if>
       ${getShortDescription()}
     </div>
     <jot:if eval="hasMoreInfos()">
       <div id="fullDesc" style="display:none">
-        <a class="more" onclick="showFullDescription(false)">[Less Infos]</a>&nbsp;
+        <a onclick="showFullDescription(false)"><img border="0" src="${${getPathToRoot}img/minus.png"></a>&nbsp;
         ${getFullDescription()}
       </div>
     </jot:if>
