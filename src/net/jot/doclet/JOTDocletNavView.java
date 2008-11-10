@@ -215,6 +215,11 @@ public class JOTDocletNavView extends JOTLightweightView {
         Vector myDocs = new Vector();
         MethodDoc[] docs = mainDoc.methods(false);
         for (int i = 0; i != docs.length; i++) {
+            // don't add private methods
+            if (docs[i].isPrivate()) {
+                    continue;
+            }
+                
             JOTDocletMethodHolder holder=new JOTDocletMethodHolder(docs[i], null);
             String sig=getSignature(docs[i]);
             ClassDoc[] interfaces = mainDoc.interfaces();
