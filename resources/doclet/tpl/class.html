@@ -1,57 +1,57 @@
 <!-- TODO: add all the anchors -->
 <html>
-  <head>
+<head>
     <link rel="stylesheet" type="text/css" href='${getPathToRoot}doclet.css'>
     <script type="text/javascript" src='${getPathToRoot}doclet.js'></script>
     <title>${curitem.name} ${windowTitle})</title>
     <script type="text/javascript">
         setWindowTitle('${curitem.name} (${windowTitle})');
     </script>
-  </head>
-  <body>
+</head>
+<body>
     <jot:include file="tpl/topbar.inc.html"/>
     <div style="height:5px"> </div>
     <div class="title">&nbsp;<img class="navItem" src='${getTypeImage(curitem)}' width="16" height="16"/>
-      <span class="smallPackName">${curitem.containingPackage.name}.</span>${curitem.name}
+        <span class="smallPackName">${curitem.containingPackage.name}.</span>${curitem.name}
     </div>
     <div style="height:3px"> </div>
     <jot:include file="tpl/tags.inc.html"/>
     <div style="height:3px;clear:both"> </div>
     <div id="classInfos">
-      <div class="tagBox" style="background-color:#f2f3c9">
-        <div class="tagTitle" style="background-color:#e2e3b9">Hierarchy</div>
-        <jot:loop over="getHierarchy()" as="item">
-          <jot:loop from="0" to="cpt">&nbsp;&nbsp;&nbsp;&nbsp;</jot:loop>
-          <span class="smallPackName"><img class="navItem" src='${getTypeImage(item)}' width="16" height="16"/>&nbsp;<a class="regular" href='${getItemLink(item)}'>${item.name}</a></span><br/>
-        </jot:loop>
-      </div>
-      <div class="tagBox" style="background-color:#c6d0f4">
-        <div class="tagTitle" style="background-color:#b6e0e4">Implements</div>
-        <jot:loop over="curitem.interfaces()" as="item">
-          <span class="smallPackName"><img class="navItem" src='${getTypeImage(item)}' width="16" height="16"/>&nbsp;<a class="regular" href='${getItemLink(item)}'>${item.name}</a></span><br/>
-        </jot:loop>
-      </div>
-      <div class="tagBox" style="background-color:#d9c6ec;max-width:400px">
-        <div class="tagTitle" style="background-color:#c9b6dc">Subclasses</div>
-        <div id="subClasses">
-          <jot:if eval="hasMoreClasses()">
-            <a class="more" onclick="showAllSubclasses(true)">See ALL subclasses</a><br/>
-          </jot:if>
-          <jot:loop over="getSubClasses()" as="item">
-            <span class="smallPackName"><img class="navItem" src='${getTypeImage(item)}' width="16" height="16"/>&nbsp;<a class="regular" href='${getItemLink(item)}'>${item.name}</a></span><br/>
-          </jot:loop>
+        <div class="tagBox" style="background-color:#f2f3c9">
+            <div class="tagTitle" style="background-color:#e2e3b9">Hierarchy</div>
+            <jot:loop over="getHierarchy()" as="item">
+                <jot:loop from="0" to="cpt">&nbsp;&nbsp;&nbsp;&nbsp;</jot:loop>
+                <span class="smallPackName"><img class="navItem" src='${getTypeImage(item)}' width="16" height="16"/>&nbsp;<a class="regular" href='${getItemLink(item)}'>${item.name}</a></span><br/>
+            </jot:loop>
         </div>
-        <div id="allSubClasses" style="display:none">
-          <a class="more" onclick="showAllSubclasses(false)">See DIRECT subclasses</a><br/>
-          <jot:loop over="getAllSubClasses()" as="item">
-            <span class="smallPackName"><img class="navItem" src='${getTypeImage(item)}' width="16" height="16"/>&nbsp;<a class="regular" href='${getItemLink(item)}'>${item.name}</a></span><br/>
-          </jot:loop>
+        <div class="tagBox" style="background-color:#c6d0f4">
+            <div class="tagTitle" style="background-color:#b6e0e4">Implements</div>
+            <jot:loop over="curitem.interfaces()" as="item">
+                <span class="smallPackName"><img class="navItem" src='${getTypeImage(item)}' width="16" height="16"/>&nbsp;<a class="regular" href='${getItemLink(item)}'>${item.name}</a></span><br/>
+            </jot:loop>
         </div>
-      </div>
+        <div class="tagBox" style="background-color:#d9c6ec;max-width:400px">
+            <div class="tagTitle" style="background-color:#c9b6dc">Subclasses</div>
+            <div id="subClasses">
+                <jot:if eval="hasMoreClasses()">
+                    <a class="more" onclick="showAllSubclasses(true)">See ALL subclasses</a><br/>
+                </jot:if>
+                <jot:loop over="getSubClasses()" as="item">
+                    <span class="smallPackName"><img class="navItem" src='${getTypeImage(item)}' width="16" height="16"/>&nbsp;<a class="regular" href='${getItemLink(item)}'>${item.name}</a></span><br/>
+                </jot:loop>
+            </div>
+            <div id="allSubClasses" style="display:none">
+                <a class="more" onclick="showAllSubclasses(false)">See DIRECT subclasses</a><br/>
+                <jot:loop over="getAllSubClasses()" as="item">
+                    <span class="smallPackName"><img class="navItem" src='${getTypeImage(item)}' width="16" height="16"/>&nbsp;<a class="regular" href='${getItemLink(item)}'>${item.name}</a></span><br/>
+                </jot:loop>
+            </div>
+        </div>
     </div>
     <div style="height:3px;clear:both"> </div>
     <div class="quicklinks">
-        Quick Links: 
+        Quick Links:
         <a href="#constructor_summary">Constructors</a>
         <a href="#method_summary">Methods</a>
     </div>
@@ -59,74 +59,80 @@
     <jot:include file="tpl/summary.inc.html"/>
     <div style="height:3px"> </div>
     <div class="constructors">
-      <div class="tagTitle" style="background-color:#eeeebb">
-              <a target="_top" class="anchor" NAME="constructor_summary" href="${getDirectLink('constructor_summary')}">${getAnchorImage}</a>
-          Constructors
-      </div>
-      <jot:loop over="getConstructors()" as="constructor">
-        <div class="item">
-                <a target="_top" class="anchor" NAME='${getAnchorName(constructor)}' href='${getDirectLink(constructor)}'>${getAnchorImage}</a>
-          ${getModifiersString(constructor)}<b>${constructor.name}</b>${getParamString(constructor)}<br/>
-          <div class="itemDesc" id='constructor_short_${cpt}'>
-            <jot:if eval="hasMoreInfos(constructor)">
-              <a onclick='showElem("constructor_short_${cpt}",false);showElem("constructor_full_${cpt}",true)'><img border="0" src="${${getPathToRoot}img/plus.png"></a>&nbsp;
-            </jot:if>
-            ${getShortDescription(constructor)}
-          </div>
-          <jot:if eval="hasMoreInfos(constructor)">
-            <div class="itemDesc" id='constructor_full_${cpt}' style="display:none">
-              <a onclick='showElem("constructor_short_${cpt}",true);showElem("constructor_full_${cpt}",false)'><img border="0" src="${${getPathToRoot}img/minus.png"></a>&nbsp;
-              ${getFullDescription(constructor)}
-              <!-- TODO: parameters, throws, modifiers(protected, dinal etc...) -->
-            </div>
-          </jot:if>
+        <div class="tagTitle" style="background-color:#eeeebb">
+            <a target="_top" class="anchor" NAME="constructor_summary" href="${getDirectLink('constructor_summary')}">${getAnchorImage}</a>
+            Constructors
         </div>
-      </jot:loop>
+        <jot:loop over="getConstructors()" as="constructor">
+            <div class="item">
+                <a target="_top" class="anchor" NAME='${getAnchorName(constructor)}' href='${getDirectLink(constructor)}'>${getAnchorImage}</a>
+                ${getModifiersString(constructor)}<b>${constructor.name}</b>${getParamString(constructor)}<br/>
+                <div class="itemDesc" id='constructor_short_${cpt}'>
+                    <jot:if eval="hasMoreInfos(constructor)">
+                        <a onclick='showElem("constructor_short_${cpt}",false);showElem("constructor_full_${cpt}",true)'><img border="0" src="${${getPathToRoot}img/plus.png"></a>&nbsp;
+                    </jot:if>
+                    ${getShortDescription(constructor)}
+                </div>
+                <jot:if eval="hasMoreInfos(constructor)">
+                    <div class="itemDesc" id='constructor_full_${cpt}' style="display:none">
+                        <a onclick='showElem("constructor_short_${cpt}",true);showElem("constructor_full_${cpt}",false)'><img border="0" src="${${getPathToRoot}img/minus.png"></a>&nbsp;
+                        ${getFullDescription(constructor)}
+                        <!-- TODO: parameters, throws, modifiers(protected, dinal etc...) -->
+                    </div>
+                </jot:if>
+            </div>
+        </jot:loop>
     </div>
     <div style="height:8px"> </div>
     <div id="methods" class="methods">
-      <div class="tagTitle" style="background-color:#dddddd">
-              <a target="_top" class="anchor" NAME="method_summary" href="${getDirectLink('method_summary')}">${getAnchorImage}</a>
-              Methods
-      </div>
-      <div class="item">
-          <a class="more" onclick="toogleAll('methods','__m_inerited_')">Hide/Show inherited methods</a>
-      </div>
-      <jot:loop over="getMethods()" as="method">
+        <div class="tagTitle" style="background-color:#dddddd">
+            <a target="_top" class="anchor" NAME="method_summary" href="${getDirectLink('method_summary')}">${getAnchorImage}</a>
+            Methods
+        </div>
+        <div class="item">
+            <a class="more" onclick="toogleAll('methods','__m_inerited_')">Hide/Show inherited methods</a>
+        </div>
+        <jot:loop over="getMethods()" as="method">
         <jot:if eval="! method.isLocal">
             <div id="__m_inerited_${cpt}" display="block">
         </jot:if>
         <div class="item">
-                <a target="_top" class="anchor" NAME='${getAnchorName(method)}' href='${getDirectLink(method)}'>${getAnchorImage}</a>
+            <a target="_top" class="anchor" NAME='${getAnchorName(method)}' href='${getDirectLink(method)}'>${getAnchorImage}</a>
             ${getModifiersString(method)} ${getReturnString(method)} <b>${method.name}</b>${getParamString(method)}
+            <jot:if eval="hasDeclaredThrows(method)">
+                throws
+                <jot:loop over="${getDeclaredThrows(method)}" as="throw">
+                    <span class="throws">${throw}</span>
+                </jot:loop>
+            </jot:if>
             <jot:if eval="! method.isLocal">
-              <span class="inherited">[Inherited From ${getInheritedFromItem(method)}]</span>
+                <span class="inherited">[Inherited From ${getInheritedFromItem(method)}]</span>
             </jot:if>
             <jot:if eval="method.isOverride">
-              <span class="overrides">[Overrides ${getOverridenInItem(method)}]</span>              
+                <span class="overrides">[Overrides ${getOverridenInItem(method)}]</span>
             </jot:if>
             <jot:if eval="method.isSpecified">
-              <span class="specified">[Specified in ${getSpecifiedInItem(method)}]</span>              
+                <span class="specified">[Specified in ${getSpecifiedInItem(method)}]</span>
             </jot:if>
-          <br/>
-          <div class="itemDesc" id='method_short_${cpt}'>
-            <jot:if eval="hasMoreInfos(method)">
-              <a onclick='showElem("method_short_${cpt}",false);showElem("method_full_${cpt}",true)'><img border="0" src="${${getPathToRoot}img/plus.png"></a>&nbsp;
-            </jot:if>
-            ${getShortDescription(method)}
-          </div>
-          <jot:if eval="hasMoreInfos(method)">
-            <div class="itemDesc" id='method_full_${cpt}' style="display:none">
-              <a onclick='showElem("method_short_${cpt}",true);showElem("method_full_${cpt}",false)'><img border="0" src="${${getPathToRoot}img/minus.png"></a>&nbsp;
-              ${getFullDescription(method)}
+            <br/>
+            <div class="itemDesc" id='method_short_${cpt}'>
+                <jot:if eval="hasMoreInfos(method)">
+                    <a onclick='showElem("method_short_${cpt}",false);showElem("method_full_${cpt}",true)'><img border="0" src="${${getPathToRoot}img/plus.png"></a>&nbsp;
+                </jot:if>
+                ${getShortDescription(method)}
             </div>
-          </jot:if>
+            <jot:if eval="hasMoreInfos(method)">
+                <div class="itemDesc" id='method_full_${cpt}' style="display:none">
+                    <a onclick='showElem("method_short_${cpt}",true);showElem("method_full_${cpt}",false)'><img border="0" src="${${getPathToRoot}img/minus.png"></a>&nbsp;
+                    ${getFullDescription(method)}
+                </div>
+            </jot:if>
         </div>
         <jot:if eval="! method.isLocal">
-            </div>
-        </jot:if>
-      </jot:loop>
+    </div>
+    </jot:if>
+    </jot:loop>
     </div>
     <div style="height:8px"> </div>
-  </body>
+</body>
 </html>

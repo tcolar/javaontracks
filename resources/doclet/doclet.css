@@ -56,6 +56,7 @@ a.tooltip:hover div.ttContent{z-index: 99;position:absolute;left:50px;top:20px;b
 span.inherited{background-color:#ddeedd;margin-left:20px}
 span.overrides{background-color:#ddddee;margin-left:20px}
 span.specified{background-color:#eedddd;margin-left:20px}
+span.throws{background-color:#eeddee;margin-left:5px}
 
 a.anchor{}
 

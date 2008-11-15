@@ -506,4 +506,17 @@ public class JOTDocletNavView extends JOTLightweightView {
         String link = getItemLink(holder.getSpecifiedIn());
         return "<a class='regular' href='" + link + "'><font class='type'>" + holder.getSpecifiedIn().name() + "</font></a>";
     }
+
+    public boolean hasDeclaredThrows(JOTDocletMethodHolder holder) {
+        return getDeclaredThrows(holder).size()>0;
+    }
+    public Vector getDeclaredThrows(JOTDocletMethodHolder holder) {
+        ClassDoc[] exceptions=holder.getDoc().thrownExceptions();
+        Vector v=new Vector();
+        for(int i=0;i!=exceptions.length;i++)
+        {
+            v.add(getItemLink(exceptions[i]));
+        }
+        return v;
+    }
 }

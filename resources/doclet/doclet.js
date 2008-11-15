@@ -25,7 +25,7 @@ function showAllSubclasses(bool)
 
 function showElem(id, show)
 {
-    if(show==true)
+    if(show)
         document.getElementById(id).style.display='block';
     else
         document.getElementById(id).style.display='none';
