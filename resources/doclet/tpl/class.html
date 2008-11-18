@@ -168,6 +168,9 @@ ${getModifiersString(field)}
 <jot:if eval="isDeprecated(field)"><del></jot:if>
 <b> ${field.name}</b>
 <jot:if eval="isDeprecated(field)"></del></jot:if>
+<jot:if eval="hasValue(field)">
+  = ${getFieldValue(field)}
+</jot:if>
 <br/>
 <div class="itemDesc" id='field_short_${cpt}'>
     <jot:if eval="hasMoreInfos(field)">
