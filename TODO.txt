@@ -16,7 +16,6 @@ Appserver: support multiple "jotapps" -> multiple class loaders ??
 
 Class lookup service (interface), default in memory -> use for singletons
 
-Javadoc doclets, more flexible, pretty
-use CSS jscript    make them using jot/jotwiki templates
-class page -> show all methods incl. inherited
-flasg Static, Final, overloaded
+Do pages for Interfaces, Enums, Annotations
+Handle innerclasses
+Handle generics
