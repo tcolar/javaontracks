@@ -333,6 +333,7 @@ public class JOTDocletNavView extends JOTLightweightView
         ClassDoc doc = (ClassDoc) getVariables().get("curitem");
         FieldDoc[] docs = doc.fields(false);
         // TODO: inherited fields ??
+        // remove private
         Arrays.sort(docs);
         return docs;
     }
