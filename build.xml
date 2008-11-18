@@ -63,7 +63,7 @@
         <delete dir="jotdoc" quiet="true"/>
         <mkdir dir="jotdoc"/>
         <!-- JOT code : ~ 48k-->
-        <javadoc sourcepath="src" destdir="jotdoc" packagenames="*" source="true" doctitle="JavaOnTracks API" windowtitle="JavaOnTracks API">
+        <javadoc sourcepath="src" destdir="jotdoc" packagenames="*" source="true" doctitle="JavaOnTracks API" windowtitle="JavaOnTracks API" link=" http://java.sun.com/j2se/1.5.0/docs/api/">
 	<!-- on my machine it needed up to 1.5G of memory to genertate this-->
         <!-- all jdk code: ~ 3MB -->
         <!--<javadoc sourcepath="/home/thibautc/NetBeansProjects/jdk1.6/j2se/src/share/classes/" destdir="jotdoc" packagenames="*" linksource="true" maxmemory="2048m">-->

@@ -99,9 +99,6 @@ public class JOTViewParser
      */
     public static String parse(JOTViewParserData view, String template, String templateRoot) throws Exception
     {
-        // done as part of caching now, since static.
-        //template=doRemoveTags(template);		
-        template = doIncludes(template, view, templateRoot);
         template = doWidgets(template, view);
         template = doUrls(template, view);
         template = do1LineBlocks(template, view);
@@ -114,6 +111,7 @@ public class JOTViewParser
         template = doVariables(template, view);
         template = doVariables2(template, view);
         template = JOTFormParser.doForms(template, view, templateRoot);
+        template = doIncludes(template, view, templateRoot);
         return template;
     }
 

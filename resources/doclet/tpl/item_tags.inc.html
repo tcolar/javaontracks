@@ -1,0 +1,64 @@
+<!-- "All" Possible javadoc tags -->
+<jot:if eval="hasItemTags('return')">
+<br/>
+<b>Returns:</b>
+<jot:loop over="getItemTags('return')" as="tag">
+    ${getTagText(tag)} 
+</jot:loop>
+</jot:if>
+<jot:if eval="hasItemTags('param')">
+<br/>
+<b>Parameters:</b>
+<jot:loop over="getItemTags('param')" as="tag">
+<br> - ${getTagText(tag)}
+</jot:loop>
+</jot:if>
+<jot:if eval="hasItemTags('throws')">
+<br/>
+<b>Throws:</b>
+<jot:loop over="getItemTags('throws')" as="tag">
+<br/>  - ${getTagText(tag)}
+</jot:loop>
+</jot:if>
+<jot:if eval="hasItemTags('exception')">
+<br/>
+<b>Exceptions:</b>
+<jot:loop over="getItemTags('exception)" as="tag">
+<br/>  - ${getTagText(tag)}
+</jot:loop>
+</jot:if>
+<jot:if eval="hasItemTags('since')">
+<br/>
+<b>Since:</b>
+<jot:loop over="getItemTags('since')" as="tag">
+    ${getTagText(tag)} 
+</jot:loop>
+</jot:if>
+<jot:if eval="hasItemTags('serial')">
+<br/>
+<b>Serial:</b>
+<jot:loop over="getItemTags('serial')" as="tag">
+  ${getTagText(tag)}
+</jot:loop>
+</jot:if>
+<jot:if eval="hasItemTags('serialData')">
+<br/>
+<b>Serial Data:</b>
+<jot:loop over="getItemTags('serialData')" as="tag">
+  ${getTagText(tag)}
+</jot:loop>
+</jot:if>
+<jot:if eval="hasItemTags('serialField')">
+<br/>
+<b>Serial Field:</b>
+<jot:loop over="getItemTags('serialField')" as="tag">
+  ${getTagText(tag)}
+</jot:loop>
+</jot:if>
+<jot:if eval="hasItemTags('see')">
+<br/>
+<b>See Also:</b>
+<jot:loop over="getItemTags('see')" as="tag">
+  ${getTagText(tag)}, 
+</jot:loop>
+</jot:if>

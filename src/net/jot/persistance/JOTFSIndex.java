@@ -24,8 +24,18 @@ import net.jot.logger.JOTLogger;
  */
 public class JOTFSIndex
 {
+
   /**
-         * Stores the current highest ID found in the data file, so we can get the next unique higher value using nextval()
+   * @deprecated
+   */
+  public JOTFSIndex()
+  {
+
+  }
+
+  /**
+         * Stores he current highest ID found in the data file, so we can get the next unique higher value using nextval()
+        * @deprecated 
          */
 
   public long highestId = 0;
@@ -48,6 +58,7 @@ public class JOTFSIndex
 
   /**
          * Returns the position od a data row given it's index
+   * @deprecated
          * @param index
          * @return
          */

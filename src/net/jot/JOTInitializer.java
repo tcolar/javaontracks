@@ -101,6 +101,10 @@ public class JOTInitializer
         testMode = b;
     }
 
+    /**
+     *
+     * @return wether it's in test mode or not
+     */
     public boolean isTestMode()
     {
         return testMode;

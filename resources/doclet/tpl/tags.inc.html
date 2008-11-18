@@ -1,18 +1,26 @@
 <div id="tags">
   <div class="tagBox" style="background-color:#d0fafe">
     <div class="tagTitle" style="background-color:#d0eaee">Author(s)</div>
-    ${getJDOCTags('author')}
+    <jot:loop over="{getJDOCTags('author')" as="tag">
+        ${getTagText(tag)}<br/>
+    </jot:loop>
   </div>
   <div class="tagBox" style="background-color:#ffe7bd">
     <div class="tagTitle" style="background-color:#fff7cd">Since</div>
-    ${getJDOCTags('since')"}
+    <jot:loop over="{getJDOCTags('since')" as="tag">
+        ${getTagText(tag)}<br/>
+    </jot:loop>
   </div>
   <div class="tagBox" style="background-color:#ffcbe5">
     <div class="tagTitle" style="background-color:#ffdbf5">Version</div>
-    ${getJDOCTags('version')}
+    <jot:loop over="{getJDOCTags('version')" as="tag">
+        ${getTagText(tag)}<br/>
+    </jot:loop>
   </div>
   <div class="tagBox" style="background-color:#ebdbff">
     <div class="tagTitle" style="background-color:#fbebff">Serial</div>
-    ${getJDOCTags('serial')}
+    <jot:loop over="{getJDOCTags('serial')" as="tag">
+        ${getTagText(tag)}<br/>
+    </jot:loop>
   </div>
 </div>

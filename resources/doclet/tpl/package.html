@@ -20,7 +20,11 @@
       <jot:loop over="getSortedClasses()" as="class">
         <tr><td nowrap class="pkgSumItem">
             <img class="navItem" src='${getTypeImage(class)}' width="16" height="16"/>
-            <a class="regular" href='${getItemLink(class)}'>${class.name}</a>
+            <a class="regular" href='${getItemLink(class)}'>
+                <jot:if eval="isDeprecated(class)"><del></jot:if>
+                ${class.name}
+                <jot:if eval="isDeprecated(class)"></del></jot:if>
+            </a>
           </td>
           <td class="pkgSumDesc">
             ${getShortDescription(class)}

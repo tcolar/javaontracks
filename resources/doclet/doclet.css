@@ -12,11 +12,13 @@ table{font-weight:normal;font-size:16px;}
 .docTitle{color:#BB0000;font-weight:bold;position:absolute;right:5px;top:2px}
 
 .type{color:#990000}
+.tagInfo{color:#AA0000}
 .item{padding:4px;border-top:1px;border-top-style:solid;border-top-color:black}
 .itemDesc{font-weight:normal}
 
 .constructors{background-color:#FFFFCC;padding:4px}
 .methods{background-color:#F9F9F9;padding:4px}
+.fields{background-color:#EEEEFF;padding:4px}
 
 .seeTags{background-color:#d6f4c3;padding:4px;border:black;border-style:solid;border-width:1px}
 .seeTag{background-color:#f6ffe3;line-height:150%}
