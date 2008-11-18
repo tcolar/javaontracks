@@ -149,6 +149,8 @@ public class JOTDoclet extends AbstractDoclet
         File navigator = new File(OUT_ROOT + "overview-frame.html");
         File packTree = new File(OUT_ROOT + "overview-summary.html");
         PrintWriter writer = null;
+        int pkLength=0;
+        int itemsLength=0;
         try
         {
             writer = new PrintWriter(navigator);
@@ -176,6 +178,7 @@ public class JOTDoclet extends AbstractDoclet
             writer.close();
 
             // write individual package pages
+            pkLength=packages.length;
             for (int i = 0; i != packages.length; i++)
             {
                 view.reset();
@@ -206,6 +209,7 @@ public class JOTDoclet extends AbstractDoclet
                     html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + "class.html");
                     writer.print(html);
                     writer.close();
+                    itemsLength++;
                 }
             }
 
@@ -219,7 +223,7 @@ public class JOTDoclet extends AbstractDoclet
                 writer.close();
             }
         }
-
+        System.out.println("Processed "+itemsLength+ " in "+pkLength+" packages.");
     }
 
     /*protected void generateClassFiles(ClassDoc[] arr, ClassTree classtree)
