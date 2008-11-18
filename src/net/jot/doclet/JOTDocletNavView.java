@@ -75,17 +75,19 @@ public class JOTDocletNavView extends JOTLightweightView
         return getItemLink(doc, LinkInfoImpl.CONTEXT_CLASS);
     }
 
-    public String getItemLink(JOTDocletMethodHolder holder)
+    public String getItemLink(JOTDocletHolder holder)
     {
         return getItemLink(holder, LinkInfoImpl.CONTEXT_CLASS);
     }
 
-    public String getItemLink(JOTDocletMethodHolder holder, int context)
+    public String getItemLink(JOTDocletHolder holder, int context)
     {
         LinkInfoImpl lnInfo = new LinkInfoImpl(context, holder.getDoc().containingClass(), "", null);
         String link = docWriter.getLink(lnInfo);
-        if(link==null)
+        if (link == null)
+        {
             return null;
+        }
         return getHref(link) + "#" + getSignature(holder.getDoc());
     }
 
@@ -103,7 +105,7 @@ public class JOTDocletNavView extends JOTLightweightView
         return getDirectLink((String) null);
     }
 
-    public String getDirectLink(JOTDocletMethodHolder handler)
+    public String getDirectLink(JOTDocletHolder handler)
     {
         return getDirectLink(getAnchorName(handler));
     }
@@ -112,6 +114,7 @@ public class JOTDocletNavView extends JOTLightweightView
     {
         return getDirectLink(getAnchorName(doc));
     }
+
     public String getDirectLink(FieldDoc doc)
     {
         return getDirectLink(getAnchorName(doc));
@@ -123,7 +126,7 @@ public class JOTDocletNavView extends JOTLightweightView
         return getPathToRoot() + "index.html?page=" + curPage + (anchor == null ? "" : "#" + anchor);
     }
 
-    public String getAnchorName(JOTDocletMethodHolder handler)
+    public String getAnchorName(JOTDocletHolder handler)
     {
         return getSignature(handler.getDoc());
     }
@@ -132,6 +135,7 @@ public class JOTDocletNavView extends JOTLightweightView
     {
         return getSignature(doc);
     }
+
     public String getAnchorName(FieldDoc doc)
     {
         return doc.name();
@@ -155,7 +159,7 @@ public class JOTDocletNavView extends JOTLightweightView
         return doc.tags("deprecated").length > 0;
     }
 
-    public boolean isDeprecated(JOTDocletMethodHolder holder)
+    public boolean isDeprecated(JOTDocletHolder holder)
     {
         return isDeprecated(holder.getDoc());
     }
@@ -172,12 +176,12 @@ public class JOTDocletNavView extends JOTLightweightView
         return results;
     }
 
-    public String getShortDescription(JOTDocletMethodHolder holder)
+    public String getShortDescription(JOTDocletHolder holder)
     {
         return getShortDescription(holder.getDoc());
     }
 
-    public String getFullDescription(JOTDocletMethodHolder holder)
+    public String getFullDescription(JOTDocletHolder holder)
     {
         return getFullDescription(holder.getDoc());
     }
@@ -247,18 +251,21 @@ public class JOTDocletNavView extends JOTLightweightView
         return "<img border=0 src='" + getPathToRoot() + "img/anchor.png'>";
     }
 
-    private String getSignature(MethodDoc doc)
+    private String getSignature(ProgramElementDoc doc)
     {
-        String sig = doc.name() + doc.flatSignature();
-        //System.out.println(sig);
-        return sig;
-    }
-
-    private String getSignature(ConstructorDoc doc)
-    {
-        String sig = doc.name() + doc.flatSignature();
-        //System.out.println(sig);
-        return sig;
+        if (doc instanceof MethodDoc)
+        {
+            return doc.name() + ((MethodDoc) doc).signature();
+        }
+        if (doc instanceof FieldDoc)
+        {
+            return doc.name();
+        }
+        if (doc instanceof ConstructorDoc)
+        {
+            return doc.name() + ((ConstructorDoc) doc).signature();
+        }
+        return "";
     }
 
     private List getSubClassesCopy(ClassDoc doc, ClassTree tree, boolean all)
@@ -304,38 +311,123 @@ public class JOTDocletNavView extends JOTLightweightView
         return path;
     }
 
-    public boolean hasValue(FieldDoc doc)
+    public boolean hasValue(JOTDocletFieldHolder doc)
     {
-        return doc.constantValue()!=null;
+        return ((FieldDoc)doc.getDoc()).constantValue() != null;
     }
-    public String getFieldValue(FieldDoc doc)
+
+    public String getFieldValue(JOTDocletFieldHolder doc)
     {
-        Object value=doc.constantValue();
-        if(value==null)
+        Object value = ((FieldDoc)doc.getDoc()).constantValue();
+        if (value == null)
+        {
             return "";
-        if(value instanceof String)
-            return "\""+value+"\"";
-        if(value instanceof Character)
-            return "'"+value+"'";
+        }
+        if (value instanceof String)
+        {
+            return "\"" + value + "\"";
+        }
+        if (value instanceof Character)
+        {
+            return "'" + value + "'";
+        }
         return value.toString();
     }
-    
+
     public ConstructorDoc[] getConstructors()
     {
         ClassDoc doc = (ClassDoc) getVariables().get("curitem");
         ConstructorDoc[] docs = doc.constructors(false);
+        // constructors are not inherited.
+        // we show private constructors as this is useful info.
         Arrays.sort(docs);
         return docs;
     }
 
-    public FieldDoc[] getFields()
+    public JOTDocletFieldHolder[] getFields()
     {
-        ClassDoc doc = (ClassDoc) getVariables().get("curitem");
-        FieldDoc[] docs = doc.fields(false);
-        // TODO: inherited fields ??
-        // remove private
-        Arrays.sort(docs);
-        return docs;
+        ClassDoc mainDoc = (ClassDoc) getVariables().get("curitem");
+        return getFields(mainDoc);
+    }
+
+    public JOTDocletFieldHolder[] getFields(ClassDoc mainDoc)
+    {
+        Vector myDocs = new Vector();
+        FieldDoc[] docs = mainDoc.fields(false);
+        for (int i = 0; i != docs.length; i++)
+        {
+            // don't add private fields
+            if (docs[i].isPrivate())
+            {
+                continue;
+            }
+            JOTDocletFieldHolder holder = new JOTDocletFieldHolder(docs[i], null);
+            myDocs.add(holder);
+        }
+        // for all the fields in those class, check if fields where
+        // specified in implemented interfaces, to mark them as such
+        ClassDoc[] interfaces = mainDoc.interfaces();
+        for (int k = 0; k != interfaces.length; k++)
+        {
+            // go trough each impl interfaces and their potential superclasses
+            JOTDocletFieldHolder[] intFields = getFields(interfaces[k]);
+            for (int l = 0; l != intFields.length; l++)
+            {
+                intFields[l].setSuperClass(interfaces[k]);
+                myDocs.add(intFields[l]);
+            }
+        }
+        ClassDoc doc = mainDoc.superclass();
+        // go through all superclasses fields
+        while (doc != null && !doc.name().equalsIgnoreCase("object"))
+        {
+            //note: We don't add the "object" fields (clutter)
+            docs = doc.fields(false);
+            for (int i = 0; i != docs.length; i++)
+            {
+                // don't add superclasses private fields
+                if (docs[i].isPrivate())
+                {
+                    continue;
+                }
+                // don't add superclasses package private and != packages
+                if (docs[i].isPackagePrivate() && !mainDoc.containingPackage().name().equals(doc.containingPackage().name()))
+                {
+                    continue;
+                }
+                // check if the field was overriden in our object
+                // if so mark that
+                boolean skip = false;
+                String sig = getSignature(docs[i]);
+                for (int j = 0; j != myDocs.size(); j++)
+                {
+                    JOTDocletFieldHolder holder = (JOTDocletFieldHolder) myDocs.get(j);
+                    if (sig.equals(getSignature((FieldDoc) holder.getDoc())))
+                    {
+                        skip = true;
+                        if (holder.getOverridenIn() == null)
+                        {
+                            if (holder.getSuperClass() == null)
+                            {
+                                // mark only the first level override (closer in hierarchy)
+                                holder.setOverridenIn(doc);
+                            }
+                        }
+                    }
+                }
+                // if it was overidden/impl. we don't want to add the original field
+                if (skip)
+                {
+                    continue;
+                }
+                // OK, finally add it.
+                myDocs.add(new JOTDocletFieldHolder(docs[i], doc));
+            }
+            doc = doc.superclass();
+        }
+        JOTDocletFieldHolder[] docArray = (JOTDocletFieldHolder[]) myDocs.toArray(new JOTDocletFieldHolder[0]);
+        Arrays.sort(docArray);
+        return docArray;
     }
 
     public JOTDocletMethodHolder[] getMethods()
@@ -367,7 +459,7 @@ public class JOTDocletNavView extends JOTLightweightView
                 JOTDocletMethodHolder[] intMethods = getMethods(interfaces[k]);
                 for (int l = 0; l != intMethods.length; l++)
                 {
-                    if (getSignature(intMethods[l].getDoc()).equals(sig))
+                    if (getSignature((MethodDoc) intMethods[l].getDoc()).equals(sig))
                     {
                         if (holder.getSpecifiedIn() == null)
                         {
@@ -403,7 +495,7 @@ public class JOTDocletNavView extends JOTLightweightView
                 for (int j = 0; j != myDocs.size(); j++)
                 {
                     JOTDocletMethodHolder holder = (JOTDocletMethodHolder) myDocs.get(j);
-                    if (sig.equals(getSignature(holder.getDoc())))
+                    if (sig.equals(getSignature((MethodDoc) holder.getDoc())))
                     {
                         skip = true;
                         if (docs[i].isAbstract())
@@ -444,17 +536,25 @@ public class JOTDocletNavView extends JOTLightweightView
         return getModifiersString(holder.getDoc());
     }
 
+    public String getModifiersString(JOTDocletFieldHolder holder)
+    {
+        return getModifiersString(holder.getDoc());
+    }
+
     public String getReturnString(JOTDocletMethodHolder holder)
     {
-        Type type = holder.getDoc().returnType();
+        Type type = ((MethodDoc) holder.getDoc()).returnType();
         String str = "";
         if (type.asClassDoc() != null)
         {
             String link = getItemLink(type.asClassDoc());
-            if(link==null)
-                str="<font class='type'>" + type.asClassDoc().qualifiedName() + "</font>";
-            else
+            if (link == null)
+            {
+                str = "<font class='type'>" + type.asClassDoc().qualifiedName() + "</font>";
+            } else
+            {
                 str = "<a class='regular' href='" + link + "'><font class='type'>" + type.simpleTypeName() + "</font></a>";
+            }
         } else
         {
             str = "<font class='type'>" + type.simpleTypeName() + "</font>";
@@ -526,13 +626,13 @@ public class JOTDocletNavView extends JOTLightweightView
     public String getParamString(JOTDocletMethodHolder holder)
     {
         String str = "(";
-        Parameter[] params = holder.getDoc().parameters();
+        Parameter[] params = ((MethodDoc) holder.getDoc()).parameters();
         str = str + processParams(params);
         str += ")";
         return str;
     }
 
-    public boolean hasMoreInfos(JOTDocletMethodHolder holder)
+    public boolean hasMoreInfos(JOTDocletHolder holder)
     {
         return hasMoreInfos(holder.getDoc());
     }
@@ -716,10 +816,13 @@ public class JOTDocletNavView extends JOTLightweightView
             if (params[i].type().asClassDoc() != null)
             {
                 String link = getItemLink(params[i].type().asClassDoc());
-                if(link==null)
-                    str+="<font class='type'>" + params[i].type().asClassDoc().qualifiedName() + "</font>";
-                else
+                if (link == null)
+                {
+                    str += "<font class='type'>" + params[i].type().asClassDoc().qualifiedName() + "</font>";
+                } else
+                {
                     str += "<a class='regular' href='" + link + "'><font class='type'>" + params[i].type().simpleTypeName() + "</font></a>";
+                }
             } else
             {
                 str += "<font class='type'>" + params[i].typeName() + "</font>";
@@ -729,39 +832,50 @@ public class JOTDocletNavView extends JOTLightweightView
         return str;
     }
 
-    public String getInheritedFromItem(JOTDocletMethodHolder holder)
+    public String getInheritedFromItem(JOTDocletHolder holder)
     {
         String link = getItemLink(holder.getSuperClass());
-        if(link==null)
+        if (link == null)
+        {
             return "<font class='type'>" + holder.getSuperClass().qualifiedName() + "</font>";
+        }
+        link+="#"+getSignature(holder.getDoc());
         return "<a class='regular' href='" + link + "'><font class='type'>" + holder.getSuperClass().name() + "</font></a>";
     }
 
-    public String getOverridenInItem(JOTDocletMethodHolder holder)
+    public String getOverridenInItem(JOTDocletHolder holder)
     {
         String link = getItemLink(holder.getOverridenIn());
-        if(link==null)
+        if (link == null)
+        {
             return "<font class='type'>" + holder.getOverridenIn().qualifiedName() + "</font>";
+        }
+        link+="#"+getSignature(holder.getDoc());
         return "<a class='regular' href='" + link + "'><font class='type'>" + holder.getOverridenIn().name() + "</font></a>";
     }
 
-    public String getSpecifiedInItem(JOTDocletMethodHolder holder)
+    public String getSpecifiedInItem(JOTDocletHolder holder)
     {
         String link = getItemLink(holder.getSpecifiedIn());
-        if(link==null)
+        if (link == null)
+        {
             return "<font class='type'>" + holder.getSpecifiedIn().qualifiedName() + "</font>";
+        }
+        link+="#"+getSignature(holder.getDoc());
         return "<a class='regular' href='" + link + "'><font class='type'>" + holder.getSpecifiedIn().name() + "</font></a>";
     }
 
     public boolean hasDeclaredThrows(ConstructorDoc doc)
     {
-        return getDeclaredThrows(doc).size()>0;
+        return getDeclaredThrows(doc).size() > 0;
     }
+
     public Vector getDeclaredThrows(ConstructorDoc doc)
     {
         ClassDoc[] exceptions = doc.thrownExceptions();
         return getDeclaredThrows(exceptions);
     }
+
     public boolean hasDeclaredThrows(JOTDocletMethodHolder holder)
     {
         return getDeclaredThrows(holder).size() > 0;
@@ -769,9 +883,10 @@ public class JOTDocletNavView extends JOTLightweightView
 
     public Vector getDeclaredThrows(JOTDocletMethodHolder holder)
     {
-        ClassDoc[] exceptions = holder.getDoc().thrownExceptions();
+        ClassDoc[] exceptions = ((MethodDoc) holder.getDoc()).thrownExceptions();
         return getDeclaredThrows(exceptions);
     }
+
     public Vector getDeclaredThrows(ClassDoc[] exceptions)
     {
         Vector v = new Vector();
@@ -780,16 +895,16 @@ public class JOTDocletNavView extends JOTLightweightView
             String link = getItemLink(exceptions[i]);
             if (link != null)
             {
-                v.add("<a href="+link+">"+exceptions[i].name()+"</a>");
+                v.add("<a href=" + link + ">" + exceptions[i].name() + "</a>");
             } else
             {
-                v.add(exceptions[i].containingPackage().name()+"."+exceptions[i].name());
+                v.add(exceptions[i].containingPackage().name() + "." + exceptions[i].name());
             }
         }
         return v;
     }
 
-    public String setTagsItem(JOTDocletMethodHolder holder)
+    public String setTagsItem(JOTDocletHolder holder)
     {
         return setTagsItem(holder.getDoc());
     }

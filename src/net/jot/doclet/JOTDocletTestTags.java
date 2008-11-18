@@ -6,6 +6,8 @@
 package net.jot.doclet;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.Vector;
 import net.jot.exceptions.JOTException;
 
 /**
@@ -21,7 +23,8 @@ import net.jot.exceptions.JOTException;
  * @version 2.6
  * @author Bob Lee
  */
-public class JOTDocletTestTags {
+public class JOTDocletTestTags extends Thread implements JOTDocletTestInterface
+{
 
     /**
      * My stupid Test field.
@@ -35,6 +38,9 @@ public class JOTDocletTestTags {
     public static final int myField=2;
 
     public static final String myField3="PRICE_ATTRIBUTE";
+
+    /** ovveride*/
+    public static final int MAX_PRIORITY=99;
 
     public static final long myField4=35L;
     public static final Character myField5=new Character('a');
@@ -86,6 +92,11 @@ public class JOTDocletTestTags {
         return null;
     }
 
+    public void getThing()
+    {
+        
+    }
+
     /**
      * Cool inner class
      * @author thibaut  C.
@@ -99,4 +110,14 @@ public class JOTDocletTestTags {
     {
 
     }
+
+    /**
+     * ovbveride/implement run method
+     */
+    public void run()
+    {
+        //super.run();
+    }
+
+
 }

@@ -6,29 +6,28 @@
 package net.jot.doclet;
 
 import com.sun.javadoc.ClassDoc;
-import com.sun.javadoc.MethodDoc;
+import com.sun.javadoc.FieldDoc;
 import com.sun.javadoc.ProgramElementDoc;
 
 /**
  *
  * @author thibautc
  */
-public class JOTDocletMethodHolder implements JOTDocletHolder, Comparable
-{
-    /** if the method comes from a superclass, which one*/
+public class JOTDocletFieldHolder implements JOTDocletHolder, Comparable{
+    /** if the field comes from a superclass, which one*/
     private ClassDoc inSuperClass=null;
-    private MethodDoc doc;
-    /** if the method is overriding one in a superclass, which one*/
+    private FieldDoc doc;
+    /** if the field is overriding one in a superclass, which one*/
     private ClassDoc overridenIn;
-    // where the method is specified (ex: abstract method/interface)
+    // where the field is specified (interface)
     private ClassDoc specifiedIn;
 
-    public JOTDocletMethodHolder(MethodDoc doc, ClassDoc inSuperClass)
+    public JOTDocletFieldHolder(FieldDoc doc, ClassDoc inSuperClass)
     {
         this.doc=doc;
         this.inSuperClass=inSuperClass;
     }
-    
+
     public ProgramElementDoc getDoc()
     {
         return doc;
@@ -57,7 +56,7 @@ public class JOTDocletMethodHolder implements JOTDocletHolder, Comparable
 
     public int compareTo(Object m2)
     {
-        JOTDocletMethodHolder m=(JOTDocletMethodHolder)m2;
+        JOTDocletFieldHolder m=(JOTDocletFieldHolder)m2;
         return doc.compareTo(m.getDoc());
     }
 
@@ -75,5 +74,9 @@ public class JOTDocletMethodHolder implements JOTDocletHolder, Comparable
 
     public void setSpecifiedIn(ClassDoc doc) {
         specifiedIn=doc;
+    }
+    public void setSuperClass(ClassDoc doc)
+    {
+        inSuperClass=doc;
     }
 }
