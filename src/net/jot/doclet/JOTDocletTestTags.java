@@ -34,6 +34,12 @@ public class JOTDocletTestTags {
      */
     public static final int myField=2;
 
+    public static final String myField3="PRICE_ATTRIBUTE";
+
+    public static final long myField4=35L;
+    public static final Character myField5=new Character('a');
+    public static final JOTDocletTestTags myField6=new JOTDocletTestTags();
+
     volatile String myField2;
 
     /**
@@ -49,6 +55,10 @@ public class JOTDocletTestTags {
      * @since 2.5
      */
     public JOTDocletTestTags(String param1) throws IOException
+    {
+
+    }
+    public JOTDocletTestTags()
     {
 
     }

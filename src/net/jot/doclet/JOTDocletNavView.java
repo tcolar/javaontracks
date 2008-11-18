@@ -112,6 +112,10 @@ public class JOTDocletNavView extends JOTLightweightView
     {
         return getDirectLink(getAnchorName(doc));
     }
+    public String getDirectLink(FieldDoc doc)
+    {
+        return getDirectLink(getAnchorName(doc));
+    }
 
     public String getDirectLink(String anchor)
     {
@@ -127,6 +131,10 @@ public class JOTDocletNavView extends JOTLightweightView
     public String getAnchorName(ConstructorDoc doc)
     {
         return getSignature(doc);
+    }
+    public String getAnchorName(FieldDoc doc)
+    {
+        return doc.name();
     }
 
     public ClassDoc[] getSortedClasses()
@@ -296,6 +304,22 @@ public class JOTDocletNavView extends JOTLightweightView
         return path;
     }
 
+    public boolean hasValue(FieldDoc doc)
+    {
+        return doc.constantValue()!=null;
+    }
+    public String getFieldValue(FieldDoc doc)
+    {
+        Object value=doc.constantValue();
+        if(value==null)
+            return "";
+        if(value instanceof String)
+            return "\""+value+"\"";
+        if(value instanceof Character)
+            return "'"+value+"'";
+        return value.toString();
+    }
+    
     public ConstructorDoc[] getConstructors()
     {
         ClassDoc doc = (ClassDoc) getVariables().get("curitem");
