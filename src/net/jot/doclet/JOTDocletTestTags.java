@@ -106,7 +106,7 @@ public class JOTDocletTestTags extends Thread implements JOTDocletTestInterface
      * @serial 123
      * @serialField 45467
      * @since 2.3     */
-    class MyInnerClass
+    public class MyInnerClass
     {
 
     }

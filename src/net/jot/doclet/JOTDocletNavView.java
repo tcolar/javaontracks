@@ -164,6 +164,48 @@ public class JOTDocletNavView extends JOTLightweightView
         return isDeprecated(holder.getDoc());
     }
 
+    public Vector getInnerClasses()
+    {
+        Vector myDocs=new Vector();
+        ClassDoc mainDoc = (ClassDoc) getVariables().get("curitem");
+        ClassDoc[] docs=mainDoc.innerClasses(false);
+        for (int i = 0; i != docs.length; i++)
+        {
+            // don't add private
+            if (docs[i].isPrivate())
+            {
+                continue;
+            }
+            myDocs.add(docs[i]);
+        }
+        ClassDoc doc = mainDoc.superclass();
+        // go through all superclasses fields
+        while (doc != null && !doc.name().equalsIgnoreCase("object"))
+        {
+            //note: We don't add the "object" fields (clutter)
+            docs = doc.innerClasses(false);
+            for (int i = 0; i != docs.length; i++)
+            {
+                // don't add superclasses private fields
+                if (docs[i].isPrivate())
+                {
+                    continue;
+                }
+                // don't add superclasses package private and != packages
+                if (docs[i].isPackagePrivate() && !mainDoc.containingPackage().name().equals(doc.containingPackage().name()))
+                {
+                    continue;
+                }
+                // OK, finally add it.
+                myDocs.add(docs[i]);
+            }
+            doc = doc.superclass();
+        }
+        ClassDoc[] docArray = (ClassDoc[]) myDocs.toArray(new ClassDoc[0]);
+        Arrays.sort(docArray);
+        return myDocs;
+    }
+
     public Vector getHierarchy()
     {
         Vector results = new Vector();
@@ -171,7 +213,20 @@ public class JOTDocletNavView extends JOTLightweightView
         while (doc != null)
         {
             results.add(0, doc);
-            doc = doc.superclass();
+            if(doc.isInterface())
+            {
+                ClassDoc[] docs=doc.interfaces();
+                if(docs==null || docs.length==0)
+                    doc=null;
+                else
+                    // an interface might have ONE superinterface
+                    doc=docs[0];
+            }
+            else
+            {
+                doc = doc.superclass();
+            }
+            
         }
         return results;
     }
@@ -649,7 +704,20 @@ public class JOTDocletNavView extends JOTLightweightView
      */
     public boolean hasMoreInfos(Doc doc)
     {
-        return docWriter.commentTagsToString(null, doc, doc.inlineTags(), false).length() > docWriter.commentTagsToString(null, doc, doc.firstSentenceTags(), true).length() ||
+        //System.out.println(doc.name());
+        String s1,s2;
+        try
+        {
+            s1=docWriter.commentTagsToString(null, doc, doc.inlineTags(), false);
+            s2=docWriter.commentTagsToString(null, doc, doc.firstSentenceTags(), true);
+        }
+        catch(ClassCastException e)
+        {
+            // java/lang/StringBuilder.html codePointAt javadic causes this -> why ??
+            System.err.println("Error parsing comments for "+doc.name());
+            return false;
+        }
+        return s1.length() > s2.length() ||
                 doc.tags("return").length > 0 ||
                 doc.tags("param").length > 0 ||
                 doc.tags("see").length > 0 ||
@@ -755,7 +823,15 @@ public class JOTDocletNavView extends JOTLightweightView
     {
         if (tag.name().equals("@see"))
         {
-            return docWriter.seeTagToString((SeeTag) tag);
+            try
+            {
+                return docWriter.seeTagToString((SeeTag) tag);
+            }
+            catch(ClassCastException e)
+            {
+                System.err.println("Error bulding @see tag "+tag.name());
+                return tag.text();
+            }
         } else if (tag.name().equals("@param"))
         {
             return buildParamTagText((ParamTag) tag);

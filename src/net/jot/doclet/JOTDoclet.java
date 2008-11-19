@@ -206,7 +206,10 @@ public class JOTDoclet extends AbstractDoclet
                     File itemFile = new File(OUT_ROOT + folder + item.name()+".html");
                     System.out.println(itemFile.getAbsolutePath());
                     writer = new PrintWriter(itemFile);
-                    html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + "class.html");
+                    String tpl="class.html";
+                    if(item.isInterface())
+                        tpl="interface.html";
+                    html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + tpl);
                     writer.print(html);
                     writer.close();
                     itemsLength++;

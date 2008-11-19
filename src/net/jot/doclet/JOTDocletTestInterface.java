@@ -9,7 +9,7 @@ package net.jot.doclet;
  * Interface for testing jotdoc generator
  * @author thibautc
  */
-public interface JOTDocletTestInterface {
+public interface JOTDocletTestInterface{
 
     /**
      * interface constant
