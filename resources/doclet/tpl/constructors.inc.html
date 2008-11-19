@@ -1,0 +1,37 @@
+<div class="constructors">
+<div class="tagTitle" style="background-color:#eeeebb">
+    <a target="_top" class="anchor" NAME="constructor_summary" href="${getDirectLink('constructor_summary')}">${getAnchorImage}</a>
+    Constructors
+</div>
+<jot:loop over="getConstructors()" as="constructor">
+<div class="item">
+<a target="_top" class="anchor" NAME='${getAnchorName(constructor)}' href='${getDirectLink(constructor)}'>${getAnchorImage}</a>
+${getModifiersString(constructor)}
+<jot:if eval="isDeprecated(constructor)"><del></jot:if>
+<b> ${constructor.name}</b>
+<jot:if eval="isDeprecated(constructor)"></del></jot:if>
+${getParamString(constructor)}
+<jot:if eval="hasDeclaredThrows(constructor)">
+    throws
+    <jot:loop over="${getDeclaredThrows(constructor)}" as="throw">
+        <span class="throws">${throw}</span>
+    </jot:loop>
+</jot:if>
+<br/>
+<div class="itemDesc" id='constructor_short_${cpt}'>
+    <jot:if eval="hasMoreInfos(constructor)">
+        <a onclick='showElem("constructor_short_${cpt}",false);showElem("constructor_full_${cpt}",true)'><img border="0" src="${getPathToRoot}img/plus.png"></a>&nbsp;
+    </jot:if>
+    ${getShortDescription(constructor)}
+</div>
+<jot:if eval="hasMoreInfos(constructor)">
+    <div class="itemDesc" id='constructor_full_${cpt}' style="display:none">
+        <a onclick='showElem("constructor_short_${cpt}",true);showElem("constructor_full_${cpt}",false)'><img border="0" src="${getPathToRoot}img/minus.png"></a>&nbsp;
+        ${getFullDescription(constructor)}
+        ${setTagsItem(constructor)}
+        <jot:include file="tpl/item_tags.inc.html"/>
+    </div>
+</jot:if>
+</div>
+</jot:loop>
+</div>

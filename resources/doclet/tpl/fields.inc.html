@@ -1,0 +1,48 @@
+<div id="fields" class="fields">
+<div class="tagTitle" style="background-color:#ccccee">
+    <a target="_top" class="anchor" NAME="fields_summary" href="${getDirectLink('fields_summary')}">${getAnchorImage}</a>
+    Fields
+</div>
+<div class="item">
+    <a class="more" onclick="toogleAll('fields','__f_inerited_')">Hide/Show inherited fields</a>
+</div>
+<jot:loop over="getFields()" as="field">
+<jot:if eval="! field.isLocal">
+    <div id="__f_inerited_${cpt}" display="block">
+</jot:if>
+<div class="item">
+<a target="_top" class="anchor" NAME='${getAnchorName(field)}' href='${getDirectLink(field)}'>${getAnchorImage}</a>
+${getModifiersString(field)}
+<jot:if eval="isDeprecated(field)"><del></jot:if>
+<b> ${field.name}</b>
+<jot:if eval="isDeprecated(field)"></del></jot:if>
+<jot:if eval="hasValue(field)">
+    = ${getFieldValue(field)}
+</jot:if>
+<jot:if eval="! field.isLocal">
+    <span class="inherited">[Inherited From ${getInheritedFromItem(field)}]</span>
+</jot:if>
+<jot:if eval="field.isOverride">
+    <span class="overrides">[Overrides ${getOverridenInItem(field)}]</span>
+</jot:if>
+<br/>
+<div class="itemDesc" id='field_short_${cpt}'>
+    <jot:if eval="hasMoreInfos(field)">
+        <a onclick='showElem("field_short_${cpt}",false);showElem("field_full_${cpt}",true)'><img border="0" src="${getPathToRoot}img/plus.png"></a>&nbsp;
+    </jot:if>
+    ${getShortDescription(field)}
+</div>
+<jot:if eval="hasMoreInfos(field)">
+    <div class="itemDesc" id='field_full_${cpt}' style="display:none">
+        <a onclick='showElem("field_short_${cpt}",true);showElem("field_full_${cpt}",false)'><img border="0" src="${getPathToRoot}img/minus.png"></a>&nbsp;
+        ${getFullDescription(field)}
+        ${setTagsItem(field)}
+        <jot:include file="tpl/item_tags.inc.html"/>
+    </div>
+</jot:if>
+</div>
+<jot:if eval="! field.isLocal">
+    </div>
+</jot:if>
+</jot:loop>
+</div>

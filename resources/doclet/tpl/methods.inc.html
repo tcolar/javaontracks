@@ -1,0 +1,55 @@
+<div id="methods" class="methods">
+<div class="tagTitle" style="background-color:#dddddd">
+    <a target="_top" class="anchor" NAME="method_summary" href="${getDirectLink('method_summary')}">${getAnchorImage}</a>
+    Methods
+</div>
+<div class="item">
+    <a class="more" onclick="toogleAll('methods','__m_inerited_')">Hide/Show inherited methods</a>
+</div>
+<jot:loop over="getMethods()" as="method">
+<jot:if eval="! method.isLocal">
+    <div id="__m_inerited_${cpt}" display="block">
+</jot:if>
+<div class="item">
+<a target="_top" class="anchor" NAME='${getAnchorName(method)}' href='${getDirectLink(method)}'>${getAnchorImage}</a>
+${getModifiersString(method)} ${getReturnString(method)}
+<jot:if eval="isDeprecated(method)"><del></jot:if>
+<b> ${method.name}</b>
+<jot:if eval="isDeprecated(method)"></del></jot:if>
+${getParamString(method)}
+<jot:if eval="hasDeclaredThrows(method)">
+    throws
+    <jot:loop over="${getDeclaredThrows(method)}" as="throw">
+        <span class="throws">${throw}</span>
+    </jot:loop>
+</jot:if>
+<jot:if eval="! method.isLocal">
+    <span class="inherited">[Inherited From ${getInheritedFromItem(method)}]</span>
+</jot:if>
+<jot:if eval="method.isOverride">
+    <span class="overrides">[Overrides ${getOverridenInItem(method)}]</span>
+</jot:if>
+<jot:if eval="method.isSpecified">
+    <span class="specified">[Specified in ${getSpecifiedInItem(method)}]</span>
+</jot:if>
+<br/>
+<div class="itemDesc" id='method_short_${cpt}'>
+    <jot:if eval="hasMoreInfos(method)">
+        <a onclick='showElem("method_short_${cpt}",false);showElem("method_full_${cpt}",true)'><img border="0" src="${getPathToRoot}img/plus.png"></a>&nbsp;
+    </jot:if>
+    ${getShortDescription(method)}
+</div>
+<jot:if eval="hasMoreInfos(method)">
+    <div class="itemDesc" id='method_full_${cpt}' style="display:none">
+        <a onclick='showElem("method_short_${cpt}",true);showElem("method_full_${cpt}",false)'><img border="0" src="${getPathToRoot}img/minus.png"></a>&nbsp;
+        ${getFullDescription(method)}
+        ${setTagsItem(method)}
+        <jot:include file="tpl/item_tags.inc.html"/>
+    </div>
+</jot:if>
+</div>
+<jot:if eval="! method.isLocal">
+    </div>
+</jot:if>
+</jot:loop>
+</div>
