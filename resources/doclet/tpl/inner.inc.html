@@ -1,12 +1,13 @@
 <div id="inner" class="inner">
 <div class="tagTitle" style="background-color:#EECCCC">
-    <a target="_top" class="anchor" NAME="inner_summary" href="${getDirectLink('inner_summary')}">${getAnchorImage}</a>
-    Inner Classes
+    <a target="_top" class="anchor" NAME="nested_class_summary" href="${getDirectLink('nested_class_summary')}">${getAnchorImage}</a>
+    Nested Classes
 </div>
 <jot:loop over="getInnerClasses()" as="class">
 <div class="item">
 <a target="_top" class="anchor" NAME='${getAnchorName(class)}' href='${getDirectLink(class)}'>${getAnchorImage}</a>
 <jot:if eval="isDeprecated(class)"><del></jot:if>
+<img class="navItem" src='${getTypeImage(class)}' width="16" height="16"/>&nbsp;
 <b><a href="${getItemLink(class)}">${class.name}</a></b>
 <jot:if eval="isDeprecated(class)"></del></jot:if>
 <br/>

@@ -209,6 +209,8 @@ public class JOTDoclet extends AbstractDoclet
                     String tpl="class.html";
                     if(item.isInterface())
                         tpl="interface.html";
+                    else if(item.isEnum())
+                        tpl="enum.html";
                     html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + tpl);
                     writer.print(html);
                     writer.close();

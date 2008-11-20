@@ -16,7 +16,7 @@ Appserver: support multiple "jotapps" -> multiple class loaders ??
 
 Class lookup service (interface), default in memory -> use for singletons
 
-Do pages for Interfaces(OK), Exceptions/Error(OK - same as class), Enums, Annotations
+Do pages for Interfaces(OK), Exceptions/Error(OK - same as class), Enums(OK), Annotations
 see for examples: http://java.sun.com/j2se/1.5.0/docs/api/java/lang/package-summary.html
 Handle innerclasses (OK)
 Handle generics

@@ -164,6 +164,33 @@ public class JOTDocletNavView extends JOTLightweightView
         return isDeprecated(holder.getDoc());
     }
 
+    public Vector getEnumConstants()
+    {
+        Vector myDocs=new Vector();
+        ClassDoc mainDoc = (ClassDoc) getVariables().get("curitem");
+        FieldDoc[] docs=mainDoc.enumConstants();
+        ClassDoc doc = mainDoc.superclass();
+        for (int i = 0; i != docs.length; i++)
+        {
+            myDocs.add(docs[i]);
+        }
+        // go through all superclasses fields
+        while (doc != null && !doc.name().equalsIgnoreCase("object"))
+        {
+            //note: We don't add the "object" fields (clutter)
+            docs = doc.enumConstants();
+            for (int i = 0; i != docs.length; i++)
+            {
+                myDocs.add(docs[i]);
+            }
+            doc = doc.superclass();
+        }
+        FieldDoc[] docArray = (FieldDoc[]) myDocs.toArray(new FieldDoc[0]);
+        Arrays.sort(docArray);
+        return myDocs;
+
+    }
+
     public Vector getInnerClasses()
     {
         Vector myDocs=new Vector();

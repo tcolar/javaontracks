@@ -27,18 +27,24 @@ ${curitem.name}
             <span class="smallPackName"><img class="navItem" src='${getTypeImage(item)}' width="16" height="16"/>&nbsp;<a class="regular" href='${getItemLink(item)}'>${item.name}</a></span><br/>
         </jot:loop>
     </div>
+    <div class="tagBox" style="background-color:#c6d0f4">
+        <div class="tagTitle" style="background-color:#b6e0e4">Implements</div>
+        <jot:loop over="curitem.interfaces()" as="item">
+            <span class="smallPackName"><img class="navItem" src='${getTypeImage(item)}' width="16" height="16"/>&nbsp;<a class="regular" href='${getItemLink(item)}'>${item.name}</a></span><br/>
+        </jot:loop>
+    </div>
     <div class="tagBox" style="background-color:#d9c6ec;max-width:400px">
-        <div class="tagTitle" style="background-color:#c9b6dc">Subinterfaces</div>
+        <div class="tagTitle" style="background-color:#c9b6dc">Subclasses</div>
         <div id="subClasses">
             <jot:if eval="hasMoreClasses()">
-                <a class="more" onclick="showAllSubclasses(true)">See ALL subinterfaces</a><br/>
+                <a class="more" onclick="showAllSubclasses(true)">See ALL subclasses</a><br/>
             </jot:if>
             <jot:loop over="getSubClasses()" as="item">
                 <span class="smallPackName"><img class="navItem" src='${getTypeImage(item)}' width="16" height="16"/>&nbsp;<a class="regular" href='${getItemLink(item)}'>${item.name}</a></span><br/>
             </jot:loop>
         </div>
         <div id="allSubClasses" style="display:none">
-            <a class="more" onclick="showAllSubclasses(false)">See DIRECT subinterfaces</a><br/>
+            <a class="more" onclick="showAllSubclasses(false)">See DIRECT subclasses</a><br/>
             <jot:loop over="getAllSubClasses()" as="item">
                 <span class="smallPackName"><img class="navItem" src='${getTypeImage(item)}' width="16" height="16"/>&nbsp;<a class="regular" href='${getItemLink(item)}'>${item.name}</a></span><br/>
             </jot:loop>
@@ -48,12 +54,15 @@ ${curitem.name}
 <div style="height:3px;clear:both"> </div>
 <div class="quicklinks">
     Quick Links:
+    <a href="#enum_constant_summary">Enum Constants</a>&nbsp;&nbsp;
     <a href="#method_summary">Methods</a>&nbsp;&nbsp;
     <a href="#fields_summary">Fields</a>&nbsp;&nbsp;
 </div>
 <div style="height:3px;clear:both"> </div>
 <jot:include file="tpl/summary.inc.html"/>
 <div style="height:3px"> </div>
+<jot:include file="tpl/enum_constants.inc.html"/>
+<div style="height:8px"> </div>
 <jot:include file="tpl/methods.inc.html"/>
 <div style="height:8px"> </div>
 <jot:include file="tpl/fields.inc.html"/>

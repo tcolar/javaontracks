@@ -1,0 +1,32 @@
+<div class="constructors">
+<div class="tagTitle" style="background-color:#eeeebb">
+    <a target="_top" class="anchor" NAME="enum_constants_summary" href="${getDirectLink('enum_constants_summary')}">${getAnchorImage}</a>
+    Enum Constants
+</div>
+<jot:loop over="getEnumConstants" as="const">
+<div class="item">
+<a target="_top" class="anchor" NAME='${getAnchorName(const)}' href='${getDirectLink(const)}'>${getAnchorImage}</a>
+<jot:if eval="isDeprecated(const)"><del></jot:if>
+<b> ${const.name}</b>
+<jot:if eval="isDeprecated(const)"></del></jot:if>
+<jot:if eval="hasValue(const)">
+    = ${getFieldValue(const)}
+</jot:if>
+<br/>
+<div class="itemDesc" id='const_short_${cpt}'>
+    <jot:if eval="hasMoreInfos(const)">
+        <a onclick='showElem("const_short_${cpt}",false);showElem("const_full_${cpt}",true)'><img border="0" src="${getPathToRoot}img/plus.png"></a>&nbsp;
+    </jot:if>
+    ${getShortDescription(const)}
+</div>
+<jot:if eval="hasMoreInfos(const)">
+    <div class="itemDesc" id='const_full_${cpt}' style="display:none">
+        <a onclick='showElem("const_short_${cpt}",true);showElem("const_full_${cpt}",false)'><img border="0" src="${getPathToRoot}img/minus.png"></a>&nbsp;
+        ${getFullDescription(const)}
+        ${setTagsItem(const)}
+        <jot:include file="tpl/item_tags.inc.html"/>
+    </div>
+</jot:if>
+</div>
+</jot:loop>
+</div>
