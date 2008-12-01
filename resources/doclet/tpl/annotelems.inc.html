@@ -1,0 +1,35 @@
+<div id="fields" class="fields">
+<div class="tagTitle" style="background-color:#ccccee">
+    <a target="_top" class="anchor" NAME="annotation_type_required_element_summary" href="${getDirectLink('fields_summary')}">${getAnchorImage}</a>
+    Elements
+</div>
+<jot:loop over="getAnnotElems()" as="field">
+<div class="item">
+<a target="_top" class="anchor" NAME='${getAnchorName(field)}' href='${getDirectLink(field)}'>${getAnchorImage}</a>
+<jot:if eval="isDeprecated(field)"><del></jot:if>
+<b> ${field.name}</b>
+<jot:if eval="isDeprecated(field)"></del></jot:if>
+<jot:if eval="elemValue(field)">
+    = ${elemValue(field)}
+</jot:if>
+<jot:if eval="! elemValue(field)">
+    <span class="required">[REQUIRED]</span>
+</jot:if>
+<br/>
+<div class="itemDesc" id='field_short_${cpt}'>
+    <jot:if eval="hasMoreInfos(field)">
+        <a onclick='showElem("field_short_${cpt}",false);showElem("field_full_${cpt}",true)'><img border="0" src="${getPathToRoot}img/plus.png"></a>&nbsp;
+    </jot:if>
+    ${getShortDescription(field)}
+</div>
+<jot:if eval="hasMoreInfos(field)">
+    <div class="itemDesc" id='field_full_${cpt}' style="display:none">
+        <a onclick='showElem("field_short_${cpt}",true);showElem("field_full_${cpt}",false)'><img border="0" src="${getPathToRoot}img/minus.png"></a>&nbsp;
+        ${getFullDescription(field)}
+        ${setTagsItem(field)}
+        <jot:include file="tpl/item_tags.inc.html"/>
+    </div>
+</jot:if>
+</div>
+</jot:loop>
+</div>

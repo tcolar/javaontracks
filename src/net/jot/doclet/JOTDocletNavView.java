@@ -4,6 +4,8 @@
  */
 package net.jot.doclet;
 
+import com.sun.javadoc.AnnotationTypeDoc;
+import com.sun.javadoc.AnnotationTypeElementDoc;
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.ConstructorDoc;
 import com.sun.javadoc.Doc;
@@ -333,7 +335,7 @@ public class JOTDocletNavView extends JOTLightweightView
         return "<img border=0 src='" + getPathToRoot() + "img/anchor.png'>";
     }
 
-    private String getSignature(ProgramElementDoc doc)
+    private String getSignature(Doc doc)
     {
         if (doc instanceof MethodDoc)
         {
@@ -398,6 +400,20 @@ public class JOTDocletNavView extends JOTLightweightView
         return ((FieldDoc)doc.getDoc()).constantValue() != null;
     }
 
+    public String getElemValue(AnnotationTypeElementDoc doc)
+    {
+        Object value=doc.defaultValue();
+        if (value instanceof String)
+        {
+            return "\"" + value + "\"";
+        }
+        if (value instanceof Character)
+        {
+            return "'" + value + "'";
+        }
+        return value==null?null:value.toString();
+    }
+
     public String getFieldValue(JOTDocletFieldHolder doc)
     {
         Object value = ((FieldDoc)doc.getDoc()).constantValue();
@@ -430,6 +446,28 @@ public class JOTDocletNavView extends JOTLightweightView
     {
         ClassDoc mainDoc = (ClassDoc) getVariables().get("curitem");
         return getFields(mainDoc);
+    }
+
+    public AnnotationTypeElementDoc[] getAnnotElems()
+    {
+        Vector myDocs = new Vector();
+        ClassDoc mainDoc = (ClassDoc) getVariables().get("curitem");
+        //System.out.println(mainDoc.typeName());
+        //System.out.println(mainDoc instanceof AnnotationTypeDoc);
+        AnnotationTypeDoc doc=(AnnotationTypeDoc)mainDoc;
+        AnnotationTypeElementDoc[] docs=doc.elements();
+
+        for (int i = 0; i != docs.length; i++)
+        {
+            if (docs[i].isPrivate())
+            {
+                continue;
+            }
+            myDocs.add(docs[i]);
+        }
+        AnnotationTypeElementDoc[] docArray = (AnnotationTypeElementDoc[]) myDocs.toArray(new AnnotationTypeElementDoc[0]);
+        Arrays.sort(docArray);
+        return docArray;
     }
 
     public JOTDocletFieldHolder[] getFields(ClassDoc mainDoc)

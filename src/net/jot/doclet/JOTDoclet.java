@@ -111,26 +111,8 @@ public class JOTDoclet extends AbstractDoclet
         classTree = new ClassTree(configuration, configuration.nodeprecated);
 
         
-        /*generateClassFiles(root, classtree);
-        if (configuration.sourcepath != null && configuration.sourcepath.length() > 0)
-        {
-        StringTokenizer pathTokens = new StringTokenizer(configuration.sourcepath,
-        String.valueOf(File.pathSeparatorChar));
-        boolean first = true;
-        while (pathTokens.hasMoreTokens())
-        {
-        Util.copyDocFiles(configuration,
-        pathTokens.nextToken() + File.separator,
-        DocletConstants.DOC_FILES_DIR_NAME, first);
-        first = false;
-        }
-        }*/
-
-        //PackageListWriter.generate(configuration);
-        //generatePackageFiles(classtree);
         generatePackageList(classTree);
 
-        //generateOtherFiles(root, classtree);
         configuration.tagletManager.printReport();
     }
 
@@ -211,6 +193,8 @@ public class JOTDoclet extends AbstractDoclet
                         tpl="interface.html";
                     else if(item.isEnum())
                         tpl="enum.html";
+                    else if(item.isAnnotationType())
+                        tpl="annot.html";
                     html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + tpl);
                     writer.print(html);
                     writer.close();
@@ -231,37 +215,6 @@ public class JOTDoclet extends AbstractDoclet
         System.out.println("Processed "+itemsLength+ " in "+pkLength+" packages.");
     }
 
-    /*protected void generateClassFiles(ClassDoc[] arr, ClassTree classtree)
-    {
-    Arrays.sort(arr);
-    for (int i = 0; i < arr.length; i++)
-    {
-    if (!(configuration.isGeneratedDoc(arr[i]) && arr[i].isIncluded()))
-    {
-    continue;
-    }
-    //ClassDoc prev = (i == 0) ? null : arr[i - 1];
-    ClassDoc curr = arr[i];
-    //ClassDoc next = (i + 1 == arr.length) ? null : arr[i + 1];
-    try
-    {
-    if (curr.isAnnotationType())
-    {
-    //TODO
-
-    } else
-    {
-    AbstractBuilder classBuilder =
-    configuration.getBuilderFactory().getClassBuilder(curr, prev, next, classtree);
-    classBuilder.build();
-    }
-    } catch (Exception e)
-    {
-    e.printStackTrace();
-    throw new DocletAbortException();
-    }
-    }
-    }*/
     public static boolean validOptions(String options[][],
             DocErrorReporter reporter)
     {
@@ -277,9 +230,12 @@ public class JOTDoclet extends AbstractDoclet
 
     protected void generatePackageFiles(ClassTree arg0) throws Exception
     {
+
     }
 
     protected void generateClassFiles(ClassDoc[] arg0, ClassTree arg1)
     {
+        
     }
+
 }
