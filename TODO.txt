@@ -17,5 +17,6 @@ Appserver: support multiple "jotapps" -> multiple class loaders ??
 Class lookup service (interface), default in memory -> use for singletons
 
 see for examples: http://java.sun.com/j2se/1.5.0/docs/api/java/lang/package-summary.html
+show class signature ($tags) in summary(s)
 Class/int/enum/annot level tags (all other tags besides @see @author @since @version @serial)
 Handle generics
