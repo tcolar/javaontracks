@@ -59,6 +59,8 @@ a.tooltip:hover div.ttContent{z-index: 99;position:absolute;left:50px;top:20px;b
 span.required{color:#ff0000;margin-left:5px;font-weight:bold}
 span.annotation{font-size:14px;font-style:italic}
 
+.genericVar{color:#000099;font-weight:bold}
+
 span.inherited{background-color:#ddeedd;margin-left:20px}
 span.overrides{background-color:#ddddee;margin-left:20px}
 span.specified{background-color:#eedddd;margin-left:20px}

@@ -212,7 +212,7 @@ public class JOTDoclet extends AbstractDoclet
                 writer.close();
             }
         }
-        System.out.println("Processed "+itemsLength+ " in "+pkLength+" packages.");
+        System.out.println("Processed "+itemsLength+ " items in "+pkLength+" packages.");
     }
 
     public static boolean validOptions(String options[][],

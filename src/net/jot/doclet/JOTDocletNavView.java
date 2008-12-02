@@ -22,6 +22,7 @@ import com.sun.javadoc.SeeTag;
 import com.sun.javadoc.Tag;
 import com.sun.javadoc.ThrowsTag;
 import com.sun.javadoc.Type;
+import com.sun.javadoc.TypeVariable;
 import com.sun.tools.doclets.formats.html.HtmlDocletWriter;
 import com.sun.tools.doclets.formats.html.LinkInfoImpl;
 import com.sun.tools.doclets.internal.toolkit.util.ClassTree;
@@ -361,12 +362,10 @@ public class JOTDocletNavView extends JOTLightweightView
         if (doc instanceof MethodDoc)
         {
             return doc.name() + ((MethodDoc) doc).signature();
-        }
-        else if (doc instanceof FieldDoc)
+        } else if (doc instanceof FieldDoc)
         {
             return doc.name();
-        }
-        else if (doc instanceof ConstructorDoc)
+        } else if (doc instanceof ConstructorDoc)
         {
             return doc.name() + ((ConstructorDoc) doc).signature();
         }
@@ -666,23 +665,43 @@ public class JOTDocletNavView extends JOTLightweightView
         return getModifiersString(holder.getDoc());
     }
 
-    public String getReturnString(JOTDocletMethodHolder holder)
+    public String getReturnString(JOTDocletHolder holder)
     {
-        Type type = ((MethodDoc) holder.getDoc()).returnType();
-        String str = "";
-        if (type.asClassDoc() != null)
+        Type type = null;
+        if (holder instanceof JOTDocletFieldHolder)
         {
-            String link = getItemLink(type.asClassDoc());
-            if (link == null)
-            {
-                str = "<font class='type'>" + type.asClassDoc().qualifiedName() + "</font>";
-            } else
-            {
-                str = "<a class='regular' href='" + link + "'><font class='type'>" + type.simpleTypeName() + "</font></a>";
-            }
+            type = ((FieldDoc) holder.getDoc()).type();
         } else
         {
-            str = "<font class='type'>" + type.simpleTypeName() + "</font>";
+            type = ((MethodDoc) holder.getDoc()).returnType();
+        }
+        String str = "";
+        if (type.asParameterizedType() != null)
+        {
+            str += handleGenerics(type);
+        } else if (type.asTypeVariable() != null)
+        {
+            str += handleGenerics(type);
+        } else if (type.asClassDoc() != null)
+        {
+            str += getTypeLink(type.asClassDoc());
+        } else
+        {
+            str += "<font class='type'>" + type.simpleTypeName() + "</font>";
+        }
+        return str;
+    }
+
+    private String getTypeLink(ClassDoc doc)
+    {
+        String str = "";
+        String link = getItemLink(doc);
+        if (link == null)
+        {
+            str = "<font class='type'>" + doc.qualifiedName() + "</font>";
+        } else
+        {
+            str = "<a class='regular' href='" + link + "'><font class='type'>" + doc.simpleTypeName() + "</font></a>";
         }
         return str;
     }
@@ -918,21 +937,26 @@ public class JOTDocletNavView extends JOTLightweightView
         Tag[] tags = doc.tags(tagName);
         return tags;
     }
+
     public AnnotationDesc[] getAnnotations(JOTDocletHolder holder)
     {
         return getAnnotations(holder.getDoc());
     }
+
     public AnnotationDesc[] getAnnotations(ProgramElementDoc doc)
     {
         AnnotationDesc[] annots = doc.annotations();
         return annots;
     }
+
     public AnnotationDesc[] getAnnotations()
     {
-        Object doc=getVariables().get("curitem");
-        if(! (doc instanceof ProgramElementDoc))
+        Object doc = getVariables().get("curitem");
+        if (!(doc instanceof ProgramElementDoc))
+        {
             return null;
-        return getAnnotations((ProgramElementDoc)doc);
+        }
+        return getAnnotations((ProgramElementDoc) doc);
     }
 
     public String getAnnotationString(AnnotationDesc annot)
@@ -951,8 +975,8 @@ public class JOTDocletNavView extends JOTLightweightView
                     result += ", ";
                 }
                 AnnotationDesc.ElementValuePair pair = pairs[i];
-                String link2=getItemLink(pair.element().containingClass());
-                result += link2==null?pair.element().qualifiedName():"<a href='"+link2+"#"+getSignature(pair.element())+"'>"+pair.element().name()+"</a>";
+                String link2 = getItemLink(pair.element().containingClass());
+                result += link2 == null ? pair.element().qualifiedName() : "<a href='" + link2 + "#" + getSignature(pair.element()) + "'>" + pair.element().name() + "</a>";
                 result += "=" + formatValue(pair.value());
             }
             result += ")";
@@ -1020,6 +1044,51 @@ public class JOTDocletNavView extends JOTLightweightView
         return txt.indexOf("<br/>") != -1 || txt.indexOf("<BR/>") != -1 || txt.indexOf("<p>") != -1 || txt.indexOf("<P>") != -1;
     }
 
+    private String handleGenerics(Type type)
+    {
+        String str="";
+        if (type.asParameterizedType() != null)
+        {
+            str += getTypeLink(type.asParameterizedType().asClassDoc());
+            Type[] args = type.asParameterizedType().typeArguments();
+            str += "<";
+            for (int i = 0; i != args.length; i++)
+            {
+                if (i > 0)
+                {
+                    str += ", ";
+                }
+                // generic might be imbricated, so recurse as needed
+                str+=handleGenerics(args[i]);
+            }
+            str += ">";
+        } else if (type.asTypeVariable() != null)
+        {
+            String name = type.simpleTypeName();
+
+            Type[] types=type.asTypeVariable().bounds();
+            for (int i = 0; i != types.length; i++)
+            {
+                if (i > 0)
+                {
+                    str += ", ";
+                }
+                // generic might be imbricated, so recurse as needed
+                str+=handleGenerics(types[i]);
+            }
+            str += (sameName(name, type.asTypeVariable()) ? "" : " <font class='genericVar'>" + type.asTypeVariable().typeName() + "</font>");
+        }
+        else if (type.asClassDoc() != null)
+        {
+            str = getTypeLink(type.asClassDoc());
+        } else
+        {
+            str = "<font class='type'>" + type.simpleTypeName() + "</font>";
+        }
+
+        return str;
+    }
+
     private String processParams(Parameter[] params)
     {
         String str = "";
@@ -1029,16 +1098,15 @@ public class JOTDocletNavView extends JOTLightweightView
             {
                 str += ", ";
             }
-            if (params[i].type().asClassDoc() != null)
+            if (params[i].type().asParameterizedType() != null)
             {
-                String link = getItemLink(params[i].type().asClassDoc());
-                if (link == null)
-                {
-                    str += "<font class='type'>" + params[i].type().asClassDoc().qualifiedName() + "</font>";
-                } else
-                {
-                    str += "<a class='regular' href='" + link + "'><font class='type'>" + params[i].type().simpleTypeName() + "</font></a>";
-                }
+                str += handleGenerics(params[i].type());
+            } else if (params[i].type().asTypeVariable() != null)
+            {
+                str+= handleGenerics(params[i].type());
+            } else if (params[i].type().asClassDoc() != null)
+            {
+                str += getTypeLink(params[i].type().asClassDoc());
             } else
             {
                 str += "<font class='type'>" + params[i].typeName() + "</font>";
@@ -1129,5 +1197,18 @@ public class JOTDocletNavView extends JOTLightweightView
     {
         curtag = doc;
         return "";
+    }
+
+    private boolean sameName(String name, TypeVariable type)
+    {
+        if (name == null || type == null)
+        {
+            return true;
+        }
+        if (type.asClassDoc() == null || type.asClassDoc().name() == null)
+        {
+            return true;
+        }
+        return name.equals(type.asClassDoc().name());
     }
 }

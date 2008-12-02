@@ -11,14 +11,14 @@
     <div id="__f_inerited_${cpt}" display="block">
 </jot:if>
 <div class="item">
-           <jot:loop over="getAnnotations(field)" as="annot">
-           ${getAnnotationString(annot)}<br/>
-        </jot:loop>
+<jot:loop over="getAnnotations(field)" as="annot">
+    ${getAnnotationString(annot)}<br/>
+</jot:loop>
 
 <a target="_top" class="anchor" NAME='${getAnchorName(field)}' href='${getDirectLink(field)}'>${getAnchorImage}</a>
 ${getModifiersString(field)}
 <jot:if eval="isDeprecated(field)"><del></jot:if>
-<b> ${field.name}</b>
+${getReturnString(field)}<b> ${field.name}</b>
 <jot:if eval="isDeprecated(field)"></del></jot:if>
 <jot:if eval="hasValue(field)">
     = ${getFieldValue(field)}
