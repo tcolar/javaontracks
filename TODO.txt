@@ -18,3 +18,4 @@ Class lookup service (interface), default in memory -> use for singletons
 
 javadoc -source code attached - linked
 package summary page is broken (MISSING & broken links)
+read resources from jar (getresourceformstream)
