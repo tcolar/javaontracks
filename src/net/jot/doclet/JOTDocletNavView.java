@@ -4,11 +4,13 @@
  */
 package net.jot.doclet;
 
+import com.sun.javadoc.AnnotationDesc;
 import com.sun.javadoc.AnnotationTypeDoc;
 import com.sun.javadoc.AnnotationTypeElementDoc;
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.ConstructorDoc;
 import com.sun.javadoc.Doc;
+import com.sun.javadoc.ExecutableMemberDoc;
 import com.sun.javadoc.FieldDoc;
 import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.PackageDoc;
@@ -168,9 +170,9 @@ public class JOTDocletNavView extends JOTLightweightView
 
     public Vector getEnumConstants()
     {
-        Vector myDocs=new Vector();
+        Vector myDocs = new Vector();
         ClassDoc mainDoc = (ClassDoc) getVariables().get("curitem");
-        FieldDoc[] docs=mainDoc.enumConstants();
+        FieldDoc[] docs = mainDoc.enumConstants();
         ClassDoc doc = mainDoc.superclass();
         for (int i = 0; i != docs.length; i++)
         {
@@ -195,9 +197,9 @@ public class JOTDocletNavView extends JOTLightweightView
 
     public Vector getInnerClasses()
     {
-        Vector myDocs=new Vector();
+        Vector myDocs = new Vector();
         ClassDoc mainDoc = (ClassDoc) getVariables().get("curitem");
-        ClassDoc[] docs=mainDoc.innerClasses(false);
+        ClassDoc[] docs = mainDoc.innerClasses(false);
         for (int i = 0; i != docs.length; i++)
         {
             // don't add private
@@ -242,20 +244,22 @@ public class JOTDocletNavView extends JOTLightweightView
         while (doc != null)
         {
             results.add(0, doc);
-            if(doc.isInterface())
+            if (doc.isInterface())
             {
-                ClassDoc[] docs=doc.interfaces();
-                if(docs==null || docs.length==0)
-                    doc=null;
-                else
-                    // an interface might have ONE superinterface
-                    doc=docs[0];
-            }
-            else
+                ClassDoc[] docs = doc.interfaces();
+                if (docs == null || docs.length == 0)
+                {
+                    doc = null;
+                } else
+                // an interface might have ONE superinterface
+                {
+                    doc = docs[0];
+                }
+            } else
             {
                 doc = doc.superclass();
             }
-            
+
         }
         return results;
     }
@@ -314,6 +318,23 @@ public class JOTDocletNavView extends JOTLightweightView
         return result;
     }
 
+    private String formatValue(Object value)
+    {
+        if (value == null)
+        {
+            return null;
+        }
+        if (value instanceof String)
+        {
+            return "\"" + value + "\"";
+        }
+        if (value instanceof Character)
+        {
+            return "'" + value + "'";
+        }
+        return value.toString();
+    }
+
     private String getHref(String link)
     {
         if (link == null)
@@ -335,17 +356,17 @@ public class JOTDocletNavView extends JOTLightweightView
         return "<img border=0 src='" + getPathToRoot() + "img/anchor.png'>";
     }
 
-    private String getSignature(Doc doc)
+    public String getSignature(Doc doc)
     {
         if (doc instanceof MethodDoc)
         {
             return doc.name() + ((MethodDoc) doc).signature();
         }
-        if (doc instanceof FieldDoc)
+        else if (doc instanceof FieldDoc)
         {
             return doc.name();
         }
-        if (doc instanceof ConstructorDoc)
+        else if (doc instanceof ConstructorDoc)
         {
             return doc.name() + ((ConstructorDoc) doc).signature();
         }
@@ -397,39 +418,23 @@ public class JOTDocletNavView extends JOTLightweightView
 
     public boolean hasValue(JOTDocletFieldHolder doc)
     {
-        return ((FieldDoc)doc.getDoc()).constantValue() != null;
+        return ((FieldDoc) doc.getDoc()).constantValue() != null;
     }
 
     public String getElemValue(AnnotationTypeElementDoc doc)
     {
-        Object value=doc.defaultValue();
-        if (value instanceof String)
-        {
-            return "\"" + value + "\"";
-        }
-        if (value instanceof Character)
-        {
-            return "'" + value + "'";
-        }
-        return value==null?null:value.toString();
+        Object value = doc.defaultValue();
+        return value == null ? null : formatValue(value);
     }
 
     public String getFieldValue(JOTDocletFieldHolder doc)
     {
-        Object value = ((FieldDoc)doc.getDoc()).constantValue();
+        Object value = ((FieldDoc) doc.getDoc()).constantValue();
         if (value == null)
         {
             return "";
         }
-        if (value instanceof String)
-        {
-            return "\"" + value + "\"";
-        }
-        if (value instanceof Character)
-        {
-            return "'" + value + "'";
-        }
-        return value.toString();
+        return formatValue(value.toString());
     }
 
     public ConstructorDoc[] getConstructors()
@@ -454,8 +459,8 @@ public class JOTDocletNavView extends JOTLightweightView
         ClassDoc mainDoc = (ClassDoc) getVariables().get("curitem");
         //System.out.println(mainDoc.typeName());
         //System.out.println(mainDoc instanceof AnnotationTypeDoc);
-        AnnotationTypeDoc doc=(AnnotationTypeDoc)mainDoc;
-        AnnotationTypeElementDoc[] docs=doc.elements();
+        AnnotationTypeDoc doc = (AnnotationTypeDoc) mainDoc;
+        AnnotationTypeElementDoc[] docs = doc.elements();
 
         for (int i = 0; i != docs.length; i++)
         {
@@ -770,16 +775,15 @@ public class JOTDocletNavView extends JOTLightweightView
     public boolean hasMoreInfos(Doc doc)
     {
         //System.out.println(doc.name());
-        String s1,s2;
+        String s1, s2;
         try
         {
-            s1=docWriter.commentTagsToString(null, doc, doc.inlineTags(), false);
-            s2=docWriter.commentTagsToString(null, doc, doc.firstSentenceTags(), true);
-        }
-        catch(ClassCastException e)
+            s1 = docWriter.commentTagsToString(null, doc, doc.inlineTags(), false);
+            s2 = docWriter.commentTagsToString(null, doc, doc.firstSentenceTags(), true);
+        } catch (ClassCastException e)
         {
             // java/lang/StringBuilder.html codePointAt javadic causes this -> why ??
-            System.err.println("Error parsing comments for "+doc.name());
+            System.err.println("Error parsing comments for " + doc.name());
             return false;
         }
         return s1.length() > s2.length() ||
@@ -789,6 +793,37 @@ public class JOTDocletNavView extends JOTLightweightView
                 doc.tags("since").length > 0 ||
                 doc.tags("throws").length > 0 ||
                 doc.tags("exception").length > 0;
+    }
+
+    public String getType(ClassDoc clazz)
+    {
+        if (clazz.isOrdinaryClass())
+        {
+            if (!clazz.isAbstract())
+            {
+                return "class";
+            } else
+            {
+                return "abstract class";
+            }
+        } else if (clazz.isInterface())
+        {
+            return "interface";
+        } else if (clazz.isEnum())
+        {
+            return "enum";
+        } else if (clazz.isError())
+        {
+            return "error";
+        } else if (clazz.isException())
+        {
+            return "exception";
+        } else if (clazz.isAnnotationType())
+        {
+            return "annotation";
+        }
+        //default;
+        return "class";
     }
 
     public String getTypeImage(ClassDoc clazz)
@@ -883,6 +918,47 @@ public class JOTDocletNavView extends JOTLightweightView
         Tag[] tags = doc.tags(tagName);
         return tags;
     }
+    public AnnotationDesc[] getAnnotations(JOTDocletHolder holder)
+    {
+        return getAnnotations(holder.getDoc());
+    }
+    public AnnotationDesc[] getAnnotations(ProgramElementDoc doc)
+    {
+        AnnotationDesc[] annots = doc.annotations();
+        return annots;
+    }
+    public AnnotationDesc[] getAnnotations()
+    {
+        Object doc=getVariables().get("curitem");
+        if(! (doc instanceof ProgramElementDoc))
+            return null;
+        return getAnnotations((ProgramElementDoc)doc);
+    }
+
+    public String getAnnotationString(AnnotationDesc annot)
+    {
+        String result = "<span class='annotation'>";
+        String link = getItemLink(annot.annotationType());
+        result += link == null ? "@" + annot.annotationType().qualifiedName() : "<a href='" + link + "'>@" + annot.annotationType().name() + "</a>";
+        AnnotationDesc.ElementValuePair[] pairs = annot.elementValues();
+        if (pairs.length > 0)
+        {
+            result += " (";
+            for (int i = 0; i != pairs.length; i++)
+            {
+                if (i > 0)
+                {
+                    result += ", ";
+                }
+                AnnotationDesc.ElementValuePair pair = pairs[i];
+                String link2=getItemLink(pair.element().containingClass());
+                result += link2==null?pair.element().qualifiedName():"<a href='"+link2+"#"+getSignature(pair.element())+"'>"+pair.element().name()+"</a>";
+                result += "=" + formatValue(pair.value());
+            }
+            result += ")";
+        }
+        return result + "</span>";
+    }
 
     public String getTagText(Tag tag)
     {
@@ -891,10 +967,9 @@ public class JOTDocletNavView extends JOTLightweightView
             try
             {
                 return docWriter.seeTagToString((SeeTag) tag);
-            }
-            catch(ClassCastException e)
+            } catch (ClassCastException e)
             {
-                System.err.println("Error bulding @see tag "+tag.name());
+                System.err.println("Error bulding @see tag " + tag.name());
                 return tag.text();
             }
         } else if (tag.name().equals("@param"))
@@ -980,7 +1055,7 @@ public class JOTDocletNavView extends JOTLightweightView
         {
             return "<font class='type'>" + holder.getSuperClass().qualifiedName() + "</font>";
         }
-        link+="#"+getSignature(holder.getDoc());
+        link += "#" + getSignature(holder.getDoc());
         return "<a class='regular' href='" + link + "'><font class='type'>" + holder.getSuperClass().name() + "</font></a>";
     }
 
@@ -991,7 +1066,7 @@ public class JOTDocletNavView extends JOTLightweightView
         {
             return "<font class='type'>" + holder.getOverridenIn().qualifiedName() + "</font>";
         }
-        link+="#"+getSignature(holder.getDoc());
+        link += "#" + getSignature(holder.getDoc());
         return "<a class='regular' href='" + link + "'><font class='type'>" + holder.getOverridenIn().name() + "</font></a>";
     }
 
@@ -1002,7 +1077,7 @@ public class JOTDocletNavView extends JOTLightweightView
         {
             return "<font class='type'>" + holder.getSpecifiedIn().qualifiedName() + "</font>";
         }
-        link+="#"+getSignature(holder.getDoc());
+        link += "#" + getSignature(holder.getDoc());
         return "<a class='regular' href='" + link + "'><font class='type'>" + holder.getSpecifiedIn().name() + "</font></a>";
     }
 

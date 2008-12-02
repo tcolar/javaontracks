@@ -18,7 +18,6 @@ import java.util.Hashtable;
 
 import net.jot.db.JOTDBField;
 import net.jot.logger.JOTLogger;
-import net.jot.persistance.query.JOTQueryManager;
 import net.jot.prefs.JOTPreferences;
 // TODO: ++ if the mapping in the class does not match the mapping in the database/FS we should probably crash with a severe error, rather that risquing messing up the data !
 /**
@@ -46,6 +45,11 @@ public class JOTModelMapping
     private int dataSize = -1;    // we cache those for speed
     private String updateString = null;
     private String insertString = null;
+
+    public void setTableName(String tableName)
+    {
+        this.tableName = tableName;
+    }
 
     public void defineFieldMaxValue(String field, int value)
     {

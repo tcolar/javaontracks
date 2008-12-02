@@ -1,26 +1,31 @@
 <div class="pkgSumInfos">
-  <div style="padding:4px">
-    <div class="tagTitle" style="background-color:#c6e4b3">
-    <a target="_top" class="anchor" NAME="summary" href='${getDirectLink("summary")}'>${getAnchorImage}</a>
-      Description
+    <div style="padding:4px">
+        <div class="tagTitle" style="background-color:#c6e4b3">
+            <a target="_top" class="anchor" NAME="summary" href='${getDirectLink("summary")}'>${getAnchorImage}</a>
+            Description
+        </div>
+        <jot:loop over="getAnnotations()" as="annot">
+            ${getAnnotationString(annot)}<br/>
+        </jot:loop>
+        ${getModifiersString(curitem)} ${getType(curitem)} ${curitem.name}
+
+        <div id="shortDesc">
+            <jot:if eval="hasMoreInfos()">
+                <a onclick="showFullDescription(true)"><img border="0" src="${${getPathToRoot}img/plus.png"></a>&nbsp;
+            </jot:if>
+            ${getShortDescription()}
+        </div>
+        <jot:if eval="hasMoreInfos()">
+            <div id="fullDesc" style="display:none">
+                <a onclick="showFullDescription(false)"><img border="0" src="${${getPathToRoot}img/minus.png"></a>&nbsp;
+                ${getFullDescription()}
+            </div>
+        </jot:if>
+        <div class="seeTags">
+            <b>See also:</b> &nbsp;&nbsp;
+            <jot:loop over="getSeeTags" as="tag">
+                <font class="seeTag">${tag}</font>
+            </jot:loop>
+        </div>
     </div>
-    <div id="shortDesc">
-      <jot:if eval="hasMoreInfos()">
-        <a onclick="showFullDescription(true)"><img border="0" src="${${getPathToRoot}img/plus.png"></a>&nbsp;
-      </jot:if>
-      ${getShortDescription()}
-    </div>
-    <jot:if eval="hasMoreInfos()">
-      <div id="fullDesc" style="display:none">
-        <a onclick="showFullDescription(false)"><img border="0" src="${${getPathToRoot}img/minus.png"></a>&nbsp;
-        ${getFullDescription()}
-      </div>
-    </jot:if>
-    <div class="seeTags">
-      <b>See also:</b> &nbsp;&nbsp;
-      <jot:loop over="getSeeTags" as="tag">
-        <font class="seeTag">${tag}</font>
-      </jot:loop>
-    </div>
-  </div>
 </div>

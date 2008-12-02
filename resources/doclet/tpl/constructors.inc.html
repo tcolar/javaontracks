@@ -5,7 +5,10 @@
 </div>
 <jot:loop over="getConstructors()" as="constructor">
 <div class="item">
-<a target="_top" class="anchor" NAME='${getAnchorName(constructor)}' href='${getDirectLink(constructor)}'>${getAnchorImage}</a>
+       <jot:loop over="getAnnotations(constructor)" as="annot">
+           ${getAnnotationString(annot)}<br/>
+        </jot:loop>
+ <a target="_top" class="anchor" NAME='${getAnchorName(constructor)}' href='${getDirectLink(constructor)}'>${getAnchorImage}</a>
 ${getModifiersString(constructor)}
 <jot:if eval="isDeprecated(constructor)"><del></jot:if>
 <b> ${constructor.name}</b>

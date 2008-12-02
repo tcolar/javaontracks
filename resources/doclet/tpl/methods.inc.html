@@ -11,6 +11,9 @@
     <div id="__m_inerited_${cpt}" display="block">
 </jot:if>
 <div class="item">
+       <jot:loop over="getAnnotations(method)" as="annot">
+           ${getAnnotationString(annot)}<br/>
+        </jot:loop>
 <a target="_top" class="anchor" NAME='${getAnchorName(method)}' href='${getDirectLink(method)}'>${getAnchorImage}</a>
 ${getModifiersString(method)} ${getReturnString(method)}
 <jot:if eval="isDeprecated(method)"><del></jot:if>

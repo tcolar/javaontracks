@@ -5,6 +5,9 @@
 </div>
 <jot:loop over="getInnerClasses()" as="class">
 <div class="item">
+       <jot:loop over="getAnnotations(class)" as="annot">
+           ${getAnnotationString(annot)}<br/>
+        </jot:loop>
 <a target="_top" class="anchor" NAME='${getAnchorName(class)}' href='${getDirectLink(class)}'>${getAnchorImage}</a>
 <jot:if eval="isDeprecated(class)"><del></jot:if>
 <img class="navItem" src='${getTypeImage(class)}' width="16" height="16"/>&nbsp;

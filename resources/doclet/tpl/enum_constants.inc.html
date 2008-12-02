@@ -5,6 +5,9 @@
 </div>
 <jot:loop over="getEnumConstants" as="const">
 <div class="item">
+       <jot:loop over="getAnnotations(const)" as="annot">
+           ${getAnnotationString(annot)}<br/>
+        </jot:loop>
 <a target="_top" class="anchor" NAME='${getAnchorName(const)}' href='${getDirectLink(const)}'>${getAnchorImage}</a>
 <jot:if eval="isDeprecated(const)"><del></jot:if>
 <b> ${const.name}</b>
