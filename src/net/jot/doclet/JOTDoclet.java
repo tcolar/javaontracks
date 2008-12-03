@@ -33,12 +33,13 @@ import net.jot.web.view.JOTViewParser;
 public class JOTDoclet extends AbstractDoclet
 {
 
-    public static final String RES_ROOT = "/home/thibautc/NetBeansProjects/javaontracks/resources/doclet/";
-    public static final String OUT_ROOT = "/tmp/";
+    public static String RES_ROOT = "/home/thibautc/NetBeansProjects/javaontracks/resources/doclet/";
+    public static String OUT_ROOT = "/tmp/";
     public ConfigurationImpl configuration = (ConfigurationImpl) configuration();
     HtmlDocletWriter docWriter;
     ClassTree classTree=null;
-    
+
+
     public static boolean start(RootDoc root)
     {
         JOTDoclet doclet = new JOTDoclet();
@@ -47,9 +48,6 @@ public class JOTDoclet extends AbstractDoclet
 
     public boolean start(JOTDoclet doclet, RootDoc root)
     {
-        String[] levels={""+JOTLogger.CRITICAL_LEVEL,""+JOTLogger.ERROR_LEVEL,""+JOTLogger.WARNING_LEVEL};
-        JOTLogger.init("/tmp/jotdoclet.log", levels , null);
-
         copyResources();
 
         configuration.root = root;
@@ -111,6 +109,11 @@ public class JOTDoclet extends AbstractDoclet
         classTree = new ClassTree(configuration, configuration.nodeprecated);
 
         
+        OUT_ROOT=configuration.docFileDestDirName;
+        new File(OUT_ROOT).mkdirs();
+        String[] levels={""+JOTLogger.CRITICAL_LEVEL,""+JOTLogger.ERROR_LEVEL,""+JOTLogger.WARNING_LEVEL};
+        JOTLogger.init(OUT_ROOT+File.separator+"jotdoclet.log", levels , null);
+
         generatePackageList(classTree);
 
         configuration.tagletManager.printReport();
