@@ -10,11 +10,11 @@
 <body>
             <jot:include file="tpl/header.inc.html"/>
 
-<jot:include file="tpl/topbar_source.inc.html"/>
+<jot:include file="tpl/topbar.inc.html"/>
 <div style="height:5px"> </div>
 <div class="title">&nbsp;<img class="navItem" src='${getTypeImage(curitem)}' width="16" height="16"/>
 <span class="smallPackName">${curitem.containingPackage.name}.</span>
-${curitem.name} (Source) <a href='${getItemLink(curitem)}'>JavaDoc</a>
+${curitem.name} <span class="sourceButton"><a href='${getItemLink(curitem)}'>View Javadoc</a></span>
 </div>
 <div class="source">
 <pre>

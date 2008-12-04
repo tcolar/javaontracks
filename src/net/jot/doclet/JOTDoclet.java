@@ -35,7 +35,7 @@ public class JOTDoclet extends AbstractDoclet
 
     public static String RES_ROOT = "/home/thibautc/NetBeansProjects/javaontracks/resources/doclet/";
     public static String OUT_ROOT = "/tmp/";
-    public ConfigurationImpl configuration = (ConfigurationImpl) configuration();
+    public ConfigurationImpl configuration = (ConfigurationImpl) ConfigurationImpl.getInstance();
     HtmlDocletWriter docWriter;
     ClassTree classTree = null;
 
@@ -48,6 +48,11 @@ public class JOTDoclet extends AbstractDoclet
     public boolean start(JOTDoclet doclet, RootDoc root)
     {
         configuration.root = root;
+
+        configuration.setOptions();
+        configuration.getDocletSpecificMsg().notice("doclet.build_version",
+                configuration.getDocletSpecificBuildDate());
+
         try
         {
             docWriter = new HtmlDocletWriter(configuration, null);
@@ -101,11 +106,7 @@ public class JOTDoclet extends AbstractDoclet
             configuration.message.error("doclet.No_Public_Classes_To_Document");
             return;
         }
-        configuration.setOptions();
-        configuration.getDocletSpecificMsg().notice("doclet.build_version",
-                configuration.getDocletSpecificBuildDate());
         classTree = new ClassTree(configuration, configuration.nodeprecated);
-
 
         OUT_ROOT = configuration.docFileDestDirName;
         new File(OUT_ROOT).mkdirs();
@@ -135,7 +136,6 @@ public class JOTDoclet extends AbstractDoclet
     protected void generatePackageList(ClassTree tree) throws Exception
     {
         JOTDocletJava2HTML htmlEncoder = new JOTDocletJava2HTML(new File(OUT_ROOT));
-        configuration.linksource=true;
 
         File navigator = new File(OUT_ROOT + "overview-frame.html");
         File packTree = new File(OUT_ROOT + "overview-summary.html");
@@ -208,23 +208,41 @@ public class JOTDoclet extends AbstractDoclet
                     {
                         tpl = "annot.html";
                     }
-                    html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + tpl);
+                    try
+                    {
+                        html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + tpl);
+                    } catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
                     writer.print(html);
                     writer.close();
 
                     if (configuration.linksource)
                     {
                         // write source file
-                        File sourceFile = new File(OUT_ROOT + folder + item.name() + "-source.html");
-                        System.out.println(sourceFile.getAbsolutePath());
-                        writer = new PrintWriter(sourceFile);
-                        File srcFile = new File(JOTUtilities.endWithSlash(configuration.sourcepath), folder + item.name() + ".java");
-                        String source = htmlEncoder.encodeFile(srcFile).toString();
-                        //source=doCrossLinks(source);
-                        view.addVariable("source", source);
-                        html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + "source.html");
-                        writer.print(html);
-                        writer.close();
+                        String name = item.name();
+                        // if "." in name is subclass, no need to write again.
+                        if (name.indexOf(".") < 0)
+                        {
+                            File sourceFile = new File(OUT_ROOT + folder + item.name() + "-source.html");
+                            System.out.println(sourceFile.getAbsolutePath());
+                            writer = new PrintWriter(sourceFile);
+                            File srcFile = new File(JOTUtilities.endWithSlash(configuration.sourcepath), folder + name + ".java");
+                            String source = htmlEncoder.encodeFile(srcFile).toString();
+                            //source=doCrossLinks(source);
+                            view.addVariable("curpage", folder + item.name() + "-source.html");
+                            view.addVariable("source", source);
+                            try
+                            {
+                                html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + "source.html");
+                            } catch (Exception e)
+                            {
+                                e.printStackTrace();
+                            }
+                            writer.print(html);
+                            writer.close();
+                        }
                     }
 
                     itemsLength++;
@@ -254,7 +272,7 @@ public class JOTDoclet extends AbstractDoclet
     public static int optionLength(String option)
     {
         // Construct temporary configuration for check
-        return (ConfigurationImpl.getInstance()).optionLength(option);
+        return ConfigurationImpl.getInstance().optionLength(option);
     }
 
     protected void generatePackageFiles(ClassTree arg0) throws Exception

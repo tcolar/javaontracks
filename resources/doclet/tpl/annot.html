@@ -14,7 +14,10 @@
 <div class="title">&nbsp;<img class="navItem" src='${getTypeImage(curitem)}' width="16" height="16"/>
 <span class="smallPackName">${curitem.containingPackage.name}.</span>
 <jot:if eval="isDeprecated(curitem)"><del></jot:if>
-${curitem.name} <a href='${curitem.name}-source.html'>Source</a>
+${curitem.name}
+<jot:if eval="sourceEnabled">
+<span class="sourceButton"><a href='${getShortItemName()}-source.html'>View Source</a></span>
+</jot:if>
 <jot:if eval="isDeprecated(curitem)"></del></jot:if>
 </div>
 <div style="height:3px"> </div>

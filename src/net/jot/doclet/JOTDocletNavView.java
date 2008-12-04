@@ -109,7 +109,6 @@ public class JOTDocletNavView extends JOTLightweightView
     {
         return getDirectLink((String) null);
     }
-
     public String getDirectLink(JOTDocletHolder handler)
     {
         return getDirectLink(getAnchorName(handler));
@@ -678,10 +677,10 @@ public class JOTDocletNavView extends JOTLightweightView
         String str = "";
         if (type.asParameterizedType() != null)
         {
-            str += handleGenerics(type);
+            str += handleGenerics(type,0);
         } else if (type.asTypeVariable() != null)
         {
-            str += handleGenerics(type);
+            str += handleGenerics(type,0);
         } else if (type.asClassDoc() != null)
         {
             str += getTypeLink(type.asClassDoc());
@@ -1007,6 +1006,17 @@ public class JOTDocletNavView extends JOTLightweightView
         return tag.text();
     }
 
+    public String getShortItemName()
+    {
+        return getShortItemName((Doc)getVariables().get("curitem"));
+    }
+    public String getShortItemName(Doc doc)
+    {
+        String name=doc.name();
+        if(name.indexOf(".")>0)
+            name=name.substring(0,name.indexOf("."));
+        return name;
+    }
     public String getFullDescription()
     {
         Doc doc = (Doc) getVariables().get("curitem");
@@ -1044,9 +1054,14 @@ public class JOTDocletNavView extends JOTLightweightView
         return txt.indexOf("<br/>") != -1 || txt.indexOf("<BR/>") != -1 || txt.indexOf("<p>") != -1 || txt.indexOf("<P>") != -1;
     }
 
-    private String handleGenerics(Type type)
+    private String handleGenerics(Type type, int depth)
     {
         String str="";
+        depth++;
+        // lame anti-recusrion hack
+        if(depth>15)
+            return str;
+        //System.out.println(type.qualifiedTypeName());
         if (type.asParameterizedType() != null)
         {
             str += getTypeLink(type.asParameterizedType().asClassDoc());
@@ -1059,14 +1074,15 @@ public class JOTDocletNavView extends JOTLightweightView
                     str += ", ";
                 }
                 // generic might be imbricated, so recurse as needed
-                str+=handleGenerics(args[i]);
+                //System.out.println("$ "+str);
+                str+=handleGenerics(args[i],depth);
             }
             str += ">";
         } else if (type.asTypeVariable() != null)
         {
             String name = type.simpleTypeName();
 
-            Type[] types=type.asTypeVariable().bounds();
+            /*Type[] types=type.asTypeVariable().bounds();
             for (int i = 0; i != types.length; i++)
             {
                 if (i > 0)
@@ -1074,8 +1090,8 @@ public class JOTDocletNavView extends JOTLightweightView
                     str += ", ";
                 }
                 // generic might be imbricated, so recurse as needed
-                str+=handleGenerics(types[i]);
-            }
+                str+=handleGenerics(types[i],depth);
+            }*/
             str += (sameName(name, type.asTypeVariable()) ? "" : " <font class='genericVar'>" + type.asTypeVariable().typeName() + "</font>");
         }
         else if (type.asClassDoc() != null)
@@ -1098,12 +1114,9 @@ public class JOTDocletNavView extends JOTLightweightView
             {
                 str += ", ";
             }
-            if (params[i].type().asParameterizedType() != null)
+            if ((params[i].type().asParameterizedType() != null || params[i].type().asTypeVariable() != null))
             {
-                str += handleGenerics(params[i].type());
-            } else if (params[i].type().asTypeVariable() != null)
-            {
-                str+= handleGenerics(params[i].type());
+                str += handleGenerics(params[i].type(),0);
             } else if (params[i].type().asClassDoc() != null)
             {
                 str += getTypeLink(params[i].type().asClassDoc());

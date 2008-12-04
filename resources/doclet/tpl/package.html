@@ -26,7 +26,7 @@
                 ${class.name}
                 <jot:if eval="isDeprecated(class)"></del></jot:if>
                 <jot:if eval="sourceEnabled">
-                    <a href="${class.name}-source.html">Source</a>
+                    <a class="sourceButton" href='${getShortItemName(class)}-source.html'>View Source</a>
                 </jot:if>
             </a>
           </td>

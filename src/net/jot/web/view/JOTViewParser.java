@@ -229,7 +229,7 @@ public class JOTViewParser
                 include = parse(view, include, templateRoot);
             } catch (Exception e)
             {
-                Exception e2 = new Exception("Error while parsing included template in: " + file, e);
+                Exception e2 = new Exception("Error while parsing included template " + file, e);
                 JOTLogger.logException(JOTLogger.ERROR_LEVEL, JOTView.class, "Error parsing template !", e);
                 e2.fillInStackTrace();
                 throw (e2);
@@ -391,7 +391,7 @@ public class JOTViewParser
                             stack = new Stack();
                         }
                         stack.push(variables.get(counter));
-                        variables.put(LOOP_STACK + "_" + counter,stack);
+                        variables.put(LOOP_STACK + "_" + counter, stack);
                     }
                     variables.put(counter, new Integer(i));
 
@@ -1011,7 +1011,19 @@ public class JOTViewParser
             Method m = lookForMethod(parent, method, values);
             if (m != null)
             {
-                obj = m.invoke(parent, values);
+                try
+                {
+                    obj = m.invoke(parent, values);
+                } catch (Exception e)
+                {
+                    String params = "[";
+                    for (int i = 0; values != null && i != values.length; i++)
+                    {
+                        params += values[i].getClass().getName() + ",";
+                    }
+                    params += "]";
+                    throw (new Exception("Failed invoking method " + m.getName() + " on " + parent.getClass().toString()+" with params: " + params, e));
+                }
             }
         }
         return obj;
