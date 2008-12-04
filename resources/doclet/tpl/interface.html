@@ -8,12 +8,13 @@
     </script>
 </head>
 <body>
+<jot:include file="tpl/header.inc.html"/>
 <jot:include file="tpl/topbar.inc.html"/>
 <div style="height:5px"> </div>
 <div class="title">&nbsp;<img class="navItem" src='${getTypeImage(curitem)}' width="16" height="16"/>
 <span class="smallPackName">${curitem.containingPackage.name}.</span>
 <jot:if eval="isDeprecated(curitem)"><del></jot:if>
-${curitem.name}
+${curitem.name} <a href='${curitem.name}-source.html'>Source</a>
 <jot:if eval="isDeprecated(curitem)"></del></jot:if>
 </div>
 <div style="height:3px"> </div>
@@ -58,5 +59,7 @@ ${curitem.name}
 <div style="height:8px"> </div>
 <jot:include file="tpl/fields.inc.html"/>
 <div style="height:8px"> </div>
+    <jot:include file="tpl/footer.inc.html"/>
+
 </body>
 </html>

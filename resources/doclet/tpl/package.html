@@ -8,7 +8,8 @@
     </script>
   </head>
   <body>
-    <jot:include file="tpl/topbar.inc.html"/>
+ <jot:include file="tpl/header.inc.html"/>
+   <jot:include file="tpl/topbar.inc.html"/>
     <div style="height:5px"> </div>
     <div class="title">&nbsp;<img src='${getPathToRoot}img/pkg.png' height="16" width="16"/>&nbsp;Package: ${curitem.name}</div>
     <div style="height:3px"> </div>
@@ -20,10 +21,13 @@
       <jot:loop over="getSortedClasses()" as="class">
         <tr><td nowrap class="pkgSumItem">
             <img class="navItem" src='${getTypeImage(class)}' width="16" height="16"/>
-            <a class="regular" href='${getItemLink(class)}'>
+            <a class="regular" href='${class.name}.html'>
                 <jot:if eval="isDeprecated(class)"><del></jot:if>
                 ${class.name}
                 <jot:if eval="isDeprecated(class)"></del></jot:if>
+                <jot:if eval="sourceEnabled">
+                    <a href="${class.name}-source.html">Source</a>
+                </jot:if>
             </a>
           </td>
           <td class="pkgSumDesc">
@@ -31,5 +35,7 @@
         </td></tr>
       </jot:loop>
     </table>
+        <jot:include file="tpl/footer.inc.html"/>
+
   </body>
 </html>

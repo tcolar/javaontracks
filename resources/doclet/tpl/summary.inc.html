@@ -4,11 +4,12 @@
             <a target="_top" class="anchor" NAME="summary" href='${getDirectLink("summary")}'>${getAnchorImage}</a>
             Description
         </div>
+        <jot:if eval="isClassDoc()">
         <jot:loop over="getAnnotations()" as="annot">
             ${getAnnotationString(annot)}<br/>
         </jot:loop>
         ${getModifiersString(curitem)} ${getType(curitem)} ${curitem.name}
-
+        </jot:if>
         <div id="shortDesc">
             <jot:if eval="hasMoreInfos()">
                 <a onclick="showFullDescription(true)"><img border="0" src="${${getPathToRoot}img/plus.png"></a>&nbsp;

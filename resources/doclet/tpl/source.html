@@ -1,0 +1,26 @@
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href='${getPathToRoot}doclet.css'>
+    <script type="text/javascript" src='${getPathToRoot}doclet.js'></script>
+    <title>Source of ${curitem.name} (${windowTitle})</title>
+    <script type="text/javascript">
+        setWindowTitle('Source of ${curitem.name} (${windowTitle})');
+    </script>
+</head>
+<body>
+            <jot:include file="tpl/header.inc.html"/>
+
+<jot:include file="tpl/topbar_source.inc.html"/>
+<div style="height:5px"> </div>
+<div class="title">&nbsp;<img class="navItem" src='${getTypeImage(curitem)}' width="16" height="16"/>
+<span class="smallPackName">${curitem.containingPackage.name}.</span>
+${curitem.name} (Source) <a href='${getItemLink(curitem)}'>JavaDoc</a>
+</div>
+<div class="source">
+<pre>
+${source}
+</pre>
+</div>
+        <jot:include file="tpl/footer.inc.html"/>
+</body>
+</html>

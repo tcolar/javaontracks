@@ -16,6 +16,8 @@ table{font-weight:normal;font-size:16px;}
 .item{padding:4px;border-top:1px;border-top-style:solid;border-top-color:black}
 .itemDesc{font-weight:normal}
 
+.source{padding:5px;background-color:#f4f4f4;font-size:12px}
+
 .constructors{background-color:#FFFFCC;padding:4px}
 .methods{background-color:#F9F9F9;padding:4px}
 .fields{background-color:#DDDDFF;padding:4px}

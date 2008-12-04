@@ -10,7 +10,6 @@ import com.sun.javadoc.AnnotationTypeElementDoc;
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.ConstructorDoc;
 import com.sun.javadoc.Doc;
-import com.sun.javadoc.ExecutableMemberDoc;
 import com.sun.javadoc.FieldDoc;
 import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.PackageDoc;
@@ -63,7 +62,7 @@ public class JOTDocletNavView extends JOTLightweightView
     }
     public final static String PACKAGES = "packages";
 
-    public String getItemLink(PackageDocImpl pack)
+    public String getItemLink(PackageDoc pack)
     {
         return getPathToRoot() + JOTDoclet.getPkgFolder(pack) + "package-summary.html";
     }
@@ -75,6 +74,12 @@ public class JOTDocletNavView extends JOTLightweightView
         return getHref(link);
     }
 
+    public boolean isClassDoc()
+    {
+        Object cur=getVariables().get("curitem");
+        return (cur instanceof ClassDoc);
+    }
+
     public String getItemLink(ClassDoc doc)
     {
         return getItemLink(doc, LinkInfoImpl.CONTEXT_CLASS);
@@ -83,6 +88,10 @@ public class JOTDocletNavView extends JOTLightweightView
     public String getItemLink(JOTDocletHolder holder)
     {
         return getItemLink(holder, LinkInfoImpl.CONTEXT_CLASS);
+    }
+    public String getPackageLink(ClassDoc doc)
+    {
+        return getItemLink(doc.containingPackage());
     }
 
     public String getItemLink(JOTDocletHolder holder, int context)
@@ -96,15 +105,6 @@ public class JOTDocletNavView extends JOTLightweightView
         return getHref(link) + "#" + getSignature(holder.getDoc());
     }
 
-    /*public String getClassLink(String className)
-    {
-    ClassDoc doc = docWriter.configuration.root.classNamed(className);
-    if (doc == null)
-    {
-    return null;
-    }
-    return getItemLink(doc);
-    }*/
     public String getDirectLink()
     {
         return getDirectLink((String) null);
