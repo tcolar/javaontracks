@@ -57,26 +57,39 @@ public class JOTDocletJava2HTML
         StringBuffer buf=null;
         try
         {
+            //System.out.println("read");
             buf = readJavaFile(javaFile);
             buf=buf.insert(0, "\n");
+            //System.out.println("pack");
             String pack = findPackage(buf);
             String itemName = javaFile.getName().substring(0, javaFile.getName().toLowerCase().lastIndexOf(".java"));
+            //System.out.println("encode");
             buf = encodeHtml(buf);
-            buf = doComments(buf);
+            //System.out.println("javadoc");
             buf = doJavadoc(buf);
+            //System.out.println("comments");
+            buf = doComments(buf);
+            //System.out.println("strings");
             buf = doStrings(buf);
+            //System.out.println("annots");
             buf = doAnnotations(buf);
+            //System.out.println("numbers");
             buf = doNumbers(buf);
+            //System.out.println("fucntions");
             buf = doFunctionNames(buf);
+            //System.out.println("keywords");
             for (int i = 0; i != KEYWORDS.length; i++)
             {
                 buf = doKeyword(buf, KEYWORDS[i]);
             }
+            //System.out.println("bolding");
             buf=new StringBuffer(buf.toString().replaceAll("("+itemName+")", "<b>$1</b>"));
+            //System.out.println("pieces");
             buf = reinsertPieces(buf);
             buf=buf.deleteCharAt(0);
             //File destFile = computeDestFile(pack, itemName);
             //writeHTMLFile(destFile, buf);
+            //System.out.println("done");
         } catch (Exception e)
         {
             loc.exception("Failed encoding the java code file " + javaFile.getAbsolutePath(), e);

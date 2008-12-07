@@ -139,19 +139,29 @@ public class JOTDoclet extends AbstractDoclet
 
         File navigator = new File(OUT_ROOT + "overview-frame.html");
         File packTree = new File(OUT_ROOT + "overview-summary.html");
+        File packList = new File(OUT_ROOT + "package-list");
         PrintWriter writer = null;
         int pkLength = 0;
         int itemsLength = 0;
         try
         {
-            writer = new PrintWriter(navigator);
-
+            // standard sucks out a lot of memory to create package list.
+            System.gc();
+            
             PackageDoc[] packages = configuration.packages;
             Arrays.sort(packages);
             JOTDocletNavView view = new JOTDocletNavView(docWriter);
             addViewConstants(view);
 
-            // write nav
+            // writing package list (used by -link javadoc option)
+            System.out.println(packList.getAbsolutePath());
+            writer = new PrintWriter(packList);
+            for(int i=0;i!=packages.length;i++)
+                writer.println(packages[i].name());
+            writer.close();
+            // writing navigator
+            writer = new PrintWriter(navigator);
+
             System.out.println(navigator.getAbsolutePath());
             view.addVariable(JOTDocletNavView.PACKAGES, packages);
             String html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + "nav.html");
@@ -195,7 +205,7 @@ public class JOTDoclet extends AbstractDoclet
                     view.addVariable("curitem", item);
                     view.addVariable("curpage", folder + item.name() + ".html");
                     File itemFile = new File(OUT_ROOT + folder + item.name() + ".html");
-                    System.out.println(itemFile.getAbsolutePath());
+                    System.out.println(itemsLength+" "+itemFile.getAbsolutePath());
                     writer = new PrintWriter(itemFile);
                     String tpl = "class.html";
                     if (item.isInterface())
@@ -246,6 +256,13 @@ public class JOTDoclet extends AbstractDoclet
                     }
 
                     itemsLength++;
+                    if(itemsLength%100==0)
+                    {
+                        System.out.println("Doing garbage collection");
+                        System.out.println("Before "+Runtime.getRuntime().freeMemory());
+                        System.gc();
+                        System.out.println("After "+Runtime.getRuntime().freeMemory());                        
+                    }
                 }
             }
 

@@ -5,7 +5,8 @@ tcolar-jot AT colar DOT net
 Artistic Licence 2.0
 http://www.javaontracks.net
 ------------------------------------
- */package net.jot.captcha;
+ */
+package net.jot.captcha;
 
 import java.io.File;
 import javax.servlet.http.HttpServletResponse;

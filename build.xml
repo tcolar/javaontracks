@@ -70,7 +70,7 @@
     
     <target name="jotdoc" depends="jar">
         <delete dir="/tmp/jotdoc/" quiet="true"/>
-        <!-- java+javax code: ~ 700k - backed linked to standard reference for other packages-->
+        <!-- java+javax code: ~ 700k - backed linked to standard reference for other packages--> <!--java.*,javax.*-->
         <javadoc sourcepath="/home/thibautc/NetBeansProjects/jdk1.6/j2se/src/share/classes/" destdir="/tmp/jotdoc/jdk1.6" packagenames="java.*,javax.*" doctitle="JDK 1.6" windowtitle="JDK 1.6" link="http://java.sun.com/j2se/1.6.0/docs/api/" maxmemory="1448m">
         <!-- all jdk code: ~ 3MB -->
         <!--<javadoc sourcepath="/home/thibautc/NetBeansProjects/jdk1.6/j2se/src/share/classes/" destdir="jotdoc" packagenames="*" linksource="true" maxmemory="2048m">-->
@@ -92,11 +92,11 @@
         </javadoc>
 
         <!-- sap code: ~ 2MB - zipped: 98k -->
-        <javadoc sourcepath="/home/thibautc/NetBeansProjects/sap_crm_java/src/;/home/thibautc/NetBeansProjects/pcf_java/src/" destdir="/tmp/jotdoc/crm2007/" packagenames="*" source="1.4" maxmemory="2048m" doctitle="SAP CRM 2007" windowtitle="SAP CRM 2007" link="../jdk1.6/">
+        <!--<javadoc sourcepath="/home/thibautc/NetBeansProjects/sap_crm_java/src/;/home/thibautc/NetBeansProjects/pcf_java/src/" destdir="/tmp/jotdoc/crm2007/" packagenames="*" source="1.4" maxmemory="2048m" doctitle="SAP CRM 2007" windowtitle="SAP CRM 2007" link="../jdk1.6/">
             <doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
             <classpath>
                 <pathelement path="${jotdoc.path}"/>
             </classpath>
-        </javadoc>
+        </javadoc>-->
     </target>
 </project>
