@@ -397,6 +397,11 @@ public class JOTDocletNavView extends JOTLightweightView {
         return docArray;
     }
 
+    public Integer getLineNb(Integer nb)
+    {
+        return new Integer(nb.intValue()+1);
+    }
+
     public JOTDocletFieldHolder[] getFields(ClassDoc mainDoc) {
         if(fieldsCache.containsKey(mainDoc.qualifiedName()))
         {

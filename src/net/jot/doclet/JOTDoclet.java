@@ -242,7 +242,7 @@ public class JOTDoclet extends AbstractDoclet
                             String source = htmlEncoder.encodeFile(srcFile).toString();
                             //source=doCrossLinks(source);
                             view.addVariable("curpage", folder + item.name() + "-source.html");
-                            view.addVariable("source", source);
+                            view.addVariable("source", source.split("\n"));
                             try
                             {
                                 html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + "source.html");

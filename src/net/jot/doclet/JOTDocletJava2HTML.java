@@ -29,6 +29,7 @@ public class JOTDocletJava2HTML
     private final static Pattern PATTERN_PACK = Pattern.compile("^\\s*package\\s+(\\S+)", Pattern.MULTILINE);
     private final static Pattern PATTERN_COMMENTS = Pattern.compile("/\\*[^*].*?\\*/", Pattern.MULTILINE | Pattern.DOTALL);
     private final static Pattern PATTERN_COMMENTS_1LINER = Pattern.compile("//.*");
+    private final static Pattern PATTERN_IMPORTS = Pattern.compile("^\\s*import\\s+(\\S+)\\s*;", Pattern.MULTILINE);
     private final static Pattern PATTERN_JAVADOC = Pattern.compile("/\\*\\*.*?\\*/", Pattern.MULTILINE | Pattern.DOTALL);
     private final static Pattern PATTERN_PIECES = Pattern.compile("__JOT_PIECE_\\d+__");
     private final static Pattern PATTERN_STRING = Pattern.compile("&quot;.*?&quot;");
@@ -57,39 +58,25 @@ public class JOTDocletJava2HTML
         StringBuffer buf=null;
         try
         {
-            //System.out.println("read");
             buf = readJavaFile(javaFile);
             buf=buf.insert(0, "\n");
-            //System.out.println("pack");
-            String pack = findPackage(buf);
             String itemName = javaFile.getName().substring(0, javaFile.getName().toLowerCase().lastIndexOf(".java"));
-            //System.out.println("encode");
             buf = encodeHtml(buf);
-            //System.out.println("javadoc");
             buf = doJavadoc(buf);
-            //System.out.println("comments");
             buf = doComments(buf);
-            //System.out.println("strings");
+            //buf = doLinks(buf);
             buf = doStrings(buf);
-            //System.out.println("annots");
             buf = doAnnotations(buf);
-            //System.out.println("numbers");
             buf = doNumbers(buf);
-            //System.out.println("fucntions");
             buf = doFunctionNames(buf);
-            //System.out.println("keywords");
             for (int i = 0; i != KEYWORDS.length; i++)
             {
                 buf = doKeyword(buf, KEYWORDS[i]);
             }
-            //System.out.println("bolding");
-            buf=new StringBuffer(buf.toString().replaceAll("("+itemName+")", "<b>$1</b>"));
-            //System.out.println("pieces");
+            buf=new StringBuffer(buf.toString().replaceFirst("\\s+("+itemName+")\\s+", " <b>$1</b> "));
             buf = reinsertPieces(buf);
             buf=buf.deleteCharAt(0);
-            //File destFile = computeDestFile(pack, itemName);
-            //writeHTMLFile(destFile, buf);
-            //System.out.println("done");
+            
         } catch (Exception e)
         {
             loc.exception("Failed encoding the java code file " + javaFile.getAbsolutePath(), e);
@@ -191,6 +178,24 @@ public class JOTDocletJava2HTML
         while (m.find())
         {
             JOTViewParser.safeAppendReplacement(m, newBuf, m.group(1) + "<font color='#880088'><b>" + m.group(2) + "</b></font>" + m.group(3));
+        }
+        m.appendTail(newBuf);
+        return newBuf;
+    }
+
+    private StringBuffer doLinks(StringBuffer buf) {
+        StringBuffer newBuf = new StringBuffer();
+        Matcher m = PATTERN_IMPORTS.matcher(buf);
+        while (m.find())
+        {
+            String imp=m.group(1);
+            String link="";
+            if(imp.endsWith(".*"))
+                link=imp.substring(0,imp.length()-2);
+            else
+                link=imp.substring(0,imp.length()-2);                
+            String key = insertPiece(m.group(1) + "<font color='#CC0000'>" + m.group(2) + "</font>");
+            JOTViewParser.safeAppendReplacement(m, newBuf, key);
         }
         m.appendTail(newBuf);
         return newBuf;

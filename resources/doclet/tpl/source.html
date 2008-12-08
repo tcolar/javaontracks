@@ -16,11 +16,18 @@
 <span class="smallPackName">${curitem.containingPackage.name}.</span>
 ${curitem.name} <span class="sourceButton"><a href='${getItemLink(curitem)}'>View Javadoc</a></span>
 </div>
-<div class="source">
+<div class="linenb">
 <pre>
-${source}
+<jot:loop over="source" as="line">${lineNb(cpt)}
+</jot:loop>
 </pre>
 </div>
-        <jot:include file="tpl/footer.inc.html"/>
+<div class="source">
+<pre>
+<jot:loop over="source" as="line">${line}
+</jot:loop>
+</pre>
+</div>
+<jot:include file="tpl/footer.inc.html"/>
 </body>
 </html>
