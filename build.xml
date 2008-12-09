@@ -71,7 +71,7 @@
     <target name="jotdoc" depends="jar">
         <delete dir="/tmp/jotdoc/" quiet="true"/>
         <!-- whole jdk 1.6 -->
-        <javadoc sourcepath="/home/thibautc/NetBeansProjects/jdk1.6/j2se/src/share/classes/" destdir="/tmp/jotdoc/jdk1.6" packagenames="javax.accessibility.*" doctitle="JDK 1.6" windowtitle="JDK 1.6" maxmemory="1448m" link="http://java.sun.com/javase/6/docs/api/" splitindex="true">
+        <javadoc sourcepath="/home/thibautc/NetBeansProjects/jdk1.6/j2se/src/share/classes/" destdir="/tmp/jotdoc/jdk1.6" packagenames="*" doctitle="JDK 1.6" windowtitle="JDK 1.6" maxmemory="1448m" link="http://java.sun.com/javase/6/docs/api/" splitindex="true">
             <doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
             <!-- ant implementation does not parse the linksource option when using a custom doclet - why ?? -->
             <arg value="-linksource"/>

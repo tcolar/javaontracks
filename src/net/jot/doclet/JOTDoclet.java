@@ -17,13 +17,10 @@ import com.sun.tools.doclets.internal.toolkit.util.ClassTree;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import net.jot.JOTInitializer;
 import net.jot.logger.JOTLogger;
-import net.jot.utils.JOTGoogleSitemapBuilder;
-import net.jot.utils.JOTGoogleSitemapBuilder;
 import net.jot.utils.JOTUtilities;
 import net.jot.web.view.JOTViewParser;
 
@@ -185,12 +182,11 @@ public class JOTDoclet extends AbstractDoclet
 
         copyResources();
 
-        generateIndex();
-
         generateNav(classTree);
 
         if (!navOnly)
         {
+            generateIndex();
             generatePackageList(classTree);
         // only save sitemap if !navonly
         } else
