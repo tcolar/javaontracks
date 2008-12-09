@@ -22,3 +22,4 @@ package list (used by -linksource)
 
 -jotdoc google sitemap
 -jotdoc methods index
+- read template from jar ?
