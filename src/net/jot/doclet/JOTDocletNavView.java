@@ -403,11 +403,10 @@ public class JOTDocletNavView extends JOTLightweightView
     {
         String path = "";
         Doc doc = (Doc) getVariables().get("curitem");
-        if(getVariables().get("manualPath")!=null)
+        if (getVariables().get("manualPath") != null)
         {
-            path=(String)getVariables().get("manualPath");
-        }
-        else if (doc != null && !(doc instanceof RootDoc))
+            path = (String) getVariables().get("manualPath");
+        } else if (doc != null && !(doc instanceof RootDoc))
         {
             String name = doc.name();
             if (doc instanceof ClassDoc)
@@ -957,16 +956,23 @@ public class JOTDocletNavView extends JOTLightweightView
         {
             nb = 27;
         }
-        return ""+nb;
+        if (c.equals(new Character('$')))
+        {
+            nb = 28;
+        }
+        return "" + nb;
     }
 
     public String getIndexFile()
     {
         // TODO: index-1.html might not exist if there are no items starting by 'a' ... unlikely
-        if(docWriter.configuration.splitindex)
-            return getPathToRoot()+"index-files/index-1.html";
-        else
-            return getPathToRoot()+"index-files/index-all.html";
+        if (docWriter.configuration.splitindex)
+        {
+            return getPathToRoot() + "index-files/index-1.html";
+        } else
+        {
+            return getPathToRoot() + "index-files/index-all.html";
+        }
     }
 
     public Tag[] getJDOCTags(String tagName)

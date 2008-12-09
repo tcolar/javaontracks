@@ -95,6 +95,8 @@ public class JOTDoclet extends AbstractDoclet
             File src = new File(RES_ROOT);
             dest.mkdirs();
             JOTUtilities.copyFolderContent(dest, src, true);
+            JOTUtilities.deleteFolder(new File(dest.getAbsolutePath()+File.separator+"tpl"));
+            JOTUtilities.deleteFolder(new File(dest.getAbsolutePath()+File.separator+".svn"));
         } catch (Exception e)
         {
             e.printStackTrace();
@@ -148,6 +150,8 @@ public class JOTDoclet extends AbstractDoclet
                 int nb=(c.charValue()-('A'-1));
                 if(c.equals(new Character('_')))
                     nb=27;
+                if(c.equals(new Character('$')))
+                    nb=28;
                 File f = new File(folder+"/index-files", "index-" + nb + ".html");
                 view.addVariable("curpage", "index-files/index-"+nb+".html");
                 System.out.println(f.getAbsolutePath());

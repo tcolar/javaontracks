@@ -260,6 +260,7 @@ public class JOTUtilities
                 }
             }
         }
+        root.delete();
     }
 
     /**
