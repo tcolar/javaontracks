@@ -48,6 +48,7 @@ public class JOTDoclet extends AbstractDoclet
         rootDoc = root;
         return doclet.start(doclet, root);
     }
+    private String indexFile="index.html";
 
     public boolean start(JOTDoclet doclet, RootDoc root)
     {
@@ -85,6 +86,7 @@ public class JOTDoclet extends AbstractDoclet
         view.addVariable("windowTitle", configuration.windowtitle);
         view.addVariable("jotversion", JOTInitializer.VERSION);
         view.addVariable("sourceEnabled", new Boolean(configuration.linksource));
+        view.addVariable("indexfile", indexFile);
     }
 
     private void copyResources()
@@ -126,6 +128,7 @@ public class JOTDoclet extends AbstractDoclet
         view.addVariable("jotversion", JOTInitializer.VERSION);
         view.addVariable("splitindex", new Boolean(configuration.splitindex));
         view.addVariable("manualPath", "../");
+        view.addVariable("indexfile", indexFile);
         new File(folder+"/index-files").mkdirs();
 
         if (! configuration.splitindex)
@@ -222,8 +225,10 @@ public class JOTDoclet extends AbstractDoclet
                 nb++;
             }
             cpt = "" + nb;
+            indexFile="index" + nb + ".html";
         }
         JOTDocletNavView view = new JOTDocletNavView(docWriter);
+        view.addVariable("indexfile", indexFile);
         view.addVariable("nav", "overview-frame" + cpt + ".html");
         // write index
         System.out.println("Index: " + OUT_ROOT + "index" + cpt + ".html");

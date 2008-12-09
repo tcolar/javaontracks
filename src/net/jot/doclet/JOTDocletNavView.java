@@ -132,7 +132,8 @@ public class JOTDocletNavView extends JOTLightweightView
     public String getDirectLink(String anchor)
     {
         String curPage = (String) getVariables().get("curpage");
-        return getPathToRoot() + "index.html?page=" + curPage + (anchor == null ? "" : "#" + anchor);
+        String index = (String) getVariables().get("indexfile");
+        return getPathToRoot() + index+"?page=" + curPage + (anchor == null ? "" : "#" + anchor);
     }
 
     public String getAnchorName(JOTDocletHolder handler)
