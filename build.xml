@@ -70,10 +70,8 @@
     
     <target name="jotdoc" depends="jar">
         <delete dir="/tmp/jotdoc/" quiet="true"/>
-        <!-- java+javax code: ~ 700k - backed linked to standard reference for other packages--> <!--java.*,javax.*-->
-        <javadoc sourcepath="/home/thibautc/NetBeansProjects/jdk1.6/j2se/src/share/classes/" destdir="/tmp/jotdoc/jdk1.6" packagenames="java.*" doctitle="JDK 1.6" windowtitle="JDK 1.6" link="http://java.sun.com/j2se/1.6.0/docs/api/" maxmemory="1448m">
-        <!-- all jdk code: ~ 3MB -->
-        <!--<javadoc sourcepath="/home/thibautc/NetBeansProjects/jdk1.6/j2se/src/share/classes/" destdir="jotdoc" packagenames="*" linksource="true" maxmemory="2048m">-->
+        <!-- whole jdk 1.6 -->
+        <javadoc sourcepath="/home/thibautc/NetBeansProjects/jdk1.6/j2se/src/share/classes/" destdir="/tmp/jotdoc/jdk1.6" packagenames="java.applet.*,java.util.*" doctitle="JDK 1.6" windowtitle="JDK 1.6" maxmemory="1448m" source="http://java.sun.com/javase/6/docs/api/">
             <doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
             <!-- ant implementation does not parse the linksource option when using a custom doclet - why ?? -->
             <arg value="-linksource"/>
@@ -81,7 +79,24 @@
                 <pathelement path="${jotdoc.path}"/>
             </classpath>
         </javadoc>
-            
+        <!-- nav for only java.* (except java.awt)-->
+        <javadoc sourcepath="/home/thibautc/NetBeansProjects/jdk1.6/j2se/src/share/classes/" destdir="/tmp/jotdoc/jdk1.6" maxmemory="1448m">
+            <doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
+            <arg value="-navonly"/>
+            <packageset includes="java.*" excludes="java.awt.*"/>
+            <classpath>
+                <pathelement path="${jotdoc.path}"/>
+            </classpath>
+        </javadoc>
+        <!-- nav for only java.* and javax.*-->
+        <javadoc sourcepath="/home/thibautc/NetBeansProjects/jdk1.6/j2se/src/share/classes/" destdir="/tmp/jotdoc/jdk1.6" maxmemory="1448m" packagenames="java.*,javax.*">
+            <doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
+            <arg value="-navonly"/>
+            <classpath>
+                <pathelement path="${jotdoc.path}"/>
+            </classpath>
+        </javadoc>
+        
         <!-- JOT code : back linked to jdk-->
         <javadoc sourcepath="/home/thibautc/NetBeansProjects/javaontracks/src/" destdir="/tmp/jotdoc/javaontracks" packagenames="*" doctitle="JavaOnTracks 0.1.2" windowtitle="JavaOnTracks 0.1.2" link="../jdk1.6/">
             <doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>

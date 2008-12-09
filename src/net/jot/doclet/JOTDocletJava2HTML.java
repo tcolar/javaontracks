@@ -4,6 +4,7 @@
  */
 package net.jot.doclet;
 
+import com.sun.tools.doclets.formats.html.HtmlDocletWriter;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,10 +27,10 @@ public class JOTDocletJava2HTML
 
     private File destFolder;
     private final JOTLoggerLocation loc = new JOTLoggerLocation(getClass());
-    private final static Pattern PATTERN_PACK = Pattern.compile("^\\s*package\\s+(\\S+)", Pattern.MULTILINE);
+    private final static Pattern PATTERN_PACK = Pattern.compile("^(\\s*package\\s+)(\\S+)\\s*;", Pattern.MULTILINE);
     private final static Pattern PATTERN_COMMENTS = Pattern.compile("/\\*[^*].*?\\*/", Pattern.MULTILINE | Pattern.DOTALL);
     private final static Pattern PATTERN_COMMENTS_1LINER = Pattern.compile("//.*");
-    private final static Pattern PATTERN_IMPORTS = Pattern.compile("^\\s*import\\s+(\\S+)\\s*;", Pattern.MULTILINE);
+    private final static Pattern PATTERN_IMPORTS = Pattern.compile("^(\\s*import\\s+)(\\S+)\\s*;", Pattern.MULTILINE);
     private final static Pattern PATTERN_JAVADOC = Pattern.compile("/\\*\\*.*?\\*/", Pattern.MULTILINE | Pattern.DOTALL);
     private final static Pattern PATTERN_PIECES = Pattern.compile("__JOT_PIECE_\\d+__");
     private final static Pattern PATTERN_STRING = Pattern.compile("&quot;.*?&quot;");
@@ -47,9 +48,11 @@ public class JOTDocletJava2HTML
         "true", "false", "null"
     };
     private Hashtable pieces = new Hashtable();
+    private HtmlDocletWriter doc;
 
-    public JOTDocletJava2HTML(File destFolder)
+    public JOTDocletJava2HTML(File destFolder, HtmlDocletWriter doc)
     {
+        this.doc=doc;
         this.destFolder = destFolder;
     }
 
@@ -64,7 +67,7 @@ public class JOTDocletJava2HTML
             buf = encodeHtml(buf);
             buf = doJavadoc(buf);
             buf = doComments(buf);
-            //buf = doLinks(buf);
+            buf = doSourceLinks(buf);
             buf = doStrings(buf);
             buf = doAnnotations(buf);
             buf = doNumbers(buf);
@@ -183,22 +186,42 @@ public class JOTDocletJava2HTML
         return newBuf;
     }
 
-    private StringBuffer doLinks(StringBuffer buf) {
+    private StringBuffer doSourceLinks(StringBuffer buf) {
+        Matcher m = PATTERN_PACK.matcher(buf);
         StringBuffer newBuf = new StringBuffer();
-        Matcher m = PATTERN_IMPORTS.matcher(buf);
         while (m.find())
         {
-            String imp=m.group(1);
-            String link="";
-            if(imp.endsWith(".*"))
-                link=imp.substring(0,imp.length()-2);
-            else
-                link=imp.substring(0,imp.length()-2);                
-            String key = insertPiece(m.group(1) + "<font color='#CC0000'>" + m.group(2) + "</font>");
+            String key = insertPiece("<font color='#880088'><b>"+m.group(1)+"</b></font><a class='srclink' href='package-summary.html'>" + m.group(2) + "</a>;");
             JOTViewParser.safeAppendReplacement(m, newBuf, key);
         }
         m.appendTail(newBuf);
-        return newBuf;
+        m = PATTERN_IMPORTS.matcher(newBuf);
+        StringBuffer newBuf2=new StringBuffer();
+        while (m.find())
+        {
+            String imp=m.group(2);
+            System.out.println(imp);
+            String link=null;
+            String item="";
+            //LinkFactoryImpl ??
+            // docWriter.getPackageLink() ??
+            if(imp.endsWith(".*"))
+            {
+                item=imp.substring(0,imp.length()-2);
+
+                link=doc.getCrossPackageLink(item);
+            }
+            else
+            {
+                item=imp.substring(0,imp.lastIndexOf("."));
+                link=doc.getCrossClassLink(item, null, null, false, "sourcelink", false);
+            }
+
+            String key = insertPiece("<font color='#880088'><b>"+m.group(1)+"</b></font>"+link);
+            JOTViewParser.safeAppendReplacement(m, newBuf2, key);
+        }
+        m.appendTail(newBuf2);
+        return newBuf2;
     }
 
     private StringBuffer doNumbers(StringBuffer buf)
@@ -293,7 +316,7 @@ public class JOTDocletJava2HTML
 
     public static void main(String[] args)
     {
-        JOTDocletJava2HTML encoder = new JOTDocletJava2HTML(new File("/tmp"));
+        JOTDocletJava2HTML encoder = new JOTDocletJava2HTML(new File("/tmp"),null);
         encoder.encodeFile(new File("/tmp/JOTDoclet.java"));
     }
 }
