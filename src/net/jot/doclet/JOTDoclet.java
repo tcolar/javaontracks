@@ -14,13 +14,16 @@ import com.sun.tools.doclets.formats.html.HtmlDocletWriter;
 import com.sun.tools.doclets.internal.toolkit.AbstractDoclet;
 import com.sun.tools.doclets.internal.toolkit.Configuration;
 import com.sun.tools.doclets.internal.toolkit.util.ClassTree;
-import com.sun.tools.doclets.internal.toolkit.util.Extern;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import net.jot.JOTInitializer;
 import net.jot.logger.JOTLogger;
+import net.jot.utils.JOTGoogleSitemapBuilder;
+import net.jot.utils.JOTGoogleSitemapBuilder;
 import net.jot.utils.JOTUtilities;
 import net.jot.web.view.JOTViewParser;
 
@@ -33,9 +36,9 @@ import net.jot.web.view.JOTViewParser;
  */
 public class JOTDoclet extends AbstractDoclet
 {
-    public static RootDoc rootDoc=null;
-    private boolean navOnly=false;
 
+    public static RootDoc rootDoc = null;
+    private boolean navOnly = false;
     public static String RES_ROOT = "/home/thibautc/NetBeansProjects/javaontracks/resources/doclet/";
     public static String OUT_ROOT = "/tmp/";
     public ConfigurationImpl configuration = ConfigurationImpl.getInstance();
@@ -45,18 +48,20 @@ public class JOTDoclet extends AbstractDoclet
     public static boolean start(RootDoc root)
     {
         JOTDoclet doclet = new JOTDoclet();
-        rootDoc=root;
+        rootDoc = root;
         return doclet.start(doclet, root);
     }
 
     public boolean start(JOTDoclet doclet, RootDoc root)
     {
-        String[][] options=root.options();
-        for(int i=0;i!=options.length;i++)
+        String[][] options = root.options();
+        for (int i = 0; i != options.length; i++)
         {
             //System.out.println(options[i][0]);
-            if(options[i][0].equalsIgnoreCase("-navOnly"))
-                navOnly=true;
+            if (options[i][0].equalsIgnoreCase("-navOnly"))
+            {
+                navOnly = true;
+            }
         }
         configuration.root = root;
 
@@ -110,6 +115,56 @@ public class JOTDoclet extends AbstractDoclet
         return folder;
     }
 
+    private void generateIndex() throws Exception
+    {
+        JOTDocletIndexWriter index = new JOTDocletIndexWriter(configuration, docWriter);
+        String templatePath = RES_ROOT + "tpl";
+        String templateName = "indexing.html";
+        File folder = new File(OUT_ROOT);
+        JOTDocletNavView view = new JOTDocletNavView(docWriter);
+        view.addVariable("docTitle", configuration.doctitle);
+        view.addVariable("windowTitle", configuration.windowtitle);
+        view.addVariable("jotversion", JOTInitializer.VERSION);
+        view.addVariable("splitindex", new Boolean(configuration.splitindex));
+        view.addVariable("manualPath", "../");
+        new File(folder+"/index-files").mkdirs();
+
+        if (! configuration.splitindex)
+        {
+            File f = new File(folder+"/index-files", "index-all.html");
+            view.addVariable("curpage", "index-files/index-all.html");
+            System.out.println(f.getAbsolutePath());
+            FileOutputStream fos = new FileOutputStream(f);
+            String page = index.generateHtml(null);
+            view.addVariable("indexHtml", page);
+            page = JOTViewParser.parseTemplate(view, templatePath, templateName);
+            fos.write(page.getBytes());
+            fos.close();
+        } else
+        {
+            Object[] cars = index.getCharactersAsObjects();
+            view.addVariable("indexchars", cars);
+            for (int i = 0; i != cars.length; i++)
+            {
+                Character c=(Character)cars[i];
+                view.addVariable("curchar", c);
+                int nb=(c.charValue()-('A'-1));
+                if(c.equals(new Character('_')))
+                    nb=27;
+                File f = new File(folder+"/index-files", "index-" + nb + ".html");
+                view.addVariable("curpage", "index-files/index-"+nb+".html");
+                System.out.println(f.getAbsolutePath());
+                FileOutputStream fos = new FileOutputStream(f);
+                String page = index.generateHtml(c);
+                view.addVariable("indexHtml", page);
+                page = JOTViewParser.parseTemplate(view, templatePath, templateName);
+                fos.write(page.getBytes());
+                fos.close();
+            }
+        }
+        view.getVariables().remove("manualPath");
+    }
+
     private void startGeneration(RootDoc root) throws Exception
     {
         if (root.classes().length == 0)
@@ -130,11 +185,14 @@ public class JOTDoclet extends AbstractDoclet
 
         copyResources();
 
+        generateIndex();
+
         generateNav(classTree);
 
         if (!navOnly)
         {
             generatePackageList(classTree);
+        // only save sitemap if !navonly
         } else
         {
             System.out.println("Done (packOnly requested.)");
@@ -155,39 +213,41 @@ public class JOTDoclet extends AbstractDoclet
 
     protected void generateNav(ClassTree tree) throws Exception
     {
-            int nb=1;
-            String cpt="";
-            if(new File((OUT_ROOT+"index.html")).exists())
+        int nb = 1;
+        String cpt = "";
+        if (new File((OUT_ROOT + "index.html")).exists())
+        {
+            while (new File(OUT_ROOT + "index" + nb + ".html").exists())
             {
-                while(new File(OUT_ROOT+"index"+nb+".html").exists())
-                    nb++;
-                cpt=""+nb;
+                nb++;
             }
-            JOTDocletNavView view = new JOTDocletNavView(docWriter);
-            view.addVariable("nav", "overview-frame"+cpt+".html");
-            // write index
-            System.out.println("Index: "+OUT_ROOT+"index"+cpt+".html");
-            String html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + "index.html");
-            PrintWriter writer = new PrintWriter(OUT_ROOT+"index"+cpt+".html");
-            writer.write(html);
-            writer.close();
-            PackageDoc[] packages = configuration.packages;
-            Arrays.sort(packages);
-            File navigator = new File(OUT_ROOT + "overview-frame"+cpt+".html");
+            cpt = "" + nb;
+        }
+        JOTDocletNavView view = new JOTDocletNavView(docWriter);
+        view.addVariable("nav", "overview-frame" + cpt + ".html");
+        // write index
+        System.out.println("Index: " + OUT_ROOT + "index" + cpt + ".html");
+        String html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + "index.html");
+        PrintWriter writer = new PrintWriter(OUT_ROOT + "index" + cpt + ".html");
+        writer.write(html);
+        writer.close();
+        PackageDoc[] packages = configuration.packages;
+        Arrays.sort(packages);
+        File navigator = new File(OUT_ROOT + "overview-frame" + cpt + ".html");
 
-            // writing navigator
-            writer = new PrintWriter(navigator);
-            System.out.println("Navigator: "+navigator.getAbsolutePath());
-            addViewConstants(view);
-            view.addVariable(JOTDocletNavView.PACKAGES, packages);
-            html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + "nav.html");
-            writer.print(html);
-            writer.close();
+        // writing navigator
+        writer = new PrintWriter(navigator);
+        System.out.println("Navigator: " + navigator.getAbsolutePath());
+        addViewConstants(view);
+        view.addVariable(JOTDocletNavView.PACKAGES, packages);
+        html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + "nav.html");
+        writer.print(html);
+        writer.close();
     }
 
     protected void generatePackageList(ClassTree tree) throws Exception
     {
-        JOTDocletJava2HTML htmlEncoder = new JOTDocletJava2HTML(new File(OUT_ROOT),this);
+        JOTDocletJava2HTML htmlEncoder = new JOTDocletJava2HTML(new File(OUT_ROOT), this);
 
         File packTree = new File(OUT_ROOT + "overview-summary.html");
         File packList = new File(OUT_ROOT + "package-list");
@@ -333,8 +393,10 @@ public class JOTDoclet extends AbstractDoclet
 
     public static int optionLength(String option)
     {
-        if(option.equalsIgnoreCase("-navOnly"))
+        if (option.equalsIgnoreCase("-navOnly"))
+        {
             return 1;
+        }
         // Construct temporary configuration for check
         return ConfigurationImpl.getInstance().optionLength(option);
     }

@@ -16,6 +16,8 @@ table{font-weight:normal;font-size:16px;}
 .item{padding:4px;border-top:1px;border-top-style:solid;border-top-color:black}
 .itemDesc{font-weight:normal}
 
+.indexing{font-size:16px;font-style:normal;padding:5px;}
+
 .source{padding:5px;background-color:#f4f4f4;font-size:12px}
 .sourceButton{background-color:#FFFF88;position:relative;left:5px;}
 

@@ -1,0 +1,33 @@
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href='${getPathToRoot}doclet.css'>
+    <title>Index of ${docTitle}</title>
+    <script type="text/javascript">
+        setWindowTitle('Index of ${windowTitle}');
+    </script>
+</head>
+<body>
+            <jot:include file="header.inc.html"/>
+
+<jot:include file="topbar.inc.html"/>
+<div style="height:5px"> </div>
+<div style="background-color:#EEEEEE;;font-weight:bold;padding:5px">
+    <jot:if eval="! splitindex">
+    Index of all items in ${docTitle}
+    </jot:if>
+    <jot:if eval="splitindex">
+    Index of all items starting with '${curchar}' in "${docTitle}"<br/>
+    All items:
+        <jot:loop over="indexchars" as="char">
+            &nbsp;&nbsp;&nbsp;<a href="index-${charVal(char)}.html">${char}</a>
+        </jot:loop>
+    </jot:if>
+</div>
+<div style="height:5px"> </div>
+<div class="indexing">
+${indexHtml}
+</div>
+<div style="height:5px"> </div>
+<jot:include file="footer.inc.html"/>
+</body>
+</html>

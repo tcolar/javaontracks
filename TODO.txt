@@ -20,6 +20,4 @@ javadoc -source code attached - linked
 read resources from jar (getresourceformstream)
 package list (used by -linksource)
 
--jotdoc google sitemap
--jotdoc methods index
 - read template from jar ?
