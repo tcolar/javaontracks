@@ -4,7 +4,9 @@
  */
 package net.jot.doclet;
 
-import com.sun.tools.doclets.formats.html.HtmlDocletWriter;
+import com.sun.javadoc.ClassDoc;
+import com.sun.javadoc.PackageDoc;
+import com.sun.tools.doclets.formats.html.LinkInfoImpl;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -48,11 +50,11 @@ public class JOTDocletJava2HTML
         "true", "false", "null"
     };
     private Hashtable pieces = new Hashtable();
-    private HtmlDocletWriter doc;
+    private JOTDoclet doclet;
 
-    public JOTDocletJava2HTML(File destFolder, HtmlDocletWriter doc)
+    public JOTDocletJava2HTML(File destFolder, JOTDoclet doclet)
     {
-        this.doc=doc;
+        this.doclet=doclet;
         this.destFolder = destFolder;
     }
 
@@ -200,28 +202,51 @@ public class JOTDocletJava2HTML
         while (m.find())
         {
             String imp=m.group(2);
-            System.out.println(imp);
+            //System.out.println(imp);
             String link=null;
             String item="";
-            //LinkFactoryImpl ??
-            // docWriter.getPackageLink() ??
+            //LinkFactoryImpl impl=new LinkFactoryImpl(doc);
+            //impl.getLinkOutput(arg0);
             if(imp.endsWith(".*"))
             {
                 item=imp.substring(0,imp.length()-2);
-
-                link=doc.getCrossPackageLink(item);
+                PackageDoc pack=doclet.rootDoc.packageNamed(item);
+                if(pack!=null)
+                    link=getHref(doclet.docWriter.getPackageLink(pack,null,false,"sourcelink"));
+                else
+                    link=getHref(doclet.docWriter.getCrossPackageLink(item));
             }
             else
             {
-                item=imp.substring(0,imp.lastIndexOf("."));
-                link=doc.getCrossClassLink(item, null, null, false, "sourcelink", false);
+                item=imp;
+                //System.out.println(item);
+                ClassDoc doc=doclet.rootDoc.classNamed(item);
+                //System.out.println(doc.qualifiedName());
+                if(doc!=null)
+                {
+                    LinkInfoImpl impl=new LinkInfoImpl(LinkInfoImpl.CONTEXT_CLASS, doc, null,null,false,"sourcelink");
+                    link=getHref(doclet.docWriter.getLink(impl));
+                }
+                else
+                    link=getHref(doclet.docWriter.getCrossClassLink(item, null, null, false, "sourcelink", false));
             }
 
-            String key = insertPiece("<font color='#880088'><b>"+m.group(1)+"</b></font>"+link);
+            String key = insertPiece("<font color='#880088'><b>"+m.group(1)+"</b></font>"+(link==null?m.group(2):"<a class='srclink' href='"+link+"'>"+m.group(2)+"</a>")+";");
             JOTViewParser.safeAppendReplacement(m, newBuf2, key);
         }
         m.appendTail(newBuf2);
         return newBuf2;
+    }
+    private String getHref(String link) {
+        if (link == null) {
+            return null;
+        }
+        int i = link.indexOf("HREF=\"") + 6;
+        if (i >= 6) {
+            return link.substring(i, link.indexOf("\"", i));
+        } else {
+            return null;
+        }
     }
 
     private StringBuffer doNumbers(StringBuffer buf)

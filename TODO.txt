@@ -20,5 +20,5 @@ javadoc -source code attached - linked
 read resources from jar (getresourceformstream)
 package list (used by -linksource)
 
-links in java source (to imports / packages)
-option to build an index only(index2.html / nav2.html)
+-jotdoc google sitemap
+-jotdoc methods index

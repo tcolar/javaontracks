@@ -33,17 +33,19 @@ import net.jot.web.view.JOTViewParser;
  */
 public class JOTDoclet extends AbstractDoclet
 {
+    public static RootDoc rootDoc=null;
     private boolean navOnly=false;
 
     public static String RES_ROOT = "/home/thibautc/NetBeansProjects/javaontracks/resources/doclet/";
     public static String OUT_ROOT = "/tmp/";
     public ConfigurationImpl configuration = ConfigurationImpl.getInstance();
-    HtmlDocletWriter docWriter;
-    ClassTree classTree = null;
+    public HtmlDocletWriter docWriter;
+    public ClassTree classTree = null;
 
     public static boolean start(RootDoc root)
     {
         JOTDoclet doclet = new JOTDoclet();
+        rootDoc=root;
         return doclet.start(doclet, root);
     }
 
@@ -185,7 +187,7 @@ public class JOTDoclet extends AbstractDoclet
 
     protected void generatePackageList(ClassTree tree) throws Exception
     {
-        JOTDocletJava2HTML htmlEncoder = new JOTDocletJava2HTML(new File(OUT_ROOT),docWriter);
+        JOTDocletJava2HTML htmlEncoder = new JOTDocletJava2HTML(new File(OUT_ROOT),this);
 
         File packTree = new File(OUT_ROOT + "overview-summary.html");
         File packList = new File(OUT_ROOT + "package-list");
