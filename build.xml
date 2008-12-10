@@ -79,14 +79,14 @@
             </classpath>
         </javadoc>-->
         <!-- nav for only java.* (except java.awt)-->
-        <!--<javadoc sourcepath="/home/thibautc/NetBeansProjects/jdk1.6/j2se/src/share/classes/" destdir="/tmp/jotdoc/jdk1.6" maxmemory="1448m">
+        <javadoc sourcepath="/home/thibautc/NetBeansProjects/jdk1.6/j2se/src/share/classes/" destdir="/tmp/jotdoc/jdk1.6" maxmemory="1448m">
             <doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
             <arg value="-navonly"/>
-            <packageset includes="java.*" excludes="java.awt.*"/>
+            <packageset defaultexcludes="true" includes="java.*" excludes="java.awt.*"/>
             <classpath>
                 <pathelement path="${jotdoc.path}"/>
             </classpath>
-        </javadoc>-->
+        </javadoc>
         <!-- nav for only java.* and javax.*-->
         <!--<javadoc sourcepath="/home/thibautc/NetBeansProjects/jdk1.6/j2se/src/share/classes/" destdir="/tmp/jotdoc/jdk1.6" maxmemory="1448m" packagenames="java.*,javax.*">
             <doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
