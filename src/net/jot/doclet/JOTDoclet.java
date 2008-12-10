@@ -48,8 +48,8 @@ public class JOTDoclet extends AbstractDoclet
         rootDoc = root;
         return doclet.start(doclet, root);
     }
-    private String indexFile="index.html";
-    private String template=null;
+    private String indexFile = "index.html";
+    private String template = null;
 
     public boolean start(JOTDoclet doclet, RootDoc root)
     {
@@ -68,7 +68,7 @@ public class JOTDoclet extends AbstractDoclet
             }
         }
 
-        if(template!=null)
+        if (template != null)
         {
             setTemplate();
         }
@@ -109,8 +109,8 @@ public class JOTDoclet extends AbstractDoclet
             File src = new File(RES_ROOT);
             dest.mkdirs();
             JOTUtilities.copyFolderContent(dest, src, true);
-            JOTUtilities.deleteFolder(new File(dest.getAbsolutePath()+File.separator+"tpl"));
-            JOTUtilities.deleteFolder(new File(dest.getAbsolutePath()+File.separator+".svn"));
+            JOTUtilities.deleteFolder(new File(dest.getAbsolutePath() + File.separator + "tpl"));
+            JOTUtilities.deleteFolder(new File(dest.getAbsolutePath() + File.separator + ".svn"));
         } catch (Exception e)
         {
             e.printStackTrace();
@@ -141,11 +141,11 @@ public class JOTDoclet extends AbstractDoclet
         view.addVariable("splitindex", new Boolean(configuration.splitindex));
         view.addVariable("manualPath", "../");
         view.addVariable("indexfile", indexFile);
-        new File(folder+"/index-files").mkdirs();
+        new File(folder + "/index-files").mkdirs();
 
-        if (! configuration.splitindex)
+        if (!configuration.splitindex)
         {
-            File f = new File(folder+"/index-files", "index-all.html");
+            File f = new File(folder + "/index-files", "index-all.html");
             view.addVariable("curpage", "index-files/index-all.html");
             System.out.println(f.getAbsolutePath());
             FileOutputStream fos = new FileOutputStream(f);
@@ -160,15 +160,19 @@ public class JOTDoclet extends AbstractDoclet
             view.addVariable("indexchars", cars);
             for (int i = 0; i != cars.length; i++)
             {
-                Character c=(Character)cars[i];
+                Character c = (Character) cars[i];
                 view.addVariable("curchar", c);
-                int nb=(c.charValue()-('A'-1));
-                if(c.equals(new Character('_')))
-                    nb=27;
-                if(c.equals(new Character('$')))
-                    nb=28;
-                File f = new File(folder+"/index-files", "index-" + nb + ".html");
-                view.addVariable("curpage", "index-files/index-"+nb+".html");
+                int nb = (c.charValue() - ('A' - 1));
+                if (c.equals(new Character('_')))
+                {
+                    nb = 27;
+                }
+                if (c.equals(new Character('$')))
+                {
+                    nb = 28;
+                }
+                File f = new File(folder + "/index-files", "index-" + nb + ".html");
+                view.addVariable("curpage", "index-files/index-" + nb + ".html");
                 System.out.println(f.getAbsolutePath());
                 FileOutputStream fos = new FileOutputStream(f);
                 String page = index.generateHtml(c);
@@ -183,12 +187,14 @@ public class JOTDoclet extends AbstractDoclet
 
     private void setTemplate()
     {
-        System.out.println("Requested template folder: "+template);
-        RES_ROOT=template;
-        File f=new File(RES_ROOT);
-        if(!f.exists())
+        System.out.println("Requested template folder: " + template);
+        RES_ROOT = template;
+        File f = new File(RES_ROOT);
+        if (!f.exists())
+        {
             f.mkdirs();
-        if(f.list().length==0)
+        }
+        if (f.list().length == 0)
         {
             System.out.println("Template folder is empty, : Copying standrad template in it.");
 
@@ -251,7 +257,7 @@ public class JOTDoclet extends AbstractDoclet
                 nb++;
             }
             cpt = "" + nb;
-            indexFile="index" + nb + ".html";
+            indexFile = "index" + nb + ".html";
         }
         JOTDocletNavView view = new JOTDocletNavView(docWriter);
         view.addVariable("indexfile", indexFile);
@@ -374,21 +380,33 @@ public class JOTDoclet extends AbstractDoclet
                             File sourceFile = new File(OUT_ROOT + folder + item.name() + "-source.html");
                             System.out.println(sourceFile.getAbsolutePath());
                             writer = new PrintWriter(sourceFile);
-                            //TODO: fix: might be separated list of paths, try all / check exists !
-                            File srcFile = new File(JOTUtilities.endWithSlash(configuration.sourcepath), folder + name + ".java");
-                            String source = htmlEncoder.encodeFile(srcFile).toString();
-                            //source=doCrossLinks(source);
-                            view.addVariable("curpage", folder + item.name() + "-source.html");
-                            view.addVariable("source", source.split("\n"));
-                            try
+                            String[] paths = configuration.sourcepath.split(":");
+                            if(configuration.sourcepath.indexOf(";")!=-1)
+                                paths = configuration.sourcepath.split(";");
+                            File srcFile = null;
+                            for (int z = 0; srcFile==null && z != paths.length; z++)
                             {
-                                html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + "source.html");
-                            } catch (Exception e)
-                            {
-                                e.printStackTrace();
+                                File f = new File(JOTUtilities.endWithSlash(paths[z])+folder, name + ".java");
+                                if (f.exists())
+                                {
+                                    srcFile = f;
+                                }
                             }
-                            writer.print(html);
-                            writer.close();
+                            if (srcFile!=null)
+                            {
+                                String source = htmlEncoder.encodeFile(srcFile).toString();
+                                view.addVariable("curpage", folder + item.name() + "-source.html");
+                                view.addVariable("source", source.split("\n"));
+                                try
+                                {
+                                    html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + "source.html");
+                                } catch (Exception e)
+                                {
+                                    e.printStackTrace();
+                                }
+                                writer.print(html);
+                                writer.close();
+                            }
                         }
                     }
 
