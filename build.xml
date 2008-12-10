@@ -120,7 +120,7 @@
     </target>
         <!-- sap/PCF code: ~ 2MB - zipped: 98k -->
     <target name="jotdoc-crm" depends="jar">
-        <javadoc sourcepath="/home/thibautc/NetBeansProjects/sap_crm_java/src/;/home/thibautc/NetBeansProjects/pcf_java/src/" destdir="/tmp/jotdoc/crm2007/" packagenames="*" source="1.4" maxmemory="2048m" doctitle="SAP CRM 2007" windowtitle="SAP CRM 2007">
+        <javadoc sourcepath="/home/thibautc/NetBeansProjects/sap_crm_java/src/;/home/thibautc/NetBeansProjects/pcf_java/src/" destdir="/tmp/jotdoc/crm2007/" packagenames="*" source="1.4" maxmemory="2048m" doctitle="SAP CRM 2007" windowtitle="SAP CRM 2007" splitindex="true">
             <doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
             <link href="../jdk1.6/"/>
             <link href=",../struts/"/>

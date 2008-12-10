@@ -49,6 +49,7 @@ public class JOTDoclet extends AbstractDoclet
         return doclet.start(doclet, root);
     }
     private String indexFile="index.html";
+    private String template=null;
 
     public boolean start(JOTDoclet doclet, RootDoc root)
     {
@@ -60,7 +61,18 @@ public class JOTDoclet extends AbstractDoclet
             {
                 navOnly = true;
             }
+            if (options[i][0].equalsIgnoreCase("-template"))
+            {
+                // template folder
+                template = options[i][1];
+            }
         }
+
+        if(template!=null)
+        {
+            setTemplate();
+        }
+
         configuration.root = root;
 
         configuration.setOptions();
@@ -167,6 +179,20 @@ public class JOTDoclet extends AbstractDoclet
             }
         }
         view.getVariables().remove("manualPath");
+    }
+
+    private void setTemplate()
+    {
+        System.out.println("Requested template folder: "+template);
+        RES_ROOT=template;
+        File f=new File(RES_ROOT);
+        if(!f.exists())
+            f.mkdirs();
+        if(f.list().length==0)
+        {
+            System.out.println("Template folder is empty, : Copying standrad template in it.");
+
+        }
     }
 
     private void startGeneration(RootDoc root) throws Exception
@@ -401,6 +427,10 @@ public class JOTDoclet extends AbstractDoclet
         if (option.equalsIgnoreCase("-navOnly"))
         {
             return 1;
+        }
+        if (option.equalsIgnoreCase("-template"))
+        {
+            return 2;
         }
         // Construct temporary configuration for check
         return ConfigurationImpl.getInstance().optionLength(option);

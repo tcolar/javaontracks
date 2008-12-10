@@ -21,3 +21,5 @@ read resources from jar (getresourceformstream)
 package list (used by -linksource)
 
 - read template from jar ?
+- do page for http://www.javaontracks.net.doclet/
+- uploads docs to http://www.colar.net/jotdoc/
