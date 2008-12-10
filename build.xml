@@ -98,7 +98,7 @@
         </javadoc>
         
         <!-- Ant code : back linked to jdk-->
-        <javadoc sourcepath="/home/thibautc/NetBeansProjects/apache-ant-1.7.1/src/main/" destdir="/tmp/jotdoc/ant" packagenames="*" doctitle="Apache Ant 1.7.1" windowtitle="Apache Ant 1.7.1" link="../jdk1.6/">
+        <javadoc sourcepath="/home/thibautc/NetBeansProjects/apache-ant-1.7.1/src/main/" destdir="/tmp/jotdoc/ant" packagenames="*" doctitle="Apache Ant 1.7.1" windowtitle="Apache Ant 1.7.1" link="../jdk1.6/" splitindex="true">
             <doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
             <arg value="-linksource"/>
             <classpath>
@@ -106,7 +106,7 @@
             </classpath>
         </javadoc>
         <!-- JOT code : back linked to jdk-->
-        <javadoc sourcepath="/home/thibautc/NetBeansProjects/javaontracks/src/" destdir="/tmp/jotdoc/javaontracks" packagenames="*" doctitle="JavaOnTracks 0.1.2" windowtitle="JavaOnTracks 0.1.2" link="../jdk1.6/">
+        <javadoc sourcepath="/home/thibautc/NetBeansProjects/javaontracks/src/" destdir="/tmp/jotdoc/javaontracks" packagenames="*" doctitle="JavaOnTracks 0.1.2" windowtitle="JavaOnTracks 0.1.2" link="../jdk1.6/" splitindex="true">
             <doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
             <arg value="-linksource"/>
             <classpath>
