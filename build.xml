@@ -70,8 +70,8 @@
     
     <target name="jotdoc" depends="jar">
         <delete dir="/tmp/jotdoc/" quiet="true"/>
-        <!-- whole jdk 1.6 -->
-        <javadoc sourcepath="/home/thibautc/NetBeansProjects/jdk1.6/j2se/src/share/classes/" destdir="/tmp/jotdoc/jdk1.6" packagenames="*" doctitle="JDK 1.6" windowtitle="JDK 1.6" maxmemory="1448m" link="http://java.sun.com/javase/6/docs/api/" splitindex="true">
+        <!-- "whole" jdk 1.6 -->
+        <javadoc sourcepath="/home/thibautc/NetBeansProjects/jdk1.6/j2se/src/share/classes/" destdir="/tmp/jotdoc/jdk1.6" packagenames="java.*,javax.*,org.*" doctitle="JDK 1.6" windowtitle="JDK 1.6" maxmemory="1448m" link="http://java.sun.com/javase/6/docs/api/" splitindex="true">
             <doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
             <!-- ant implementation does not parse the linksource option when using a custom doclet - why ?? -->
             <arg value="-linksource"/>
@@ -97,6 +97,14 @@
             </classpath>
         </javadoc>
         
+        <!-- Ant code : back linked to jdk-->
+        <javadoc sourcepath="/home/thibautc/NetBeansProjects/apache-ant-1.7.1/src/main/" destdir="/tmp/jotdoc/ant" packagenames="*" doctitle="Apache Ant 1.7.1" windowtitle="Apache Ant 1.7.1" link="../jdk1.6/">
+            <doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
+            <arg value="-linksource"/>
+            <classpath>
+                <pathelement path="${jotdoc.path}"/>
+            </classpath>
+        </javadoc>
         <!-- JOT code : back linked to jdk-->
         <javadoc sourcepath="/home/thibautc/NetBeansProjects/javaontracks/src/" destdir="/tmp/jotdoc/javaontracks" packagenames="*" doctitle="JavaOnTracks 0.1.2" windowtitle="JavaOnTracks 0.1.2" link="../jdk1.6/">
             <doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
