@@ -80,3 +80,29 @@ function applyFilters()
     }
 }
 
+function checkEnter(e)
+{
+    var characterCode;
+    if(e && e.which)
+    {
+        //NN
+        e = e
+        characterCode = e.which
+    }
+    else
+    {
+        //IE
+        e = event
+        characterCode = e.keyCode
+    }
+    if(characterCode == 13)
+    {
+        // ENTER
+        applyFilters();
+        return false
+    }
+    else{
+        return true
+    }
+
+}
