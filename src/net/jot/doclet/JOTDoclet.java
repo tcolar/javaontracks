@@ -374,6 +374,7 @@ public class JOTDoclet extends AbstractDoclet
                             File sourceFile = new File(OUT_ROOT + folder + item.name() + "-source.html");
                             System.out.println(sourceFile.getAbsolutePath());
                             writer = new PrintWriter(sourceFile);
+                            //TODO: fix: might be separated list of paths, try all / check exists !
                             File srcFile = new File(JOTUtilities.endWithSlash(configuration.sourcepath), folder + name + ".java");
                             String source = htmlEncoder.encodeFile(srcFile).toString();
                             //source=doCrossLinks(source);
