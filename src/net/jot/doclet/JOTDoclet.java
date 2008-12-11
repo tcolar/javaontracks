@@ -23,6 +23,7 @@ import net.jot.JOTInitializer;
 import net.jot.logger.JOTLogger;
 import net.jot.utils.JOTUtilities;
 import net.jot.web.view.JOTViewParser;
+import net.jot.web.views.JOTLightweightView;
 
 /**
  * Custom Javadoc Doclet (Javadoc Generator)
@@ -35,12 +36,37 @@ public class JOTDoclet extends AbstractDoclet
 {
 
     public static RootDoc rootDoc = null;
-    private boolean navOnly = false;
     public static String RES_ROOT = "/home/thibautc/NetBeansProjects/javaontracks/resources/doclet/";
     public static String OUT_ROOT = "/tmp/";
     public ConfigurationImpl configuration = ConfigurationImpl.getInstance();
     public HtmlDocletWriter docWriter;
     public ClassTree classTree = null;
+    boolean flagCopyResources = true;
+    // flags, values can be manually overriden in initFlags()
+    private boolean flagGenerateNav = true;
+    private boolean flagNavOnly = false;
+    private boolean flagGenerateIndex = true;
+    private boolean flagGeneratePackageList=true;
+    private boolean flagGeneratePackageFiles=true;
+    private boolean flagGenerateItemFiles=true;
+    private boolean flagGenerateSourceFiles=true;
+
+    /**
+     * Central method where we can force option flags, for easy customizing.
+     */
+    public void initFlags()
+    {
+        //flagCopyResources=true;
+        //OUT_ROOT = configuration.docFileDestDirName;
+        //flagNavOnly=true;
+        //template="";
+        //flagGenerateNav=true;
+        //flagGenerateIndex=true;
+        //flagGeneratePackageList=true
+        //flagGeneratePackageFiles=false;
+        //flagGenerateItemFiles=false;
+        //flagGenerateSourceFiles=false;
+    }
 
     public static boolean start(RootDoc root)
     {
@@ -59,7 +85,7 @@ public class JOTDoclet extends AbstractDoclet
             //System.out.println(options[i][0]);
             if (options[i][0].equalsIgnoreCase("-navOnly"))
             {
-                navOnly = true;
+                flagNavOnly = true;
             }
             if (options[i][0].equalsIgnoreCase("-template"))
             {
@@ -68,16 +94,21 @@ public class JOTDoclet extends AbstractDoclet
             }
         }
 
-        if (template != null)
-        {
-            setTemplate();
-        }
-
         configuration.root = root;
 
         configuration.setOptions();
         configuration.getDocletSpecificMsg().notice("doclet.build_version",
                 configuration.getDocletSpecificBuildDate());
+
+        OUT_ROOT = configuration.docFileDestDirName;
+        flagGenerateSourceFiles=configuration.linksource;
+
+        initFlags();
+
+        if (template != null)
+        {
+            setTemplate();
+        }
 
         try
         {
@@ -89,6 +120,58 @@ public class JOTDoclet extends AbstractDoclet
             return false;
         }
         return true;
+    }
+
+    private void startGeneration(RootDoc root) throws Exception
+    {
+        if (root.classes().length == 0)
+        {
+            configuration.message.error("doclet.No_Public_Classes_To_Document");
+            return;
+        }
+        classTree = new ClassTree(configuration, configuration.nodeprecated);
+
+        OUT_ROOT = configuration.docFileDestDirName;
+        new File(OUT_ROOT).mkdirs();
+        System.out.println(OUT_ROOT);
+        String[] levels =
+        {
+            "" + JOTLogger.CRITICAL_LEVEL, "" + JOTLogger.ERROR_LEVEL, "" + JOTLogger.WARNING_LEVEL
+        };
+        JOTLogger.init(OUT_ROOT + File.separator + "jotdoclet.log", levels, null);
+
+        if (flagCopyResources)
+        {
+            copyResources();
+        }
+
+        if (flagGenerateNav)
+        {
+            generateNav(classTree);
+        }
+
+        if (!flagNavOnly)
+        {
+            if (flagGeneratePackageList)
+            {
+                generatePackageList(classTree);
+            }
+            if (flagGeneratePackageFiles)
+            {
+                // generate package files and items
+                generatePackageFiles(classTree);
+            }
+            if (flagGenerateIndex)
+            {
+                generateIndex();
+            }
+        // only save sitemap if !navonly
+        } else
+        {
+            System.out.println("Done (packOnly requested.)");
+        }
+
+        configuration.tagletManager.printReport();
     }
 
     private void addViewConstants(JOTDocletNavView view)
@@ -201,41 +284,6 @@ public class JOTDoclet extends AbstractDoclet
         }
     }
 
-    private void startGeneration(RootDoc root) throws Exception
-    {
-        if (root.classes().length == 0)
-        {
-            configuration.message.error("doclet.No_Public_Classes_To_Document");
-            return;
-        }
-        classTree = new ClassTree(configuration, configuration.nodeprecated);
-
-        OUT_ROOT = configuration.docFileDestDirName;
-        new File(OUT_ROOT).mkdirs();
-        System.out.println(OUT_ROOT);
-        String[] levels =
-        {
-            "" + JOTLogger.CRITICAL_LEVEL, "" + JOTLogger.ERROR_LEVEL, "" + JOTLogger.WARNING_LEVEL
-        };
-        JOTLogger.init(OUT_ROOT + File.separator + "jotdoclet.log", levels, null);
-
-        copyResources();
-
-        generateNav(classTree);
-
-        if (!navOnly)
-        {
-            generateIndex();
-            generatePackageList(classTree);
-        // only save sitemap if !navonly
-        } else
-        {
-            System.out.println("Done (packOnly requested.)");
-        }
-
-        configuration.tagletManager.printReport();
-    }
-
     public static LanguageVersion languageVersion()
     {
         return LanguageVersion.JAVA_1_5;
@@ -284,13 +332,9 @@ public class JOTDoclet extends AbstractDoclet
 
     protected void generatePackageList(ClassTree tree) throws Exception
     {
-        JOTDocletJava2HTML htmlEncoder = new JOTDocletJava2HTML(new File(OUT_ROOT), this);
-
         File packTree = new File(OUT_ROOT + "overview-summary.html");
         File packList = new File(OUT_ROOT + "package-list");
         PrintWriter writer = null;
-        int pkLength = 0;
-        int itemsLength = 0;
         try
         {
             // standard sucks out a lot of memory to create package list.
@@ -316,110 +360,17 @@ public class JOTDoclet extends AbstractDoclet
             view.addVariable("curpage", "overview-summary.html");
             view.addVariable("packages", packages);
             writer = new PrintWriter(packTree);
-            String html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + "packages.html");
+            String html="";
+            try
+            {
+                html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + "packages.html");
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
             writer.print(html);
             writer.close();
-
-            // write individual package pages
-            pkLength = packages.length;
-            for (int i = 0; i != packages.length; i++)
-            {
-                view.reset();
-                PackageDoc pack = packages[i];
-                view.addVariable("curitem", pack);
-                String folder = getPkgFolder(pack);
-                view.addVariable("curpage", folder + "package-summary.html");
-                new File(OUT_ROOT + folder).mkdirs();
-                File packFile = new File(OUT_ROOT + folder + "package-summary.html");
-                System.out.println(packFile.getAbsolutePath());
-                writer = new PrintWriter(packFile);
-                html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + "package.html");
-
-                writer.print(html);
-                writer.close();
-
-                //package items pages
-                ClassDoc[] items = view.getSortedClasses(pack);
-                for (int j = 0; j != items.length; j++)
-                {
-                    view.reset();
-                    ClassDoc item = items[j];
-                    view.addVariable("curitem", item);
-                    view.addVariable("curpage", folder + item.name() + ".html");
-                    File itemFile = new File(OUT_ROOT + folder + item.name() + ".html");
-                    System.out.println(itemsLength + " " + itemFile.getAbsolutePath());
-                    writer = new PrintWriter(itemFile);
-                    String tpl = "class.html";
-                    if (item.isInterface())
-                    {
-                        tpl = "interface.html";
-                    } else if (item.isEnum())
-                    {
-                        tpl = "enum.html";
-                    } else if (item.isAnnotationType())
-                    {
-                        tpl = "annot.html";
-                    }
-                    try
-                    {
-                        html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + tpl);
-                    } catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
-                    writer.print(html);
-                    writer.close();
-
-                    if (configuration.linksource)
-                    {
-                        // write source file
-                        String name = item.name();
-                        // if "." in name is subclass, no need to write again.
-                        if (name.indexOf(".") < 0)
-                        {
-                            File sourceFile = new File(OUT_ROOT + folder + item.name() + "-source.html");
-                            System.out.println(sourceFile.getAbsolutePath());
-                            writer = new PrintWriter(sourceFile);
-                            String[] paths = configuration.sourcepath.split(":");
-                            if(configuration.sourcepath.indexOf(";")!=-1)
-                                paths = configuration.sourcepath.split(";");
-                            File srcFile = null;
-                            for (int z = 0; srcFile==null && z != paths.length; z++)
-                            {
-                                File f = new File(JOTUtilities.endWithSlash(paths[z])+folder, name + ".java");
-                                if (f.exists())
-                                {
-                                    srcFile = f;
-                                }
-                            }
-                            if (srcFile!=null)
-                            {
-                                String source = htmlEncoder.encodeFile(srcFile).toString();
-                                view.addVariable("curpage", folder + item.name() + "-source.html");
-                                view.addVariable("source", source.split("\n"));
-                                try
-                                {
-                                    html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + "source.html");
-                                } catch (Exception e)
-                                {
-                                    e.printStackTrace();
-                                }
-                                writer.print(html);
-                                writer.close();
-                            }
-                        }
-                    }
-
-                    itemsLength++;
-                    if (itemsLength % 100 == 0)
-                    {
-                        System.out.println("Doing garbage collection");
-                        System.out.println("Before " + Runtime.getRuntime().freeMemory());
-                        System.gc();
-                        System.out.println("After " + Runtime.getRuntime().freeMemory());
-                    }
-                }
-            }
 
         } catch (FileNotFoundException e)
         {
@@ -431,7 +382,6 @@ public class JOTDoclet extends AbstractDoclet
                 writer.close();
             }
         }
-        System.out.println("Processed " + itemsLength + " items in " + pkLength + " packages.");
     }
 
     public static boolean validOptions(String options[][],
@@ -457,6 +407,144 @@ public class JOTDoclet extends AbstractDoclet
 
     protected void generatePackageFiles(ClassTree arg0) throws Exception
     {
+        int pkLength = 0;
+        int itemsLength = 0;
+        PackageDoc[] packages = configuration.packages;
+        Arrays.sort(packages);
+        JOTDocletNavView view = new JOTDocletNavView(docWriter);
+        addViewConstants(view);
+        // write individual package pages
+        pkLength = packages.length;
+        for (int i = 0; i != packages.length; i++)
+        {
+            view.reset();
+            PackageDoc pack = packages[i];
+            view.addVariable("curitem", pack);
+            String folder = getPkgFolder(pack);
+            view.addVariable("curpage", folder + "package-summary.html");
+            new File(OUT_ROOT + folder).mkdirs();
+            File packFile = new File(OUT_ROOT + folder + "package-summary.html");
+            System.out.println(packFile.getAbsolutePath());
+            PrintWriter writer = new PrintWriter(packFile);
+            String html="";
+            try
+            {
+                html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + "package.html");
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+            writer.print(html);
+            writer.close();
+
+            //package items pages
+            ClassDoc[] items = view.getSortedClasses(pack);
+            for (int j = 0; j != items.length; j++)
+            {
+                if(flagGenerateItemFiles)
+                {
+                    generateClassFiles(items[j], folder);
+                }
+                if (flagGenerateSourceFiles)
+                {
+                    generateSourceFile(items[j], folder);
+                }
+
+                itemsLength++;
+                if (itemsLength % 100 == 0)
+                {
+                    System.out.println("Doing garbage collection");
+                    System.out.println("Before " + Runtime.getRuntime().freeMemory());
+                    System.gc();
+                    System.out.println("After " + Runtime.getRuntime().freeMemory());
+                }
+
+            }
+        }
+    }
+
+    protected void generateClassFiles(ClassDoc item, String folder) throws Exception
+    {
+        JOTDocletNavView view = new JOTDocletNavView(docWriter);
+        addViewConstants(view);
+        view.reset();
+        view.addVariable("curitem", item);
+        view.addVariable("curpage", folder + item.name() + ".html");
+        File itemFile = new File(OUT_ROOT + folder + item.name() + ".html");
+        System.out.println(itemFile.getAbsolutePath());
+        PrintWriter writer = new PrintWriter(itemFile);
+        String tpl = "class.html";
+        if (item.isInterface())
+        {
+            tpl = "interface.html";
+        } else if (item.isEnum())
+        {
+            tpl = "enum.html";
+        } else if (item.isAnnotationType())
+        {
+            tpl = "annot.html";
+        }
+        String html = "";
+        try
+        {
+            html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + tpl);
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        writer.print(html);
+        writer.close();
+    }
+
+    private void generateSourceFile(ClassDoc item, String folder) throws Exception
+    {
+        JOTDocletJava2HTML htmlEncoder = new JOTDocletJava2HTML(new File(OUT_ROOT), this);
+
+        JOTDocletNavView view = new JOTDocletNavView(docWriter);
+        addViewConstants(view);
+        view.reset();
+        view.addVariable("curitem", item);
+        view.addVariable("curpage", folder + item.name() + ".html");
+        // write source file
+        String name = item.name();
+        // if "." in name is subclass, no need to write again.
+        if (name.indexOf(".") < 0)
+        {
+            File sourceFile = new File(OUT_ROOT + folder + item.name() + "-source.html");
+            System.out.println(sourceFile.getAbsolutePath());
+            PrintWriter writer = new PrintWriter(sourceFile);
+            String[] paths = configuration.sourcepath.split(":");
+            if (configuration.sourcepath.indexOf(";") != -1)
+            {
+                paths = configuration.sourcepath.split(";");
+            }
+            File srcFile = null;
+            for (int z = 0; srcFile == null && z != paths.length; z++)
+            {
+                File f = new File(JOTUtilities.endWithSlash(paths[z]) + folder, name + ".java");
+                if (f.exists())
+                {
+                    srcFile = f;
+                }
+            }
+            if (srcFile != null)
+            {
+                String source = htmlEncoder.encodeFile(srcFile).toString();
+                view.addVariable("curpage", folder + item.name() + "-source.html");
+                view.addVariable("source", source.split("\n"));
+                String html="";
+                try
+                {
+                    html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + "source.html");
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+                writer.print(html);
+                writer.close();
+            }
+        }
     }
 
     protected void generateClassFiles(ClassDoc[] arg0, ClassTree arg1)
