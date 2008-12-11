@@ -295,7 +295,6 @@ public class JOTDoclet extends AbstractDoclet
         {
             // standard sucks out a lot of memory to create package list.
             System.gc();
-
             PackageDoc[] packages = configuration.packages;
             Arrays.sort(packages);
             JOTDocletNavView view = new JOTDocletNavView(docWriter);
@@ -315,6 +314,7 @@ public class JOTDoclet extends AbstractDoclet
             System.out.println(packTree.getAbsolutePath());
             view.addVariable("curitem", configuration.root);
             view.addVariable("curpage", "overview-summary.html");
+            view.addVariable("packages", packages);
             writer = new PrintWriter(packTree);
             String html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + "packages.html");
             writer.print(html);
