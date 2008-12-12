@@ -213,7 +213,7 @@ public class JOTDBField
         return defaultValue;
     }
 
-    private String getCleanFieldName(String fieldName)
+    public static String getCleanFieldName(String fieldName)
     {
         return JOTModelMapping.createCleanTableName(fieldName);
     }

@@ -21,10 +21,8 @@ import net.jot.db.JOTDBField;
 import net.jot.db.JOTDBJDBCSetup;
 import net.jot.logger.JOTLogger;
 import net.jot.persistance.query.JOTDBQueryImpl;
-import net.jot.persistance.query.JOTFSQueryImpl;
 import net.jot.persistance.query.JOTQueryInterface;
 import net.jot.persistance.query.JOTQueryManager;
-import net.jot.persistance.JOTTransaction;
 
 /**
  * Generic Persistance model<br>
@@ -245,7 +243,8 @@ public abstract class JOTModel extends JOTModelAddons
             String realName = (String) fieldNames.get(fieldName);
             if (realName == null)
             {
-                throw new Exception("Could not find real name of field: " + fieldName + "!!");
+                JOTLogger.debug(this,"Could not find real name of field: " + fieldName + "!!");
+                return null;
             }
             value = getClass().getField(realName).get(this);
         } catch (Exception ex)

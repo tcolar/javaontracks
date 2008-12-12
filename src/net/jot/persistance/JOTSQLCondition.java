@@ -8,6 +8,8 @@ http://www.javaontracks.net
  */
 package net.jot.persistance;
 
+import net.jot.db.JOTDBField;
+
 /**
  * Defines a single DB condition, as used in an SQL 'where' closed <br>
  * ie: 'firstname' IS_EQUAL 'John'
@@ -53,7 +55,7 @@ public class JOTSQLCondition
 	 */
 	public JOTSQLCondition(String field, int comparaison, Object value)
 	{
-                field=field.toLowerCase();
+                field=JOTDBField.getCleanFieldName(field);
 
 		this.value=value;
 		this.comparaison=comparaison;

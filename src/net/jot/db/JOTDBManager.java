@@ -335,7 +335,7 @@ public class JOTDBManager
             String str = "";
             for (int i = 0; i != params.length; i++)
             {
-                str += params[i].toString() + ", ";
+                str += (params[i]==null?"!!NULL!!":params[i].toString()) + ", ";
             }
             JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.TRACE_LEVEL, this, "With Parameters: " + str);
         }
