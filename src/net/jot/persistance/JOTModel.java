@@ -323,10 +323,11 @@ public abstract class JOTModel extends JOTModelAddons
         Object db = JOTPersistanceManager.getInstance().getDatabases().get(storage);
         if (db != null)
         {
-            if (db instanceof JOTDBFSSetup)
+            /*if (db instanceof JOTDBFSSetup)
             {
                 queryImplClass = JOTFSQueryImpl.class;
-            } else if (db instanceof JOTDBJDBCSetup)
+            } else*/
+            if (db instanceof JOTDBJDBCSetup)
             {
                 queryImplClass = JOTDBQueryImpl.class;
             } else

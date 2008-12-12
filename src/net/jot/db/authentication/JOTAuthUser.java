@@ -28,10 +28,10 @@ import net.jot.persistance.JOTSQLCondition;
 public abstract class JOTAuthUser extends JOTModel
 {
 
-    public String dataLogin;
+    public String login;
     // dataProfile refers to dataProfile.id
-    public int dataProfile = -1;
-    public String dataPassword = "";
+    public int profile = -1;
+    public String password = "";
 
     /**
      * If you override this in the subclass, make sure you still call this (super.customize())
@@ -39,8 +39,8 @@ public abstract class JOTAuthUser extends JOTModel
      */
     public void customize(JOTModelMapping mapping)
     {
-        mapping.defineFieldSize("dataLogin", 20);
-        mapping.defineFieldSize("dataPassword", 20);
+        mapping.defineFieldSize("login", 20);
+        mapping.defineFieldSize("password", 20);
     }
 
     /**
@@ -49,7 +49,7 @@ public abstract class JOTAuthUser extends JOTModel
      */
     public static boolean isNewUser(Class implClass, String login) throws Exception
     {
-        JOTSQLCondition cond=new JOTSQLCondition("dataLogin", JOTSQLCondition.IS_EQUAL, login);
+        JOTSQLCondition cond=new JOTSQLCondition("login", JOTSQLCondition.IS_EQUAL, login);
         return JOTQueryBuilder.selectQuery(implClass).where(cond).findOne()==null;
     }
 
@@ -64,14 +64,14 @@ public abstract class JOTAuthUser extends JOTModel
      */
     public static boolean isUserValid(Class implClass, String login, String password) throws Exception
     {
-        JOTSQLCondition cond=new JOTSQLCondition("dataLogin", JOTSQLCondition.IS_EQUAL, login);
-        JOTSQLCondition cond2=new JOTSQLCondition("dataPassword", JOTSQLCondition.IS_EQUAL, password);
+        JOTSQLCondition cond=new JOTSQLCondition("login", JOTSQLCondition.IS_EQUAL, login);
+        JOTSQLCondition cond2=new JOTSQLCondition("password", JOTSQLCondition.IS_EQUAL, password);
         return JOTQueryBuilder.selectQuery(implClass).where(cond).where(cond2).findOne()!=null;
     }
 
     public static JOTAuthUser getUserByLogin(Class implClass, String login) throws Exception
     {
-        JOTSQLCondition cond=new JOTSQLCondition("dataLogin", JOTSQLCondition.IS_EQUAL, login);
+        JOTSQLCondition cond=new JOTSQLCondition("login", JOTSQLCondition.IS_EQUAL, login);
         return (JOTAuthUser)JOTQueryBuilder.selectQuery(implClass).where(cond).findOne();
     }
 
@@ -82,10 +82,10 @@ public abstract class JOTAuthUser extends JOTModel
      */
     public boolean hasPermission(String permission)
     {
-        if (dataProfile != -1)
+        if (profile != -1)
         {
-            JOTSQLCondition cond=new JOTSQLCondition("dataProfile", JOTSQLCondition.IS_EQUAL, "" + dataProfile);
-            JOTSQLCondition cond2=new JOTSQLCondition("dataPermission", JOTSQLCondition.IS_EQUAL, permission);
+            JOTSQLCondition cond=new JOTSQLCondition("profile", JOTSQLCondition.IS_EQUAL, "" + profile);
+            JOTSQLCondition cond2=new JOTSQLCondition("permission", JOTSQLCondition.IS_EQUAL, permission);
             try
             {
                 return JOTQueryBuilder.selectQuery(getClass()).where(cond).where(cond2).findOne()!=null;

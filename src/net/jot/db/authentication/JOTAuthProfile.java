@@ -21,9 +21,9 @@ import net.jot.persistance.JOTModelMapping;
 public abstract class JOTAuthProfile extends JOTModel
 {
 	// ie: "Admin"
-	public String dataName;
+	public String name;
 	// ie: "Administartor account, full permissions"
-	public String dataDescription;
+	public String description;
 	
 	/**
 	 * If you override this in the subclass, make sure you still call this (super.customize())
@@ -31,28 +31,28 @@ public abstract class JOTAuthProfile extends JOTModel
 	 */
 	public void customize(JOTModelMapping mapping)
 	{
-			mapping.defineFieldSize("dataName",30);
-			mapping.defineFieldSize("dataDescription",80);
+			mapping.defineFieldSize("name",30);
+			mapping.defineFieldSize("description",80);
 	}
 
 	public String getDescription()
 	{
-		return dataDescription;
+		return description;
 	}
 
 	public void setDescription(String description)
 	{
-		this.dataDescription = description;
+		this.description = description;
 	}
 
 	public String getName()
 	{
-		return dataName;
+		return name;
 	}
 
 	public void setName(String name)
 	{
-		this.dataName = name;
+		this.name = name;
 	}
         
  

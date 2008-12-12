@@ -21,27 +21,27 @@ public abstract class JOTAuthPermission extends JOTModel
 {
 	// dataProfile refers to dataProfile.id
         // should be a long
-	public long dataProfile;
-	public String dataPermission;
+	public long profile;
+	public String permission;
 
 	public String getPermission()
 	{
-		return dataPermission;
+		return permission;
 	}
 
 	public void setPermission(String permission)
 	{
-		this.dataPermission = permission;
+		this.permission = permission;
 	}
 
 	public long getProfile()
 	{
-		return dataProfile;
+		return profile;
 	}
 
 	public void setProfile(long profile)
 	{
-		this.dataProfile = profile;
+		this.profile = profile;
 	}
 
 /**

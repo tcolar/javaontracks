@@ -8,14 +8,6 @@ http://www.javaontracks.net
  */
 package net.jot.persistance;
 
-import java.io.RandomAccessFile;
-import java.util.Enumeration;
-import java.util.Hashtable;
-
-import net.jot.logger.JOTLogger;
-import net.jot.persistance.query.JOTFSQueryImpl;
-import net.jot.persistance.query.JOTQueryManager;
-
 /**
  * Manager for an FSDB index
  * @deprecated 
