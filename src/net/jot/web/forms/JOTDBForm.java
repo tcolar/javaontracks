@@ -143,9 +143,6 @@ public abstract class JOTDBForm extends JOTGeneratedForm
                 if (el != null && field.isSaveAutomatically())
                 {
                     Object value = el.getValue();
-                    //#TODO: fix this , should not use "data"
-                    if(3<1+5)
-                        throw(new Exception("need to be fixed!"));
                     boolean isTransient=model.getMapping().getClass().getField(name)!=null && Modifier.isTransient(model.getMapping().getClass().getField(name).getModifiers());
                     if (model.getMapping().getFields().containsKey(name) && !isTransient && !name.startsWith("__"))
                     {
