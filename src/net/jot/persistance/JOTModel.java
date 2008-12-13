@@ -270,7 +270,7 @@ public abstract class JOTModel extends JOTModelAddons
      */
     public void delete(JOTTransaction transaction) throws Exception
     {
-        JOTSQLCondition cond=new JOTSQLCondition("ID", JOTSQLCondition.IS_EQUAL, new Long(id));
+        JOTSQLCondition cond=new JOTSQLCondition("id", JOTSQLCondition.IS_EQUAL, new Long(id));
         JOTQueryBuilder.deleteQuery(getClass()).where(cond).delete();
     }
 

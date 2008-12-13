@@ -143,7 +143,7 @@ public abstract class JOTDBForm extends JOTGeneratedForm
                 if (el != null && field.isSaveAutomatically())
                 {
                     Object value = el.getValue();
-                    boolean isTransient=model.getMapping().getClass().getField(name)!=null && Modifier.isTransient(model.getMapping().getClass().getField(name).getModifiers());
+                    boolean isTransient=model.getClass().getField(name)!=null && Modifier.isTransient(model.getClass().getField(name).getModifiers());
                     if (model.getMapping().getFields().containsKey(name) && !isTransient && !name.startsWith("__"))
                     {
                         Field f = model.getClass().getField(name);
