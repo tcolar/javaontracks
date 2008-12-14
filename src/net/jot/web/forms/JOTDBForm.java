@@ -143,10 +143,12 @@ public abstract class JOTDBForm extends JOTGeneratedForm
                 if (el != null && field.isSaveAutomatically())
                 {
                     Object value = el.getValue();
-                    boolean isTransient=model.getClass().getField(name)!=null && Modifier.isTransient(model.getClass().getField(name).getModifiers());
-                    if (model.getMapping().getFields().containsKey(name) && !isTransient && !name.startsWith("__"))
+                    Field f = getField(model,name);
+                    if (model.getMapping().getFields().containsKey(name))
                     {
-                        Field f = model.getClass().getField(name);
+                        boolean isTransient=f!=null && Modifier.isTransient(f.getModifiers());
+                        if(!isTransient && !name.startsWith("__"))
+                        {
                         String v = (String) value;
                         if (f.getType() == String.class)
                         {
@@ -176,8 +178,14 @@ public abstract class JOTDBForm extends JOTGeneratedForm
                         {
                             value = new BigDecimal(v);
                         }
+
                         //TBD: timstamp / date /time ?
                         f.set(model, value);
+                        }
+                        else
+                        {
+                            JOTLogger.debug(this, "Skipping form field: "+name);
+                        }
                     } else
                     {
                         JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.DEBUG_LEVEL, this, "Form field: '" + name + "' does not exist in DB, ignoring.");
@@ -189,6 +197,17 @@ public abstract class JOTDBForm extends JOTGeneratedForm
         model.save();
     }
 
+    private Field getField(JOTModel model,String fieldName)
+    {
+        Field f=null;
+        try
+        {
+            f=model.getClass().getField(fieldName);
+        }catch(NoSuchFieldException e)
+        {
+        }
+        return f;
+    }
     
     /**
      * This should be implemented so that it:

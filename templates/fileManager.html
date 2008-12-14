@@ -50,9 +50,9 @@
 <input type="hidden" name="_JOT_FB_ACTION" value="SELECT">
 </jot:if>
 <jot:loop from="1" to="fbSession.nbOfUploadFields">
-<input type="file" size="20" name="file<jot:var value="cpt"/>"><br>
+<input type="file" size="20" name="file${cpt}"><br>
 </jot:loop>
-<jot:if value="fbSession.isAllowUpdateFile">
+<jot:if eval="fbSession.isAllowUpdateFile">
 Overwrite Existing files: <input type="checkbox" name="_JOT_FORCE_UPDATE"><br>
 <input type="submit" value="Upload File(s)">
 </jot:if>
