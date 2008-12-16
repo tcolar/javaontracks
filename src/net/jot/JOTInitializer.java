@@ -29,7 +29,7 @@ public class JOTInitializer
 {
 
     private static boolean destroyed = false;
-    public static final String VERSION = "0.1.3";
+    public static final String VERSION = "0.1.4";
 
     // singleton
     private static final JOTInitializer initializer = new JOTInitializer();
