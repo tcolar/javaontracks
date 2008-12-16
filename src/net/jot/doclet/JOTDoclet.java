@@ -286,11 +286,11 @@ public class JOTDoclet extends AbstractDoclet
         String copyTo = null;
         if (template == null)
         {
-            RES_ROOT = JOTUtilities.endWithSlash(OUT_ROOT) + TEMP_TPL;
+            RES_ROOT = JOTUtilities.endWithSlash(JOTUtilities.endWithSlash(OUT_ROOT) + TEMP_TPL);
             copyTo = RES_ROOT;
         } else
         {
-            RES_ROOT = template;
+            RES_ROOT = JOTUtilities.endWithSlash(template);
             File f = new File(RES_ROOT);
             if (!f.exists())
             {
