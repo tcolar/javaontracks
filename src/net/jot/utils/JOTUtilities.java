@@ -286,6 +286,7 @@ public class JOTUtilities
 
                 if (content[i].isDirectory())
                 {
+                System.out.println("DIR "+content[i].getAbsolutePath()+" -> "+newFile.getAbsolutePath());
                     if (recurse)
                     {
                         newFile.mkdirs();
@@ -293,6 +294,7 @@ public class JOTUtilities
                     }
                 } else
                 {
+                System.out.println(content[i].getAbsolutePath()+" -> "+newFile.getAbsolutePath());
                     copyFile(newFile, content[i]);
                 }
             }

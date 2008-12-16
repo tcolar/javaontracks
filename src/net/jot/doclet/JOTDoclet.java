@@ -17,13 +17,18 @@ import com.sun.tools.doclets.internal.toolkit.util.ClassTree;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.PrintWriter;
+import java.net.JarURLConnection;
+import java.net.URL;
 import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import net.jot.JOTInitializer;
 import net.jot.logger.JOTLogger;
 import net.jot.utils.JOTUtilities;
 import net.jot.web.view.JOTViewParser;
-import net.jot.web.views.JOTLightweightView;
 
 /**
  * Custom Javadoc Doclet (Javadoc Generator)
@@ -36,8 +41,8 @@ public class JOTDoclet extends AbstractDoclet
 {
 
     public static RootDoc rootDoc = null;
-    public static String RES_ROOT = "/home/thibautc/NetBeansProjects/javaontracks/resources/doclet/";
-    public static String OUT_ROOT = "/tmp/";
+    public static String RES_ROOT = "null";
+    public static String OUT_ROOT = "null";
     public ConfigurationImpl configuration = ConfigurationImpl.getInstance();
     public HtmlDocletWriter docWriter;
     public ClassTree classTree = null;
@@ -46,10 +51,11 @@ public class JOTDoclet extends AbstractDoclet
     private boolean flagGenerateNav = true;
     private boolean flagNavOnly = false;
     private boolean flagGenerateIndex = true;
-    private boolean flagGeneratePackageList=true;
-    private boolean flagGeneratePackageFiles=true;
-    private boolean flagGenerateItemFiles=true;
-    private boolean flagGenerateSourceFiles=true;
+    private boolean flagGeneratePackageList = true;
+    private boolean flagGeneratePackageFiles = true;
+    private boolean flagGenerateItemFiles = true;
+    private boolean flagGenerateSourceFiles = true;
+    private static final String TEMP_TPL = "temp_tpl";
 
     /**
      * Central method where we can force option flags, for easy customizing.
@@ -101,14 +107,11 @@ public class JOTDoclet extends AbstractDoclet
                 configuration.getDocletSpecificBuildDate());
 
         OUT_ROOT = configuration.docFileDestDirName;
-        flagGenerateSourceFiles=configuration.linksource;
+        flagGenerateSourceFiles = configuration.linksource;
 
         initFlags();
 
-        if (template != null)
-        {
-            setTemplate();
-        }
+        setTemplate();
 
         try
         {
@@ -118,6 +121,16 @@ public class JOTDoclet extends AbstractDoclet
         {
             exc.printStackTrace();
             return false;
+        } finally
+        {
+            if (RES_ROOT != null)
+            {
+                File f = new File(JOTUtilities.endWithSlash(RES_ROOT) + TEMP_TPL);
+                if (f.exists())
+                {
+                    JOTUtilities.deleteFolder(f);
+                }
+            }
         }
         return true;
     }
@@ -133,7 +146,7 @@ public class JOTDoclet extends AbstractDoclet
 
         OUT_ROOT = configuration.docFileDestDirName;
         new File(OUT_ROOT).mkdirs();
-        System.out.println(OUT_ROOT);
+        //System.out.println(OUT_ROOT);
         String[] levels =
         {
             "" + JOTLogger.CRITICAL_LEVEL, "" + JOTLogger.ERROR_LEVEL, "" + JOTLogger.WARNING_LEVEL
@@ -192,8 +205,8 @@ public class JOTDoclet extends AbstractDoclet
             File src = new File(RES_ROOT);
             dest.mkdirs();
             JOTUtilities.copyFolderContent(dest, src, true);
-            JOTUtilities.deleteFolder(new File(dest.getAbsolutePath() + File.separator + "tpl"));
             JOTUtilities.deleteFolder(new File(dest.getAbsolutePath() + File.separator + ".svn"));
+            JOTUtilities.deleteFolder(new File(dest.getAbsolutePath() + File.separator + "tpl"));
         } catch (Exception e)
         {
             e.printStackTrace();
@@ -270,18 +283,65 @@ public class JOTDoclet extends AbstractDoclet
 
     private void setTemplate()
     {
-        System.out.println("Requested template folder: " + template);
-        RES_ROOT = template;
-        File f = new File(RES_ROOT);
-        if (!f.exists())
+        String copyTo = null;
+        if (template == null)
         {
-            f.mkdirs();
+            RES_ROOT = JOTUtilities.endWithSlash(OUT_ROOT) + TEMP_TPL;
+            copyTo = RES_ROOT;
+        } else
+        {
+            RES_ROOT = template;
+            File f = new File(RES_ROOT);
+            if (!f.exists())
+            {
+                f.mkdirs();
+            }
+            if (f.list().length == 0)
+            {
+                System.out.println("Template folder is empty: Copying standard template in it.");
+                copyTo = RES_ROOT;
+            }
         }
-        if (f.list().length == 0)
-        {
-            System.out.println("Template folder is empty, : Copying standrad template in it.");
 
+        if (copyTo != null)
+        {
+            try
+            {
+                byte[] buf = new byte[1024];
+                URL url = getClass().getResource("/doclet/doclet.js");
+                JarURLConnection conn = (JarURLConnection) url.openConnection();
+                JarFile jarFile = conn.getJarFile();
+                Enumeration entries = jarFile.entries();
+                while (entries.hasMoreElements())
+                {
+                    JarEntry entry = (JarEntry) entries.nextElement();
+                    if (entry.getName().startsWith("doclet/"))
+                    {
+                        String name=entry.getName().substring("doclet/".length());
+                        File f = new File(JOTUtilities.endWithSlash(RES_ROOT) + name);
+                        if (!entry.isDirectory())
+                        {
+                            System.out.println("Copying: " + f.getAbsolutePath());
+                            f.getParentFile().mkdirs();
+                            FileOutputStream out = new FileOutputStream(f);
+                            InputStream input = jarFile.getInputStream(entry);
+                            int n = 0;
+                            while ((n = input.read(buf, 0, 1024)) > -1)
+                            {
+                                out.write(buf, 0, n);
+                            }
+                            input.close();
+                            out.close();
+                        }
+                    }
+                }
+            } catch (Exception e)
+            {
+                e.printStackTrace();
+            }
         }
+
+        System.out.println("Template folder: " + RES_ROOT);
     }
 
     public static LanguageVersion languageVersion()
@@ -360,12 +420,11 @@ public class JOTDoclet extends AbstractDoclet
             view.addVariable("curpage", "overview-summary.html");
             view.addVariable("packages", packages);
             writer = new PrintWriter(packTree);
-            String html="";
+            String html = "";
             try
             {
                 html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + "packages.html");
-            }
-            catch(Exception e)
+            } catch (Exception e)
             {
                 e.printStackTrace();
             }
@@ -426,12 +485,11 @@ public class JOTDoclet extends AbstractDoclet
             File packFile = new File(OUT_ROOT + folder + "package-summary.html");
             System.out.println(packFile.getAbsolutePath());
             PrintWriter writer = new PrintWriter(packFile);
-            String html="";
+            String html = "";
             try
             {
                 html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + "package.html");
-            }
-            catch(Exception e)
+            } catch (Exception e)
             {
                 e.printStackTrace();
             }
@@ -442,7 +500,7 @@ public class JOTDoclet extends AbstractDoclet
             ClassDoc[] items = view.getSortedClasses(pack);
             for (int j = 0; j != items.length; j++)
             {
-                if(flagGenerateItemFiles)
+                if (flagGenerateItemFiles)
                 {
                     generateClassFiles(items[j], folder);
                 }
@@ -533,7 +591,7 @@ public class JOTDoclet extends AbstractDoclet
                 String source = htmlEncoder.encodeFile(srcFile).toString();
                 view.addVariable("curpage", folder + item.name() + "-source.html");
                 view.addVariable("source", source.split("\n"));
-                String html="";
+                String html = "";
                 try
                 {
                     html = JOTViewParser.parseTemplate(view, RES_ROOT, "tpl" + File.separator + "source.html");

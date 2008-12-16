@@ -32,6 +32,7 @@
         <delete file="dist/javaOnTracks.jar"></delete>
         <jar destfile="dist/javaOnTracks.jar">
             <fileset dir="classes"/>
+            <fileset dir="resources"/>
         </jar>
     </target>
     
@@ -92,6 +93,8 @@
         <javadoc sourcepath="../apache-ant-1.7.1/src/main/" destdir="/tmp/jotdoc/ant" packagenames="*" doctitle="Apache Ant 1.7.1" windowtitle="Apache Ant 1.7.1" link="../jdk1.6/" splitindex="true">
             <doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
             <arg value="-linksource"/>
+            <!--<arg value="-template"/>
+            <arg value="/tmp/mytpl/"/>-->
             <classpath>
                 <pathelement path="${jotdoc.path}"/>
             </classpath>
