@@ -6,12 +6,10 @@
 package net.jot.web.server.impl.webapp;
 
 import java.net.Socket;
-import java.util.Enumeration;
 import java.util.Hashtable;
-import net.jot.web.server.JOTRequestParser;
 import net.jot.web.server.JOTServerRequestHandler;
-import net.jot.web.server.JOTWebRequest;
 import net.jot.utils.JOTUtilities;
+import net.jot.web.server.impl.JOTStaticServerHandler;
 import net.jottools.actions.ConfigView;
 
 /**
@@ -19,36 +17,11 @@ import net.jottools.actions.ConfigView;
  * There will be one inctance of this per request/thread
  * @author thibautc
  */
-public class JOTWebappRequestProcessor  implements JOTServerRequestHandler{
+public class JOTWebappRequestProcessor  extends JOTStaticServerHandler implements JOTServerRequestHandler{
 
-    public void handle(Socket socket)
+    public void handle(Socket socket) throws Exception
     {
-        try
-        {
-            JOTWebRequest request=JOTRequestParser.parseRequest(socket);
-        }
-        catch(Exception e){e.printStackTrace();}
-        /*System.out.println("Request: " + path);
-        Enumeration e = Parameters.keys();
-        while (e.hasMoreElements())
-        {
-            String key = (String) e.nextElement();
-            System.out.println("Param: " + key + " -> " + (String) Parameters.get(key));
-        }
-        try
-        {
-            ConfigView view = getViewClass(path);
-            if (view != null)
-            {
-                view.writePage(socket.getOutputStream(), Parameters);
-            } else
-            {
-                socket.getOutputStream().write("Page Not Found !".getBytes());
-            }
-        } catch (Exception e2)
-        {
-            e2.printStackTrace();
-        }*/
+        super.handle(socket);
     }
 
     private ConfigView getViewClass(String path)

@@ -7,7 +7,6 @@ package net.jot.web.server.impl;
 import java.util.Hashtable;
 import net.jot.logger.JOTLogger;
 import net.jot.logger.JOTLoggerLocation;
-import net.jot.web.server.JOTSessionManager;
 
 /**
  * Implements a minimalistic web server (static content)
