@@ -4,6 +4,7 @@
     <script type="text/javascript" src='${getPathToRoot}doclet.js'></script>
     <title>${curitem.name} ${windowTitle})</title>
     <script type="text/javascript">
+        <jot:include file="tpl/forceframe.inc.js"/>
         setWindowTitle('${curitem.name} (${windowTitle})');
     </script>
 </head>
@@ -16,7 +17,7 @@
 <jot:if eval="isDeprecated(curitem)"><del></jot:if>
 ${curitem.name}
 <jot:if eval="sourceEnabled">
-<span class="sourceButton"><a href='${getShortItemName()}-source.html'>View Source</a></span>
+    <span class="sourceButton"><a href='${getShortItemName()}-source.html'>View Source</a></span>
 </jot:if>
 <jot:if eval="isDeprecated(curitem)"></del></jot:if>
 </div>
@@ -34,7 +35,7 @@ ${curitem.name}
 <jot:include file="tpl/annotelems.inc.html"/>
 <div style="height:8px"> </div>
 <jot:include file="tpl/inner.inc.html"/>
-    <jot:include file="tpl/footer.inc.html"/>
+<jot:include file="tpl/footer.inc.html"/>
 
 </body>
 </html>

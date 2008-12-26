@@ -2,8 +2,9 @@
   <head>
     <link rel="stylesheet" type="text/css" href='${getPathToRoot}doclet.css'>
     <script type="text/javascript" src='${getPathToRoot}doclet.js'></script>
-    <title>${curitem.name} (${windowTitle"$})</title>
-    <script type="tex/javascript">
+    <title>${curitem.name} (${windowTitle})</title>
+    <script type="text/javascript">
+        <jot:include file="tpl/forceframe.inc.js"/>
         setWindowTitle('${curitem.name} (${windowTitle})');
     </script>
   </head>
