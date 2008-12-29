@@ -143,7 +143,8 @@ public class JOTDocletIndexWriter
     {
         if (doc instanceof ProgramElementDoc)
         {
-            String link = getLink((ProgramElementDoc) doc, LinkInfoImpl.CONTEXT_TREE);
+            String link = getLink((ProgramElementDoc) doc, LinkInfoImpl.CONTEXT_INDEX);
+            link=link.replaceAll("\\.\\./", "");
             return "<a href='../" + link + "'>" + JOTHTMLUtilities.textToHtml(getSignature(doc),JOTHTMLUtilities.ENCODE_HTML_CHARS) + "</a>";
         }
         return "#######" + doc.name();

@@ -152,4 +152,9 @@
             </classpath>
         </javadoc>
     </target>
+
+    <target name="jotdoc-clean">
+        <delete dir="/tmp/jotdoc/"/>
+    </target>
+    <target name="jotdoc-all" depends="jotdoc-clean, jotdoc-ant, jotdoc-jdk, jotdoc-jot, jotdoc-sitemesh, jotdoc-struts, jotdoc-crm"/>
 </project>

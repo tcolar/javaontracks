@@ -66,7 +66,7 @@ public class JOTDoclet extends AbstractDoclet
         //OUT_ROOT = configuration.docFileDestDirName;
         //flagNavOnly=true;
         //template="";
-        //flagGenerateNav=false;
+        //flagGenerateNav=true;
         //flagGenerateIndex=true;
         //flagGeneratePackageList=false;
         //flagGeneratePackageFiles=false;
