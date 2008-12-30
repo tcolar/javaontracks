@@ -16,9 +16,6 @@ Appserver: support multiple "jotapps" -> multiple class loaders ??
 
 Class lookup service (interface), default in memory -> use for singletons
 
-javadoc -source code attached - linked
-read resources from jar (getresourceformstream)
-package list (used by -linksource)
-
-- read template from jar ?
-- uploads docs to http://www.colar.net/jotdoc/
+flow.conf & config.conf
+flow: cleanup -> Controller, View, Form defined.
+config: context, session timeout etc...

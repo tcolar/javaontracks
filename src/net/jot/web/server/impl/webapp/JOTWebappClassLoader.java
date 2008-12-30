@@ -4,7 +4,10 @@
  */
 package net.jot.web.server.impl.webapp;
 
+import java.net.URL;
 import java.net.URLClassLoader;
+import net.jot.logger.JOTLogger;
+import net.jot.logger.JOTLoggerLocation;
 
 /**
  * WebApp Classloader
@@ -19,13 +22,14 @@ import java.net.URLClassLoader;
  */
 public class JOTWebappClassLoader extends URLClassLoader
 {
+    private JOTLoggerLocation loc=new JOTLoggerLocation(JOTLogger.CAT_SERVER,getClass());
     /**
      * Parent is JOTCommonClassLoader
      * @param parent
      */
-    public JOTWebappClassLoader(ClassLoader parent)
+    public JOTWebappClassLoader(URL[] urls, ClassLoader parent)
     {
-        super(null, parent);
+        super(urls, parent);
     }
 
     /**
@@ -46,6 +50,8 @@ public class JOTWebappClassLoader extends URLClassLoader
                 c = loadClass(name, resolve);
             }
         }
+        if(c!=null)
+            loc.trace("Loaded class: "+name);
         return c;
     }
 }

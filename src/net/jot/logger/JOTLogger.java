@@ -56,7 +56,7 @@ public final class JOTLogger
     private final static int NOT_INITED = 0;
     private final static int INITED_OK = 1;
     private final static int INITED_FAILED = 2;
-    private static boolean printToConcole = false;
+    private static boolean printToConsole = false;
     private static boolean printStackTrace = true;
     private static int status = NOT_INITED;
     private static PrintStream printer = null;
@@ -227,12 +227,6 @@ public final class JOTLogger
 
             String time = JOTClock.getDateStringWithMs();
             addLogEntry(cat + " " + level + " " + time + " " + servletName + " " + user + " " + message);
-
-
-            if (printToConcole && status == NOT_INITED)
-            {
-                System.out.println(cat + level + " " + time + " " + servletName + " " + user + " " + message);
-            }
         }
     }
 
@@ -417,6 +411,7 @@ public final class JOTLogger
             printer = new PrintStream(new FileOutputStream(file, true));
             System.out.println("Will log to: "+f.getAbsolutePath());
             status = INITED_OK;
+            inited=true;
         } catch (Exception e)
         {
             System.err.println("Couldn't initialyze the log file (" + file + ")!! " + e);
@@ -485,7 +480,7 @@ public final class JOTLogger
                 System.err.println(entry);
             }
         }
-        if (printToConcole)
+        if (printToConsole || status == NOT_INITED)
         {
             System.out.println(entry);
         }
@@ -511,9 +506,9 @@ public final class JOTLogger
      * Wether to dump all errors to the console as well as the log file.
      * @param printToConcole   default false
      */
-    public static void setPrintToConcole(boolean printToConcole)
+    public static void setPrintToConcole(boolean printToConsole)
     {
-        JOTLogger.printToConcole = printToConcole;
+        JOTLogger.printToConsole = printToConsole;
     }
 
     /**
