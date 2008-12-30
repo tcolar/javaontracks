@@ -49,7 +49,7 @@ public class JOTMiniServer
         while (socket != null && !stop)
         {
             Socket client = socket.accept();
-            logger.debug("New Connection from: " + client.getRemoteSocketAddress());
+            logger.trace("New Connection from: " + client.getRemoteSocketAddress());
             JOTServerRequestHandler handler=(JOTServerRequestHandler)jOTServerRequestHandlerImplClass.newInstance();
             handler.init(params);
             RequestThread c = new RequestThread(client, handler);

@@ -77,7 +77,7 @@ public class JOTWebappServer
         JOTLogger.initIfNecessary(log.getAbsolutePath(), JOTLogger.ALL_LEVELS, null);
         JOTLogger.setPrintToConcole(true);
         JOTLogger.setPrintStackTrace(true);
-        JOTLogger.info(this, "Starting server on port: " + port);
+        logger.info("Starting server on port: " + port);
         Hashtable params = new Hashtable();
 
         server = new JOTMiniServer();
