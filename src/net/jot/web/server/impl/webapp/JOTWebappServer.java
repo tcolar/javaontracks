@@ -73,7 +73,6 @@ public class JOTWebappServer
         boolean autoReload = prefs.getDefaultedBoolean("server.webapps.autoreload", Boolean.TRUE).booleanValue();
         File log = new File(root + File.separator + "logs", DEFAULT_LOG_FILE);
         System.out.println("Will log to console & " + log.getAbsolutePath());
-        //JOTLogger.init(log.getAbsolutePath(), JOTLogger.ALL_LEVELS, null);
         JOTLogger.initIfNecessary(log.getAbsolutePath(), JOTLogger.ALL_LEVELS, null);
         JOTLogger.setPrintToConcole(true);
         JOTLogger.setPrintStackTrace(true);
