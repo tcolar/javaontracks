@@ -36,6 +36,10 @@ public class JOTXmlParser {
         copy=parser.doTextItem(PATTERN_DECLARATION, copy);
         copy=parser.doTextItem(PATTERN_COMMENT, copy);
 
+        //TODO: actual xml tags
+
+
+        // TODO: all remaining should be blank etc... -> textItems
         // TODO: group together "text" elements (in a row)
 
 
