@@ -27,7 +27,7 @@ public class JOTXmlParser {
 
     private JOTXmlParser(){}
 
-    protected static Enumeration parse(StringBuffer xml)
+    protected static Enumeration parse(StringBuffer xml) throws JOTXMLException
     {
         StringBuffer copy=new StringBuffer(xml.toString());
         JOTXmlParser parser=new JOTXmlParser();
