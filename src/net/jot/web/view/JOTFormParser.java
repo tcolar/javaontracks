@@ -45,7 +45,7 @@ public class JOTFormParser extends JOTViewParser
 			StringBuffer buf=new StringBuffer();
 			String jotId=m.group(2);
 			jotId=jotId.trim();
-			String openingTag=m.group(1);
+			String openingTag=m.group(1).trim();
 			String restOfTemplate=m.group(3);
 			
 			JOTForm form=(JOTForm)forms.get(jotId);

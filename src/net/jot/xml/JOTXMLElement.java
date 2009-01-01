@@ -14,21 +14,24 @@ import java.util.Vector;
 public class JOTXMLElement {
 
     private String name=null;
+    private String value=null;
+
+    public JOTXMLElement(String name)
+    {
+        this.name=name;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
 
     /**
      * ordered list of items found in the page
      * such as root xml element, definition, comments etc...
      * Types: JOTXMLElement, JOTXMLTextElement
      */
-    protected Vector items;
-
-    /**
-     * return this element attributes
-     */
-    public String[] getAttributes()
-    {
-        return null;
-    }
+    protected Vector items=new Vector();
 
     /**
      * Return this element sub-elements (childs)
@@ -46,4 +49,20 @@ public class JOTXMLElement {
     {
         return items;
     }
+
+    protected void addItem(Object item)
+    {
+        items.add(item);
+    }
+
+    void setValue(String val)
+    {
+        value=val;
+    }
+
+    public String getValue()
+    {
+        return value;
+    }
+
 }

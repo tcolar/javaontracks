@@ -498,7 +498,7 @@ public class JOTViewParser
             String jotId = m.group(3);
             jotId = jotId.trim();
             String openingTag = m.group(1);
-            String tagName = m.group(2);
+            String tagName = m.group(2).trim();
             String restOfTemplate = m.group(4);
 
             JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Found Tag: " + openingTag);
@@ -506,7 +506,7 @@ public class JOTViewParser
             //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTView.class, "Tag Name: "+tagName);
             //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTView.class, "jotId: "+jotId);
 
-            String closeTagString = "</" + tagName + ">";
+            String closeTagString = /*Pattern.quote(*/"</" + tagName + ">"/*)*/;
             Pattern closeTag = Pattern.compile(closeTagString, PATTERN_FLAGS);
             int index = findMatchingClosingTag(0, restOfTemplate, OPEN_TAG_PATTERN, closeTag, 1);
 
@@ -1109,7 +1109,7 @@ public class JOTViewParser
         }
         if (depth == 0)
         {
-            return index + closeTag.pattern().length();
+            return /*index + */m2.end();
         } else
         {
             return findMatchingClosingTag(index + closeTag.pattern().length(), template, openTag, closeTag, depth);

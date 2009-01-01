@@ -16,4 +16,11 @@ public class JOTXMLTextElement {
     {
         text=content;
     }
+
+    public String getText()
+    {
+        return text;
+    }
+
+    
 }

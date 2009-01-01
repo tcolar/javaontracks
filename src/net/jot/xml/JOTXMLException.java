@@ -11,4 +11,12 @@ package net.jot.xml;
  */
 class JOTXMLException extends Exception {
 
+    public JOTXMLException(String title)
+    {
+        super(title);
+    }
+    public JOTXMLException(String title, Throwable cause)
+    {
+        super(title, cause);
+    }
 }
