@@ -642,6 +642,11 @@ public class JOTUtilities
              */
             if (encodeIt)
             {
+                /**
+                 * Note: when using "localhost" on firefox, it doesn;t accept the cookie
+                 * and instead use a url jsessionid
+                 * strange !
+                 */
                 newLocation = res.encodeRedirectURL(newLocation);
             }
             res.setStatus(permanent ? HttpServletResponse.SC_MOVED_PERMANENTLY : HttpServletResponse.SC_MOVED_TEMPORARILY);

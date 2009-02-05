@@ -1109,7 +1109,7 @@ public class JOTViewParser
         }
         if (depth == 0)
         {
-            return /*index + */m2.end();
+            return pos+m2.end();
         } else
         {
             return findMatchingClosingTag(index + closeTag.pattern().length(), template, openTag, closeTag, depth);
