@@ -45,24 +45,24 @@
 <body class="body">
 <table width="100%"><tr><td  align="center">
 <div class="titlebar">
-<div class="title">! JOT <jot:var value="version"/>: UNEXPECTED ERROR !</div>
+<div class="title">! JOT ${version}: UNEXPECTED ERROR !</div>
 </div>
 <div style="height:20px"></div>
 <div class="errorbar">
-<div class="error"><jot:var value="title"/></div>
+<div class="error">${title}</div>
 </div>
 <div class="errorbox" align="left">
 <jot:loop over="getStackTrace(exception)" as="traceElement">
-&nbsp;@<jot:var value="htmlEncode(traceElement)"/><br>
+&nbsp;@${htmlEncode(traceElement)}<br>
 </jot:loop>
 </div>
 <jot:if eval="cause">
 <div class="errorbar">
-<div class="error">Caused By: <jot:var value="causeTitle"/> </div>
+<div class="error">Caused By: ${causeTitle} </div>
 </div>
 <div class="errorbox" align="left">
 <jot:loop over="getStackTrace(cause)" as="traceElement">
-&nbsp;@<jot:var value="htmlEncode(traceElement)"/><br>
+&nbsp;@${htmlEncode(traceElement)}<br>
 </jot:loop>
 </div>
 </jot:if>

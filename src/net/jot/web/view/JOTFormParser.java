@@ -54,7 +54,8 @@ public class JOTFormParser extends JOTViewParser
 
 			String closeTagString="</form>";
 			Pattern closeTag=Pattern.compile(closeTagString,PATTERN_FLAGS);
-			int index=findMatchingClosingTag(0, restOfTemplate, OPEN_TAG_PATTERN, closeTag, 1).getX();
+			Pair pair=findMatchingClosingTag(0, restOfTemplate, OPEN_TAG_PATTERN, closeTag);
+            int index=pair.getX();
 			
 			if(index==-1)
 			{
@@ -70,7 +71,7 @@ public class JOTFormParser extends JOTViewParser
 				{
 					JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Removing  invisible form:"+jotId);
 					// keeping what's is AFTER the tag.
-					safeAppendReplacement(m, buf, restOfTemplate.substring(index,restOfTemplate.length()));
+					safeAppendReplacement(m, buf, restOfTemplate.substring(pair.getY(),restOfTemplate.length()));
 				}
 				else
 				{
@@ -233,13 +234,14 @@ public class JOTFormParser extends JOTViewParser
 					tag=m.group(1);
 					tail=m.group(2);
 					Pattern p2=Pattern.compile(closePattern, JOTViewParser.PATTERN_FLAGS);
-					Pair pt=findMatchingClosingTag(0, tail, null, p2, 1);
+					Pair pt=findMatchingClosingTag(0, tail, null, p2);
                     int index=pt.getX();
 					tagInside=tail.substring(0,index);
-					closeIndex=m.start(2)+index;
-					//JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTFormParser.class, "Tag : "+tag);			
-					//JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTFormParser.class, "Tail : "+tail);			
-					//JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTFormParser.class, "Tag inside : "+tagInside);			
+					closeIndex=pt.getY();
+                    
+					//JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTFormParser.class, "Tag : "+tag);
+					//JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTFormParser.class, "Tail : "+tail);
+					//JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTFormParser.class, "Tag inside : "+tagInside);
 				}
 				String newTag="";
 				if(!element.isVisible())

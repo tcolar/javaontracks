@@ -9,6 +9,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import net.jot.utils.Pair;
 import net.jot.web.view.JOTViewParser;
 
 /**
@@ -172,13 +173,14 @@ public class JOTXMLParser
             int i = 0;
             if (!oneLiner)
             {
-                i = JOTViewParser.findMatchingClosingTag(0, restOfTemplate, open, closeTag, 1).getX();
+                Pair pair=JOTViewParser.findMatchingClosingTag(0, restOfTemplate, open, closeTag);
+                i=pair.getX();
 
                 if (i == -1)
                 {
                     throw new JOTXMLException("Couldn't find closing tag (" + closeTag + ") for:" + open + " in " + restOfTemplate);
                 }
-                index += i;
+                index += pair.getY();
             } else
             {
                 index += openingTag.length();
@@ -246,7 +248,7 @@ public class JOTXMLParser
     {
         String[] files =
         {
-            "/tmp/xml/config.xml", "/tmp/xml/templateResponse.xml", "/tmp/xml/web.xml", "/tmp/xml/note.xml", "/tmp/xml/recipe.xml"
+            "/tmp/xml/config.xml"
         };
         for (int i = 0; i != files.length; i++)
         {
