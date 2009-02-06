@@ -23,6 +23,7 @@ import java.util.regex.Pattern;
 import net.jot.logger.JOTLogger;
 import net.jot.utils.JOTReflectionUtils;
 import net.jot.utils.JOTUtilities;
+import net.jot.utils.Pair;
 import net.jot.web.JOTFlowClassCache;
 import net.jot.web.JOTMainFilter;
 import net.jot.web.JOTTemplateCache;
@@ -151,7 +152,7 @@ public class JOTViewParser
                 negated = true;
             }
 
-            int index = findMatchingClosingTag(0, restOfTemplate, OPEN_IF_PATTERN, CLOSE_IF_PATTERN, 1);
+            int index = findMatchingClosingTag(0, restOfTemplate, OPEN_IF_PATTERN, CLOSE_IF_PATTERN, 1).getX();
 
             if (index == -1)
             {
@@ -273,7 +274,7 @@ public class JOTViewParser
 
             int loopStartIndex = m.start();
 
-            int loopEndIndex = findMatchingClosingTag(m.end(), template, GENERIC_LOOP_PATTERN, CLOSE_LOOP_PATTERN, 1);
+            int loopEndIndex = findMatchingClosingTag(m.end(), template, GENERIC_LOOP_PATTERN, CLOSE_LOOP_PATTERN, 1).getX();
 
             if (loopEndIndex == -1)
             {
@@ -281,7 +282,7 @@ public class JOTViewParser
             }
 
             // what is inside the loop.
-            String loopContent = template.substring(m.end(), loopEndIndex - CLOSE_LOOP_STRING.length());
+            String loopContent = template.substring(m.end(), loopEndIndex);
 
             int start = (from).intValue();
             int stop = (to).intValue();
@@ -338,7 +339,7 @@ public class JOTViewParser
             JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Loop found :" + loopObjectName + " loop as:" + as + " counter:" + counter);
 
             int loopStartIndex = m.start();
-            int loopEndIndex = findMatchingClosingTag(m.end(), template, GENERIC_LOOP_PATTERN, CLOSE_LOOP_PATTERN, 1);
+            int loopEndIndex = findMatchingClosingTag(m.end(), template, GENERIC_LOOP_PATTERN, CLOSE_LOOP_PATTERN, 1).getX();
 
             if (loopEndIndex == -1)
             {
@@ -346,7 +347,7 @@ public class JOTViewParser
             }
 
             // what is inside the loop.
-            String loopContent = template.substring(m.end(), loopEndIndex - CLOSE_LOOP_STRING.length());
+            String loopContent = template.substring(m.end(), loopEndIndex);
 
             Vector varHash = getVariableHash(loopObjectName);
             if (varHash.size() > 0)
@@ -506,9 +507,9 @@ public class JOTViewParser
             //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTView.class, "Tag Name: "+tagName);
             //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTView.class, "jotId: "+jotId);
 
-            String closeTagString = /*Pattern.quote(*/"</" + tagName + ">"/*)*/;
+            String closeTagString = /*Pattern.quote(*/ "</" + tagName + ">"/*)*/;
             Pattern closeTag = Pattern.compile(closeTagString, PATTERN_FLAGS);
-            int index = findMatchingClosingTag(0, restOfTemplate, OPEN_TAG_PATTERN, closeTag, 1);
+            int index = findMatchingClosingTag(0, restOfTemplate, OPEN_TAG_PATTERN, closeTag, 1).getX();
 
             if (index == -1)
             {
@@ -693,7 +694,7 @@ public class JOTViewParser
             String restOfTemplate = m.group(3);
             JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Found block " + openingTag);
 
-            int index = findMatchingClosingTag(0, restOfTemplate, OPEN_BLOCK_PATTERN, CLOSE_BLOCK_PATTERN, 1);
+            int index = findMatchingClosingTag(0, restOfTemplate, OPEN_BLOCK_PATTERN, CLOSE_BLOCK_PATTERN, 1).getX();
 
             if (index == -1)
             {
@@ -1022,7 +1023,7 @@ public class JOTViewParser
                         params += values[i].getClass().getName() + ",";
                     }
                     params += "]";
-                    throw (new Exception("Failed invoking method " + m.getName() + " on " + parent.getClass().toString()+" with params: " + params, e));
+                    throw (new Exception("Failed invoking method " + m.getName() + " on " + parent.getClass().toString() + " with params: " + params, e));
                 }
             }
         }
@@ -1086,34 +1087,36 @@ public class JOTViewParser
      * @param openTag
      * @param closeTag
      * @param depth
-     * @return
+     * @return [closingtagBeginIndex,clodingTagEndIndex] (-1 = !found)
      */
-    public static int findMatchingClosingTag(int pos, String template, Pattern openTag, Pattern closeTag, int depth)
+    public static Pair findMatchingClosingTag(int pos, String template, Pattern openTag, Pattern closeTag, int depth)
     {
-        // we came here with one tag opened, so starting with -1
-        depth--;
-        Matcher m2 = closeTag.matcher(template.substring(pos, template.length()));
-        if (!m2.find())
+        Matcher m2 = closeTag.matcher(template.substring(pos));
+        while (m2.find())
         {
-            // huho, no matching closing tag found .. broken html ??
-            return -1;
-        }
-        int index = pos + m2.start();
-        if (openTag != null)
-        {
-            Matcher m = openTag.matcher(template.substring(pos, index));
-            while (m.find())
+            boolean balanced = true;
+            depth++;
+            String sub = template.substring(pos,pos+m2.start());
+            if (openTag != null)
             {
-                depth++;
+                Matcher m = openTag.matcher(sub);
+                while (m.find())
+                {
+                    Pair pair = findMatchingClosingTag(m.start(), sub, openTag, closeTag, depth);
+                    balanced = balanced && pair.getX() != -1;
+                    if (!balanced)
+                    {
+                        break;
+                    }
+                }
+            }
+            if (balanced)
+            {
+                return new Pair(pos+m2.start(),pos+m2.end());
             }
         }
-        if (depth == 0)
-        {
-            return pos+m2.end();
-        } else
-        {
-            return findMatchingClosingTag(index + closeTag.pattern().length(), template, openTag, closeTag, depth);
-        }
+        // not found
+        return new Pair(-1,-1);
     }
 
     /**
@@ -1157,7 +1160,7 @@ public class JOTViewParser
             System.out.println("rest: " + rest);
 
             //int l=a.indexOf("<jot:loop dataId")+1;
-            int i = findMatchingClosingTag(0, rest, OPEN_BLOCK_PATTERN, CLOSE_BLOCK_PATTERN, 1);
+            int i = findMatchingClosingTag(0, rest, OPEN_BLOCK_PATTERN, CLOSE_BLOCK_PATTERN, 1).getX();
             System.out.println("tag reminder: " + rest.substring(0, i));
         //replace: remove the tag + content if invisible			
         //m.reset();

@@ -53,7 +53,7 @@ public class JOTFormParser extends JOTViewParser
 
 			String closeTagString="</form>";
 			Pattern closeTag=Pattern.compile(closeTagString,PATTERN_FLAGS);
-			int index=findMatchingClosingTag(0, restOfTemplate, OPEN_TAG_PATTERN, closeTag, 1);
+			int index=findMatchingClosingTag(0, restOfTemplate, OPEN_TAG_PATTERN, closeTag, 1).getX();
 			
 			if(index==-1)
 			{
@@ -232,7 +232,7 @@ public class JOTFormParser extends JOTViewParser
 					tag=m.group(1);
 					tail=m.group(2);
 					Pattern p2=Pattern.compile(closePattern, JOTViewParser.PATTERN_FLAGS);
-					int index=findMatchingClosingTag(0, tail, null, p2, 1);
+					int index=findMatchingClosingTag(0, tail, null, p2, 1).getX();
 					tagInside=tail.substring(0,index-closePattern.length());
 					closeIndex=m.start(2)+index;
 					//JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTFormParser.class, "Tag : "+tag);			

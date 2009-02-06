@@ -52,7 +52,7 @@
 <div class="error"><jot:var value="title"/></div>
 </div>
 <div class="errorbox" align="left">
-<jot:loop over="exception.stackTrace" as="traceElement">
+<jot:loop over="getStackTrace(exception)" as="traceElement">
 &nbsp;@<jot:var value="htmlEncode(traceElement)"/><br>
 </jot:loop>
 </div>
@@ -61,7 +61,7 @@
 <div class="error">Caused By: <jot:var value="causeTitle"/> </div>
 </div>
 <div class="errorbox" align="left">
-<jot:loop over="cause.stackTrace" as="traceElement">
+<jot:loop over="getStackTrace(cause)" as="traceElement">
 &nbsp;@<jot:var value="htmlEncode(traceElement)"/><br>
 </jot:loop>
 </div>

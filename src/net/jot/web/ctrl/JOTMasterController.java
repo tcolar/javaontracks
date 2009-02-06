@@ -411,12 +411,18 @@ public class JOTMasterController
                     templateFile = templateRoots[i] + template;
                     try
                     {
-                        template = JOTViewParser.parseTemplate(view, templateRoots[i], template);
-                        found=true;
+                        JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.DEBUG_LEVEL, this, "Looking for template in : " + templateRoots[i] + "/"+template);
+                        File f = new File(JOTUtilities.endWithSlash(templateRoots[i]) + template);
+                        if(f.exists())
+                        {
+                            template = JOTViewParser.parseTemplate(view, templateRoots[i], template);
+                            found=true;
+                        }
                     }
                     catch(Exception e2)
                     {
-                        JOTLogger.logException(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, this, "Faile parsing template : " + JOTUtilities.endWithSlash(templateRoots[i]) + template, e2);
+                        JOTLogger.logException(JOTLogger.CAT_FLOW, JOTLogger.INFO_LEVEL, this, "Faile parsing template : " + JOTUtilities.endWithSlash(templateRoots[i]) + template, e2);
+                        throw(e2);
                     }
                 }
                 if(!found)

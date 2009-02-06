@@ -26,6 +26,7 @@ public class JOTErrorView extends JOTView
 		
 		addVariable("version",JOTInitializer.VERSION);
 		Throwable t=(Throwable)request.getAttribute(EXCEPTION_ATTRIB);
+        
 		if(t!=null)
 		{
 			addVariable("title",htmlEncode(t.toString()));
@@ -39,18 +40,15 @@ public class JOTErrorView extends JOTView
 		}
 	}
 
+    public StackTraceElement[] getStackTrace(Throwable t)
+    {
+        return t.getStackTrace();
+    }
+
 	// Here we want html tags to be shown, not interpreted.
 	public String htmlEncode(String s)
 	{
 		return JOTHTMLUtilities.textToHtml(s);
-	}
-	public String htmlEncode(Throwable t)
-	{
-		return htmlEncode(t.toString());
-	}
-	public String htmlEncode(Exception e)
-	{
-		return htmlEncode(e.toString());
 	}
 	public String htmlEncode(StackTraceElement e)
 	{

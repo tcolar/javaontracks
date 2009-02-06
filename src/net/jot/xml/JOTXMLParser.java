@@ -172,7 +172,7 @@ public class JOTXMLParser
             int i = 0;
             if (!oneLiner)
             {
-                i = JOTViewParser.findMatchingClosingTag(0, restOfTemplate, open, closeTag, 1);
+                i = JOTViewParser.findMatchingClosingTag(0, restOfTemplate, open, closeTag, 1).getX();
 
                 if (i == -1)
                 {
