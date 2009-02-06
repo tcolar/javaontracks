@@ -1097,21 +1097,25 @@ public class JOTViewParser
             boolean balanced = true;
             depth++;
             String sub = template.substring(pos,pos+m2.start());
+            int cpt=0;
             if (openTag != null)
             {
                 Matcher m = openTag.matcher(sub);
+                // don't recurse anymore just look that we have balanced # of
+                // opening and closing tags, faster and good enough
                 while (m.find())
                 {
-                    Pair pair = findMatchingClosingTag(m.start(), sub, openTag, closeTag, depth);
-                    balanced = balanced && pair.getX() != -1;
-                    if (!balanced)
-                    {
-                        break;
-                    }
+                    cpt++;
+                }
+                Matcher m3 = closeTag.matcher(sub);
+                while(m3.find())
+                {
+                    cpt--;
                 }
             }
-            if (balanced)
+            if (cpt==0)
             {
+                // balanced
                 return new Pair(pos+m2.start(),pos+m2.end());
             }
         }
