@@ -8,6 +8,7 @@ http://www.javaontracks.net
  */
 package net.jot.web.view;
 
+import net.jot.utils.Pair;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.regex.Matcher;
@@ -232,8 +233,9 @@ public class JOTFormParser extends JOTViewParser
 					tag=m.group(1);
 					tail=m.group(2);
 					Pattern p2=Pattern.compile(closePattern, JOTViewParser.PATTERN_FLAGS);
-					int index=findMatchingClosingTag(0, tail, null, p2, 1).getX();
-					tagInside=tail.substring(0,index-closePattern.length());
+					Pair pt=findMatchingClosingTag(0, tail, null, p2, 1);
+                    int index=pt.getX();
+					tagInside=tail.substring(0,index);
 					closeIndex=m.start(2)+index;
 					//JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTFormParser.class, "Tag : "+tag);			
 					//JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTFormParser.class, "Tail : "+tail);			
