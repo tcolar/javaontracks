@@ -59,9 +59,9 @@ public class JOTViewParser
     protected static final int PATTERN_FLAGS = Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE | Pattern.CANON_EQ;
     // Main patterns
     //TODO: jot:wrap
-    protected static final Pattern FORM_PATTERN = Pattern.compile("(<form\\s+jotclass=\"([^\"]+)\"[^>]*>)(.*)", PATTERN_FLAGS);
+    protected static final Pattern FORM_PATTERN = Pattern.compile("(<form\\s+jotclass=\"([^\"]+)\"[^>]*>)", PATTERN_FLAGS);
     protected static final Pattern REMOVE_PATTERN = Pattern.compile("<jot:remove>.*</jot:remove>", PATTERN_FLAGS);
-    protected static final Pattern BLOCK_PATTERN = Pattern.compile("(<jot:block\\s+dataId=\"([^\"]+)\"\\s*>)(.*)", PATTERN_FLAGS);
+    protected static final Pattern BLOCK_PATTERN = Pattern.compile("(<jot:block\\s+dataId=\"([^\"]+)\"\\s*>)", PATTERN_FLAGS);
     protected static final Pattern BLOCK_PATTERN_1LINE = Pattern.compile("<jot:block\\s+dataId=\"([^\"]+)\"\\s*/>", PATTERN_FLAGS);
     protected static final Pattern TAG_PATTERN_1LINE = Pattern.compile("<[^> ]*\\s+jotid=\"([^\"]+)\"([^/][^>])*/>", PATTERN_FLAGS);
     protected static final Pattern TAG_PATTERN = Pattern.compile("(<([^> ]*)\\s+jotid=\"([^\"]+)\"[^>]*>)(.*)", PATTERN_FLAGS);

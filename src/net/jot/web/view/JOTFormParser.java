@@ -47,14 +47,13 @@ public class JOTFormParser extends JOTViewParser
 			String jotId=m.group(2);
 			jotId=jotId.trim();
 			String openingTag=m.group(1).trim();
-			String restOfTemplate=m.group(3);
 			
 			JOTForm form=(JOTForm)forms.get(jotId);
 			JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Found form:"+jotId);
 
 			String closeTagString="</form>";
 			Pattern closeTag=Pattern.compile(closeTagString,PATTERN_FLAGS);
-			Pair pair=findMatchingClosingTag(0, restOfTemplate, OPEN_TAG_PATTERN, closeTag);
+			Pair pair=findMatchingClosingTag(m.end(), template, OPEN_TAG_PATTERN, closeTag);
             int index=pair.getX();
 			
 			if(index==-1)
@@ -63,7 +62,7 @@ public class JOTFormParser extends JOTViewParser
 				throw new Exception("View Parsing error, Could not find closing tag for:"+openingTag+" ("+jotId+")");
 			}
 			
-			String tagContent=restOfTemplate.substring(0,index);
+			String tagContent=template.substring(m.end(),index);
 
 			if(form!=null)
 			{
@@ -71,7 +70,7 @@ public class JOTFormParser extends JOTViewParser
 				{
 					JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Removing  invisible form:"+jotId);
 					// keeping what's is AFTER the tag.
-					safeAppendReplacement(m, buf, restOfTemplate.substring(pair.getY(),restOfTemplate.length()));
+					safeAppendReplacement(m, buf, template.substring(pair.getY()));
 				}
 				else
 				{
@@ -100,7 +99,7 @@ public class JOTFormParser extends JOTViewParser
 					// closing the tag
 					replacement+=closeTagString;
 					// keeping what's is AFTER the tag.
-					replacement+=restOfTemplate.substring(index,restOfTemplate.length());
+					replacement+=template.substring(pair.getY());
 					
 					safeAppendReplacement(m, buf, replacement);
 				}
@@ -110,7 +109,7 @@ public class JOTFormParser extends JOTViewParser
 				// keep unchanged except remove jotid=""
 				Matcher m2=OPEN_TAG_JOTCLASS_PATTERN.matcher(openingTag);
 				openingTag=m2.replaceFirst("");
-				safeAppendReplacement(m, buf, openingTag+restOfTemplate);
+				safeAppendReplacement(m, buf, openingTag+template.substring(m.end(),pair.getY()));
 				JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTViewParser.class, "Form defined in html but not found in the View: "+jotId);
 			}
 			
@@ -219,7 +218,6 @@ public class JOTFormParser extends JOTViewParser
 			Pattern p=Pattern.compile(openPattern,JOTViewParser.PATTERN_FLAGS);
 			Matcher m;
 			String tag;
-			String tail;
 			String tagInside="";
 			if((m=p.matcher(content)).find())
 			{
@@ -232,11 +230,10 @@ public class JOTFormParser extends JOTViewParser
 				else
 				{
 					tag=m.group(1);
-					tail=m.group(2);
 					Pattern p2=Pattern.compile(closePattern, JOTViewParser.PATTERN_FLAGS);
-					Pair pt=findMatchingClosingTag(0, tail, null, p2);
+					Pair pt=findMatchingClosingTag(m.end(), content, null, p2);
                     int index=pt.getX();
-					tagInside=tail.substring(0,index);
+					tagInside=content.substring(m.end(),index);
 					closeIndex=pt.getY();
                     
 					//JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTFormParser.class, "Tag : "+tag);
@@ -279,7 +276,7 @@ public class JOTFormParser extends JOTViewParser
 					}
 				}
 
-				content=content.substring(0,m.start())+newTag+content.substring(closeIndex,content.length());
+				content=content.substring(0,m.start())+newTag+content.substring(closeIndex);
 									
 			}
 			else
