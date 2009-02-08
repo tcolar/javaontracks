@@ -228,10 +228,12 @@ public class JOTTester
 
     public boolean isClassTestable(String className)
     {
-
+        debug("Checking if testable: " + className);
         try
         {
+        debug(">forname");
             Class c = Class.forName(className);
+        debug("<forname");
             if (c.isInterface())
             {
                 return false;
@@ -241,12 +243,17 @@ public class JOTTester
                 return true;
             }
             Method m = c.getMethod(TEST_METHOD_NAME, (Class[]) null);
-            debug("Testing class: " + className + m != null ? "succeeded" : "failed");
+            debug("Testable class: " + className + m != null ? " Yes" : " No");
 
             return m != null;
         } catch (Exception e)
         {
-            debug("Testing class: " + className + "failed");
+            debug("Testable class: " + className + " No");
+            return false;
+        } catch (NoClassDefFoundError e)
+        {
+            debug("Testable class: " + className + " No - class not found error");
+            e.printStackTrace();
             return false;
         }
     }
@@ -372,7 +379,7 @@ public class JOTTester
             }
             if (sof && ! warnOnly)
             {
-                throw new JOTTestException("Test '" + message + "' failed");
+                throw new JOTTestException("Test '" + message==null?"NULL":message + "' failed");
             }
         }   
     }

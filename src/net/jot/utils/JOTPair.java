@@ -9,10 +9,10 @@ package net.jot.utils;
  *
  * @author thibautc
  */
-public class Pair {
+public class JOTPair {
     int x,y;
 
-    public Pair(int x,int y)
+    public JOTPair(int x,int y)
     {
         this.x=x;
         this.y=y;

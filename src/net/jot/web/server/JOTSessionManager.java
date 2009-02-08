@@ -35,6 +35,10 @@ public class JOTSessionManager
     
     public static JOTSessionManager getInstance()
     {
+        if(!instance.inUse && !instance.thread.isAlive())
+        {
+            instance.thread.start();
+        }
         instance.inUse=true;
         return instance;
     }
@@ -151,7 +155,6 @@ public class JOTSessionManager
 
         public JOTSessionManagerThread()
         {
-            run();
         }
 
         public void run()

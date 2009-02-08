@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 import net.jot.logger.JOTLogger;
 import net.jot.utils.JOTReflectionUtils;
 import net.jot.utils.JOTUtilities;
-import net.jot.utils.Pair;
+import net.jot.utils.JOTPair;
 import net.jot.web.JOTFlowClassCache;
 import net.jot.web.JOTMainFilter;
 import net.jot.web.JOTTemplateCache;
@@ -64,7 +64,7 @@ public class JOTViewParser
     protected static final Pattern BLOCK_PATTERN = Pattern.compile("(<jot:block\\s+dataId=\"([^\"]+)\"\\s*>)", PATTERN_FLAGS);
     protected static final Pattern BLOCK_PATTERN_1LINE = Pattern.compile("<jot:block\\s+dataId=\"([^\"]+)\"\\s*/>", PATTERN_FLAGS);
     protected static final Pattern TAG_PATTERN_1LINE = Pattern.compile("<[^> ]*\\s+jotid=\"([^\"]+)\"([^/][^>])*/>", PATTERN_FLAGS);
-    protected static final Pattern TAG_PATTERN = Pattern.compile("(<([^> ]*)\\s+jotid=\"([^\"]+)\"[^>]*>)(.*)", PATTERN_FLAGS);
+    protected static final Pattern TAG_PATTERN = Pattern.compile("(<([^> ]*)\\s+jotid=\"([^\"]+)\"[^>]*>)", PATTERN_FLAGS);
     protected static final Pattern LOOP_PATTERN = Pattern.compile("<jot:loop\\s+over=\"([^\"]+)\"\\s+as=\"([^\"]+)\"\\s*(counter=\"([^\"]+)\")?\\s*>", PATTERN_FLAGS);
     protected static final Pattern VAR_PATTERN = Pattern.compile("<jot:var\\s+value=\"([^\"]+)\"\\s*(default=\"([^\"]+)\")?\\s*/>", PATTERN_FLAGS);
     protected static final Pattern VAR_PATTERN2 = Pattern.compile("\\$\\{([^}]+)\\}", Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.CANON_EQ);
@@ -72,7 +72,7 @@ public class JOTViewParser
     protected static final Pattern INCLUDE_PATTERN = Pattern.compile("<jot:include\\s+file=\"([^\"]+)\"\\s*/>", PATTERN_FLAGS);
     protected static final Pattern RANGE_LOOP_PATTERN = Pattern.compile("<jot:loop\\s+from=\"([^\"]+)\"\\s+to=\"([^\"]+)\"\\s*(counter=\"([^\"]+)\")?\\s*>", PATTERN_FLAGS);
     protected static final Pattern GENERIC_LOOP_PATTERN = Pattern.compile("<jot:loop[^>]*>", PATTERN_FLAGS);
-    protected static final Pattern IF_PATTERN = Pattern.compile("(<jot:if\\s+eval=\"([^\"]+)\"\\s*>)(.*)", PATTERN_FLAGS);
+    protected static final Pattern IF_PATTERN = Pattern.compile("(<jot:if\\s+eval=\"([^\"]+)\"\\s*>)", PATTERN_FLAGS);
     protected static final Pattern WIDGET_PATTERN = Pattern.compile("<jot:widget\\s+class=\"([^\"]+)\"\\s*(args=\"([^\"]+)\")?\\s*/>", PATTERN_FLAGS);
     // match a variable pattern members
     protected static final Pattern VAR_MEMBER_PATTERN = Pattern.compile("(([a-zA-Z0-9\\(\\)_,\"-]*(['`][^'`]*['`])*)+)", PATTERN_FLAGS);
@@ -142,7 +142,6 @@ public class JOTViewParser
             StringBuffer buf = new StringBuffer();
             String var = m.group(2);
             String openingTag = m.group(1);
-            String restOfTemplate = m.group(3);
             JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Found If " + openingTag);
             boolean negated = false;
             var = var.trim();
@@ -152,7 +151,7 @@ public class JOTViewParser
                 negated = true;
             }
 
-            Pair pair  = findMatchingClosingTag(0, restOfTemplate, OPEN_IF_PATTERN, CLOSE_IF_PATTERN);
+            JOTPair pair  = findMatchingClosingTag(m.end(), template, OPEN_IF_PATTERN, CLOSE_IF_PATTERN);
             int index=pair.getX();
 
             if (index == -1)
@@ -187,15 +186,12 @@ public class JOTViewParser
             {
                 JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Removing if content:" + openingTag);
                 // keeping what's is AFTER the tag.
-                safeAppendReplacement(m, buf, restOfTemplate.substring(pair.getY(), restOfTemplate.length()));
+                template=template.substring(0,m.start())+template.substring(pair.getY());
             } else
             {
-                String newTemplate = restOfTemplate.substring(0, index) + restOfTemplate.substring(pair.getY(), restOfTemplate.length());
-                newTemplate = parse(view, newTemplate, templateRoot);
-                //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTView.class, "Replacement without tag:"+newTemplate);
-                safeAppendReplacement(m, buf, newTemplate);
+                String content = parse(view, template.substring(m.end(),pair.getX()), templateRoot);
+                template=template.substring(0,m.start())+content+template.substring(pair.getY());
             }
-            template = buf.toString();
         //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTView.class, "New template:"+template);
         }//end while
 
@@ -275,7 +271,7 @@ public class JOTViewParser
 
             int loopStartIndex = m.start();
 
-            Pair pair=findMatchingClosingTag(m.end(), template, GENERIC_LOOP_PATTERN, CLOSE_LOOP_PATTERN);
+            JOTPair pair=findMatchingClosingTag(m.end(), template, GENERIC_LOOP_PATTERN, CLOSE_LOOP_PATTERN);
             int loopEndIndex = pair.getX();
 
             if (loopEndIndex == -1)
@@ -341,7 +337,7 @@ public class JOTViewParser
             JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Loop found :" + loopObjectName + " loop as:" + as + " counter:" + counter);
 
             int loopStartIndex = m.start();
-            Pair pair=findMatchingClosingTag(m.end(), template, GENERIC_LOOP_PATTERN, CLOSE_LOOP_PATTERN);
+            JOTPair pair=findMatchingClosingTag(m.end(), template, GENERIC_LOOP_PATTERN, CLOSE_LOOP_PATTERN);
             int loopEndIndex = pair.getX();
 
             if (loopEndIndex == -1)
@@ -503,16 +499,12 @@ public class JOTViewParser
             jotId = jotId.trim();
             String openingTag = m.group(1);
             String tagName = m.group(2).trim();
-            String restOfTemplate = m.group(4);
 
             JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Found Tag: " + openingTag);
 
-            //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTView.class, "Tag Name: "+tagName);
-            //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTView.class, "jotId: "+jotId);
-
             String closeTagString = /*Pattern.quote(*/ "</" + tagName + ">"/*)*/;
             Pattern closeTag = Pattern.compile(closeTagString, PATTERN_FLAGS);
-            Pair pair = findMatchingClosingTag(0, restOfTemplate, OPEN_TAG_PATTERN, closeTag);
+            JOTPair pair = findMatchingClosingTag(m.end(), template, OPEN_TAG_PATTERN, closeTag);
             int index=pair.getX();
 
             if (index == -1)
@@ -521,8 +513,7 @@ public class JOTViewParser
                 throw new Exception("View Parsing error, Could not find closing tag for:" + openingTag + " (" + jotId + ")");
             }
 
-            String tagContent = restOfTemplate.substring(0, index);
-            //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTView.class, "Tag content:"+restOfTemplate.substring(0,index));
+            String tagContent = template.substring(m.end(), pair.getX());
 
             JOTViewTag tag = (JOTViewTag) tags.get(jotId);
 
@@ -532,7 +523,7 @@ public class JOTViewParser
                 {
                     JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Removing  invisible block:" + jotId);
                     // keeping what's is AFTER the tag.
-                    safeAppendReplacement(m, buf, restOfTemplate.substring(pair.getY(), restOfTemplate.length()));
+                    template=template.substring(0,m.start())+template.substring(pair.getY());
                 } else
                 {
                     // keep tag itself (but remove jotid="" from it)
@@ -555,21 +546,18 @@ public class JOTViewParser
                     }
                     // closing the tag
                     replacement += closeTagString;
-                    // keeping what's is AFTER the tag.
-                    replacement += restOfTemplate.substring(pair.getY(), restOfTemplate.length());
-
-                    safeAppendReplacement(m, buf, replacement);
+                    template=template.substring(0,m.start())+replacement+template.substring(pair.getY());
                 }
             } else
             {
                 // keep unchanged except remove jotid=""
                 Matcher m2 = OPEN_TAG_JOTID_PATTERN.matcher(openingTag);
                 openingTag = m2.replaceFirst("");
-                safeAppendReplacement(m, buf, openingTag + restOfTemplate);
+                safeAppendReplacement(m, buf, openingTag);
+                template=buf.toString();
             }
 
 
-            template = buf.toString();
         //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTView.class, "New template:"+template);
         }//end while
 
@@ -695,10 +683,9 @@ public class JOTViewParser
             String jotId = m.group(2);
             jotId = jotId.trim();
             String openingTag = m.group(1);
-            String restOfTemplate = m.group(3);
             JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Found block " + openingTag);
 
-            Pair pair = findMatchingClosingTag(0, restOfTemplate, OPEN_BLOCK_PATTERN, CLOSE_BLOCK_PATTERN);
+            JOTPair pair = findMatchingClosingTag(m.end(), template, OPEN_BLOCK_PATTERN, CLOSE_BLOCK_PATTERN);
             int index=pair.getX();
             if (index == -1)
             {
@@ -706,24 +693,21 @@ public class JOTViewParser
                 throw new Exception("View Parsing error, Could not find closing block tag for:" + openingTag + " (" + jotId + ")");
             }
 
-            //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTView.class, "Block content:"+restOfTemplate.substring(0,index));
-
             JOTViewBlock block = (JOTViewBlock) blocks.get(jotId);
 
             if (block == null)
             {
                 // keeping all but the opening/closing tags
-                String newTemplate = restOfTemplate.substring(0, index) + restOfTemplate.substring(pair.getY(), restOfTemplate.length());
-                newTemplate = parse(view, newTemplate, templateRoot);
-                //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTView.class, "Replacement without tag:"+newTemplate);
-                safeAppendReplacement(m, buf, newTemplate);
+                String newTemplate = template.substring(0,m.end()) + template.substring(pair.getY());
+                template = parse(view, newTemplate, templateRoot);
             } else
             {
                 if (!block.isVisible())
                 {
                     JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.TRACE_LEVEL, JOTView.class, "Removing invisible block:" + jotId);
-                    // keeping what's is AFTER the tag.
-                    safeAppendReplacement(m, buf, restOfTemplate.substring(pair.getY(), restOfTemplate.length()));
+                    // keeping what's is befor & AFTER the tag.
+                    String newTemplate = template.substring(0,m.end()) + template.substring(pair.getY());
+                    template = parse(view, newTemplate, templateRoot);
                 } else
                 {
                     if (block.getContent() != null)
@@ -732,12 +716,12 @@ public class JOTViewParser
                         // replace old content by newContent
                         // keeping what's is AFTER the tag.
                         String newContent = parse(view, block.getContent(), templateRoot);
-                        safeAppendReplacement(m, buf, newContent + restOfTemplate.substring(pair.getY(), restOfTemplate.length()));
+                        String newTemplate = template.substring(0,m.end()) +newContent+ template.substring(pair.getY());
+                        template = parse(view, newTemplate, templateRoot);
                     }
                 }
             }
             template = buf.toString();
-        //JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTView.class, "New template:"+template);
         }//end while
 
         return template;
@@ -1093,7 +1077,7 @@ public class JOTViewParser
      * @param depth
      * @return [closingtagBeginIndex,clodingTagEndIndex] (-1 = !found)
      */
-    public static Pair findMatchingClosingTag(int pos, String template, Pattern openTag, Pattern closeTag)
+    public static JOTPair findMatchingClosingTag(int pos, String template, Pattern openTag, Pattern closeTag)
     {
         Matcher m2 = closeTag.matcher(template.substring(pos));
         while (m2.find())
@@ -1118,11 +1102,11 @@ public class JOTViewParser
             if (cpt==0)
             {
                 // balanced
-                return new Pair(pos+m2.start(),pos+m2.end());
+                return new JOTPair(pos+m2.start(),pos+m2.end());
             }
         }
         // not found
-        return new Pair(-1,-1);
+        return new JOTPair(-1,-1);
     }
 
     /**

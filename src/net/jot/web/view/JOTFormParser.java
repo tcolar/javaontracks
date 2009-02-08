@@ -8,7 +8,7 @@ http://www.javaontracks.net
  */
 package net.jot.web.view;
 
-import net.jot.utils.Pair;
+import net.jot.utils.JOTPair;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.regex.Matcher;
@@ -53,7 +53,7 @@ public class JOTFormParser extends JOTViewParser
 
 			String closeTagString="</form>";
 			Pattern closeTag=Pattern.compile(closeTagString,PATTERN_FLAGS);
-			Pair pair=findMatchingClosingTag(m.end(), template, OPEN_TAG_PATTERN, closeTag);
+			JOTPair pair=findMatchingClosingTag(m.end(), template, OPEN_TAG_PATTERN, closeTag);
             int index=pair.getX();
 			
 			if(index==-1)
@@ -149,32 +149,32 @@ public class JOTFormParser extends JOTViewParser
 			}
 			else if(type==JOTFormConst.LABEL)
 			{
-				pattern="(<label\\s+name=\""+key+"\"[^>]*>)(.*)";
+				pattern="(<label\\s+name=\""+key+"\"[^>]*>)";
 				closePattern="</label>";
 			}
 			else if(type==JOTFormConst.OBJECT)
 			{
-				pattern="(<object\\s+name=\""+key+"\"[^>]*>)(.*)";
+				pattern="(<object\\s+name=\""+key+"\"[^>]*>)";
 				closePattern="</object>";
 			}
 			else if(type==JOTFormConst.TEXTAREA)
 			{
-				pattern="(<textarea\\s+name=\""+key+"\"[^>]*>)(.*)";
+				pattern="(<textarea\\s+name=\""+key+"\"[^>]*>)";
 				closePattern="</textarea>";
 			}
 			else if(type==JOTFormConst.BUTTON)
 			{
-				pattern="(<button\\s+name=\""+key+"\"[^>]*>)(.*)";
+				pattern="(<button\\s+name=\""+key+"\"[^>]*>)";
 				closePattern="</button>";
 			}
 			else if(type==JOTFormConst.OBJECT)
 			{
-				pattern="(<object\\s+name=\""+key+"\"[^>]*>)(.*)";
+				pattern="(<object\\s+name=\""+key+"\"[^>]*>)";
 				closePattern="</object>";
 			}
 			else if(type==JOTFormConst.SELECT)
 			{
-				pattern="(<select\\s+name=\""+key+"\"[^>]*>)(.*)";
+				pattern="(<select\\s+name=\""+key+"\"[^>]*>)";
 				closePattern="</select>";
 			}
 			else if(type==JOTFormConst.OBJECT_PARAM)
@@ -183,12 +183,12 @@ public class JOTFormParser extends JOTViewParser
 			}
 			else if(type==JOTFormConst.SELECT_OPTGRP)
 			{
-				pattern="(<optgroup\\s+dataId=\""+key+"\"[^>]*>)(.*)";
+				pattern="(<optgroup\\s+dataId=\""+key+"\"[^>]*>)";
 				closePattern="</optgroup>";
 			}
 			else if(type==JOTFormConst.SELECT_OPTION)
 			{
-				pattern="(<option\\s+dataId=\""+key+"\"[^>]*>)(.*)";
+				pattern="(<option\\s+dataId=\""+key+"\"[^>]*>)";
 				closePattern="</option>";
 			}
 
@@ -231,15 +231,13 @@ public class JOTFormParser extends JOTViewParser
 				{
 					tag=m.group(1);
 					Pattern p2=Pattern.compile(closePattern, JOTViewParser.PATTERN_FLAGS);
-					Pair pt=findMatchingClosingTag(m.end(), content, null, p2);
+					JOTPair pt=findMatchingClosingTag(m.end(), content, null, p2);
                     int index=pt.getX();
+                    if(index==-1)
+                        throw new Exception("Failed findind matching tag for: "+m.group());
 					tagInside=content.substring(m.end(),index);
 					closeIndex=pt.getY();
-                    
-					//JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTFormParser.class, "Tag : "+tag);
-					//JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTFormParser.class, "Tail : "+tail);
-					//JOTLogger.log(JOTLogger.CAT_FLOW,JOTLogger.TRACE_LEVEL, JOTFormParser.class, "Tag inside : "+tagInside);
-				}
+ 				}
 				String newTag="";
 				if(!element.isVisible())
 				{

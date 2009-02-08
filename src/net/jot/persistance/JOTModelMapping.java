@@ -283,7 +283,7 @@ public class JOTModelMapping
             {
                 // Camel case transaformed to _  EX: userTable -> user_table
                 String lower = ("" + new Character(c)).toLowerCase();
-                if (i != 0)
+                if (newName.length()>0 && name.charAt(i-1)>='a' && name.charAt(i-1)<='z')
                 {
                     newName.append("_");
                 }

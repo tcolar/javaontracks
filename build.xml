@@ -48,7 +48,10 @@
     <target name="test" depends="jar">
         <java classname="net.jot.testing.JOTTester">
             <!--<classpath path="classes:/usr/share/java/postgresql-jdbc3-8.1.jar:lib/servlet-api.jar"/>-->
-            <classpath path="classes:test_libs/hsqldb.jar:lib/servlet-api.jar"/>
+            <classpath>
+                <pathelement path="${jotdoc.path}"/>
+                <pathelement path="classes:test_libs/hsqldb.jar:lib/servlet-api.jar"/>
+            </classpath>
             
             <arg value="classes"/>
             <!--<arg value="-debug"/>-->

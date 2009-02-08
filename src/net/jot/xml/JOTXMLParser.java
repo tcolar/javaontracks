@@ -9,7 +9,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import net.jot.utils.Pair;
+import net.jot.utils.JOTPair;
 import net.jot.web.view.JOTViewParser;
 
 /**
@@ -173,7 +173,7 @@ public class JOTXMLParser
             int i = 0;
             if (!oneLiner)
             {
-                Pair pair=JOTViewParser.findMatchingClosingTag(0, restOfTemplate, open, closeTag);
+                JOTPair pair=JOTViewParser.findMatchingClosingTag(0, restOfTemplate, open, closeTag);
                 i=pair.getX();
 
                 if (i == -1)
