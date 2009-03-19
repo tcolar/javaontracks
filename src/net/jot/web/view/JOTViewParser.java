@@ -26,7 +26,7 @@ import net.jot.utils.JOTUtilities;
 import net.jot.utils.JOTPair;
 import net.jot.web.JOTFlowClassCache;
 import net.jot.web.JOTMainFilter;
-import net.jot.web.JOTTemplateCache;
+import net.jot.utils.JOTTextFileCache;
 
 /*
 Rather than parse the template each time, preload a "programatic view of it"
@@ -47,16 +47,15 @@ import net.jot.web.widget.JOTWidgetBase;
 /**
  * This is the main parser that takes a View object and a Template and spits out HTML code to the browser.
  * It makes heavy use of headache-inducing Regular expressions.
- * 
+ * Note that this is all static.
  */
 public class JOTViewParser
 {
-
     protected static final String MISSING_VALUE = "MISSING_VALUE !";
     protected static final String COUNTER_NAME = "cpt";
     protected static final String LOOP_STACK = "__JOT_LOOP_STACK";
     // we want to ignore the case of the tag, ".*" to allow multiple lines and allow the html to be multilines.  canon=unicode insensitive
-    protected static final int PATTERN_FLAGS = Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE | Pattern.CANON_EQ;
+    public static final int PATTERN_FLAGS = Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE | Pattern.CANON_EQ;
     // Main patterns
     //TODO: jot:wrap
     protected static final Pattern FORM_PATTERN = Pattern.compile("(<form\\s+jotclass=\"([^\"]+)\"[^>]*>)", PATTERN_FLAGS);
@@ -221,7 +220,7 @@ public class JOTViewParser
 
             File f = new File(JOTUtilities.endWithSlash(templateRoot) + file);
 
-            String include = JOTTemplateCache.getTemplate(f.getAbsolutePath());
+            String include = JOTTextFileCache.getFileText(f.getAbsolutePath());
             try
             {
                 include = parse(view, include, templateRoot);
@@ -1121,7 +1120,7 @@ public class JOTViewParser
         File f = new File(JOTUtilities.endWithSlash(templateRoot) + templateFile);
         long startTime = new GregorianCalendar().getTime().getTime();
         // Get template from cache
-        String templateString = JOTTemplateCache.getTemplate(f.getAbsolutePath());
+        String templateString = JOTTextFileCache.getFileText(f.getAbsolutePath());
         String template = parse(view, templateString, templateRoot);
         long endTime = new GregorianCalendar().getTime().getTime();
         JOTLogger.log(JOTLogger.CAT_FLOW, JOTLogger.DEBUG_LEVEL, JOTView.class, "Parsing of template: " + f.getAbsolutePath() + " took " + (endTime - startTime) + "ms");

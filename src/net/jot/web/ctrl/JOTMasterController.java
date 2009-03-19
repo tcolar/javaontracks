@@ -29,7 +29,7 @@ import net.jot.web.JOTFlowClassCache;
 import net.jot.web.JOTFlowConfig;
 import net.jot.web.JOTFlowDirective;
 import net.jot.web.JOTFlowRequest;
-import net.jot.web.JOTTemplateCache;
+import net.jot.utils.JOTTextFileCache;
 import net.jot.web.flowparams.JOTParamBase;
 import net.jot.web.forms.JOTForm;
 import net.jot.web.forms.JOTGeneratedForm;
@@ -370,7 +370,7 @@ public class JOTMasterController
         {
             File templateFile = new File(templateRoots[i], template);
             String templateString = "";
-            templateString = JOTTemplateCache.getTemplate(templateFile.getAbsolutePath());
+            templateString = JOTTextFileCache.getFileText(templateFile.getAbsolutePath());
             found=true;
             sendResponse(response, templateString);
         }
