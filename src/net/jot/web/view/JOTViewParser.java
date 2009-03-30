@@ -89,6 +89,8 @@ public class JOTViewParser
     protected static final String CLOSE_IF_STRING = "</jot:if>";
     protected static final Pattern CLOSE_IF_PATTERN = Pattern.compile(CLOSE_IF_STRING, PATTERN_FLAGS);
     protected static final Pattern PARAMS_PATTERN = Pattern.compile("([^,]*)[,]?", PATTERN_FLAGS);
+	private static JOTViewParserInterface preProcessor=null;
+	private static JOTViewParserInterface postProcessor=null;
 
     /**
      * Parse the whole template file as a String.
@@ -99,6 +101,7 @@ public class JOTViewParser
      */
     public static String parse(JOTViewParserData view, String template, String templateRoot) throws Exception
     {
+		template=preProcess(template, view, templateRoot);
         template = doWidgets(template, view);
         template = doUrls(template, view);
         template = do1LineBlocks(template, view);
@@ -112,6 +115,7 @@ public class JOTViewParser
         template = doVariables2(template, view);
         template = JOTFormParser.doForms(template, view, templateRoot);
         template = doIncludes(template, view, templateRoot);
+		template=postProcess(template, view, templateRoot);
         return template;
     }
 
@@ -1243,4 +1247,33 @@ public class JOTViewParser
         m.appendTail(buf);
         return buf.toString();
     }
+
+	private static String postProcess(String template, JOTViewParserData view, String templateRoot) throws Exception
+	{
+		if (preProcessor!=null)
+			return preProcessor.process(template, view, templateRoot);
+		return template;
+	}
+
+	private static String preProcess(String template, JOTViewParserData view, String templateRoot) throws Exception
+	{
+		if (postProcessor!=null)
+			return postProcessor.process(template, view, templateRoot);
+		return template;
+	}
+
+	/**
+	 * set your own custom preprocessor
+	 * @param postprocessor
+	 */
+	public static void setPostProcessor(JOTViewParserInterface postprocessor)
+	{
+		postProcessor = postprocessor;
+	}
+
+	public static void setPreProcessor(JOTViewParserInterface preprocessor)
+	{
+		preProcessor = preprocessor;
+	}
+
 }
