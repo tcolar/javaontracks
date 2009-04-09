@@ -15,24 +15,20 @@ import java.math.BigDecimal;
 import net.jot.logger.JOTLogger;
 import net.jot.persistance.JOTModel;
 import net.jot.persistance.builders.JOTQueryBuilder;
-import net.jot.persistance.query.JOTQueryManager;
 import net.jot.utils.JOTUtilities;
 import net.jot.web.JOTFlowRequest;
 import net.jot.web.forms.ui.JOTFormField;
 
 /**
  * This form helps into automatically generating/parsing an HTMl form to/From a Database entry(DB Model) 
- * It allows for simple CRUD actions on a db object.
+ * It allows for simple CRUD actions on a particular db object (just one)
  *
  * This is an extension of JOTGeneratedForm, see that for extra documentation.
  *
- * TODO: maybe sublass this for fully automated form
- * this would use a text file description of the form 
- * and be fully automatic (stored in db)
  * @author thibautc
  *
  */
-public abstract class JOTDBForm extends JOTGeneratedForm
+public abstract class JOTDBItemForm extends JOTGeneratedForm
 {
 
     /** ID for JOT form*/
@@ -55,11 +51,10 @@ public abstract class JOTDBForm extends JOTGeneratedForm
         String html = super.getFormBowells(request);
 
         // We want to add the form ID
-        JOTDBForm form = (JOTDBForm) this;
-        long id = form.getModel().getId();
+        long id = getModel().getId();
         if (id != -1)
         {
-            String modelClass = form.getModel().getClass().getName();
+            String modelClass = getModel().getClass().getName();
             html += "\n<input type='hidden' name='" + JOT_GENERATED_FORM_ID + "' value='" + id + "'>";
 
             //We also add an ID token for a bit of security, so a user can't just mess with the ID and mess things up too much.

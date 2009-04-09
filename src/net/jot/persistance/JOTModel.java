@@ -188,7 +188,7 @@ public abstract class JOTModel extends JOTModelAddons
     }
 
     /**
-     * Return the fields values
+     * Return all fields values
      * @param mapping
      * @param conds
      * @return

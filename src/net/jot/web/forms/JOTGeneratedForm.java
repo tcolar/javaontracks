@@ -35,7 +35,7 @@ import net.jot.web.view.JOTFormParser;
  * @author thibautc
  *
  */
-public abstract class JOTGeneratedForm extends JOTForm
+public abstract class JOTGeneratedForm extends JOTForm implements JOTGeneratedFormInterface
 {
 
     public static final String HAD_SUCCESS = "_GeneratedForm_success";

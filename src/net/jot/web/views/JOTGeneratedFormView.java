@@ -9,7 +9,7 @@ http://www.javaontracks.net
 package net.jot.web.views;
 
 import net.jot.logger.JOTLogger;
-import net.jot.web.forms.JOTGeneratedForm;
+import net.jot.web.forms.JOTGeneratedFormInterface;
 import net.jot.web.view.JOTView;
 
 /**
@@ -22,7 +22,7 @@ public abstract class JOTGeneratedFormView extends JOTView
 
   public void prepareViewData() throws Exception
   {
-    JOTGeneratedForm form = (JOTGeneratedForm) request.getAttribute(GENERATED_FORM);
+    JOTGeneratedFormInterface form = (JOTGeneratedFormInterface) request.getAttribute(GENERATED_FORM);
     
     String htmlForm = "";
     if(form!=null)
