@@ -11,10 +11,12 @@ package net.jot.web.forms.ui;
 import net.jot.web.forms.JOTFormConst;
 
 /**
-Generic form field, use subclasses instead such as JOTFormTextField
+ * Generic form field, use subclasses instead such as JOTFormTextField
+ *
+ * Note: clonable, watch if adding mutable fields later
 @author thibautc
 */
-public abstract class JOTFormField
+public abstract class JOTFormField implements Cloneable
 {
 
   protected String name = "";
@@ -98,5 +100,10 @@ If false, then that particular field won't be saved.
   public void setSaveAutomatically(boolean saveAutomatically)
   {
     this.saveAutomatically = saveAutomatically;
+  }
+
+  public Object clone() throws CloneNotSupportedException
+  {
+	  return super.clone();
   }
 }

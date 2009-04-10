@@ -128,82 +128,11 @@ public abstract class JOTDBItemForm extends JOTGeneratedForm
     public void save(JOTFlowRequest request) throws Exception
     {
         // get all the form fields values and store them in the model
-        for (int i = 0; i != items.size(); i++)
-        {
-            if (items.get(i) instanceof JOTFormField)
-            {
-                JOTFormField field = (JOTFormField) items.get(i);
-                String name = field.getName();
-                JOTFormElement el = get(name);
-                if (el != null && field.isSaveAutomatically())
-                {
-                    Object value = el.getValue();
-                    Field f = getField(model,name);
-                    if (model.getMapping().getFields().containsKey(name))
-                    {
-                        boolean isTransient=f!=null && Modifier.isTransient(f.getModifiers());
-                        if(!isTransient && !name.startsWith("__"))
-                        {
-                        String v = (String) value;
-                        if (f.getType() == String.class)
-                        {
-                            value = (String) value;
-                        } else if (f.getType() == Boolean.class)
-                        {
-                            value = new Boolean(v.length() > 0 && !v.equalsIgnoreCase("false"));
-                        } else if (f.getType() == Integer.class)
-                        {
-                            value = new Integer(v);
-                        } else if (f.getType() == Byte.class)
-                        {
-                            value = new Byte(v);
-                        } else if (f.getType() == Short.class)
-                        {
-                            value = new Short(v);
-                        } else if (f.getType() == Long.class)
-                        {
-                            value = new Long(v);
-                        } else if (f.getType() == Float.class)
-                        {
-                            value = new Float(v);
-                        } else if (f.getType() == Double.class)
-                        {
-                            value = new Double(v);
-                        } else if (f.getType() == BigDecimal.class)
-                        {
-                            value = new BigDecimal(v);
-                        }
-
-                        //TBD: timstamp / date /time ?
-                        f.set(model, value);
-                        }
-                        else
-                        {
-                            JOTLogger.debug(this, "Skipping form field: "+name);
-                        }
-                    } else
-                    {
-                        JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.DEBUG_LEVEL, this, "Form field: '" + name + "' does not exist in DB, ignoring.");
-                    }
-                }
-            }
-        }
+		model=updateModelFromRequest(model, items, request);
         // then save the model
         model.save();
     }
 
-    private Field getField(JOTModel model,String fieldName)
-    {
-        Field f=null;
-        try
-        {
-            f=model.getClass().getField(fieldName);
-        }catch(NoSuchFieldException e)
-        {
-        }
-        return f;
-    }
-    
     /**
      * This should be implemented so that it:
      * - retrieves/update the "model" object(ie: does the db query to find/update the DB/Model object).
