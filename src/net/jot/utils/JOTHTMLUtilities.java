@@ -63,10 +63,10 @@ public class JOTHTMLUtilities
 		{
 			text=doCurleys(text);
 		}
-		else
+		/*else
 		{
 			text=doStraight(text);
-		}
+		}*/
 		if((flags & ENCODE_SYMBOLS)>0)
 		{
 			text=doSymbols(text);
