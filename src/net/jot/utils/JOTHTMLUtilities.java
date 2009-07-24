@@ -59,11 +59,11 @@ public class JOTHTMLUtilities
 			text=text.replaceAll(">", "&gt;");
 		}
 		
-		if((flags & ENCODE_CURLEYS)>0)
+		/*if((flags & ENCODE_CURLEYS)>0)
 		{
 			text=doCurleys(text);
 		}
-		/*else
+		else
 		{
 			text=doStraight(text);
 		}*/

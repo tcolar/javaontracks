@@ -782,5 +782,14 @@ public class JOTUtilities
         Vector v = new Vector(coll);
         return (File[])v.toArray(files);
     }
+
+	public static String getShortClassname(Class clazz)
+	{
+		if(clazz==null) return "null";
+		String name=clazz.getName();
+		if(name!=null && name.indexOf(".")!=-1)
+			name=name.substring(name.lastIndexOf(".")+1);
+		return name;
+	}
 }
 
