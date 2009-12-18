@@ -11,6 +11,7 @@ package net.jot.persistance;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.net.URL;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -120,7 +121,7 @@ public class JOTPersistanceManager
       for (int i = 0; i != dbs.length; i++)
       {
         String dbProps = dbs[i];
-        File props = ((JOTPreferences) prefs).findAssociatedPropsFile(dbProps);
+        URL props = ((JOTPreferences) prefs).findAssociatedPropsItem(dbProps);
         if (props != null)
         {
           loadDbs(props);
@@ -138,13 +139,13 @@ public class JOTPersistanceManager
          * Loads the databases according to the property file
          * @param props
          */
-  private void loadDbs(File props) throws Exception
+  private void loadDbs(URL props) throws Exception
   {
     String dbHandle = null;
     JOTPropertiesPreferences dbPrefs = new JOTPropertiesPreferences();
     try
     {
-      dbPrefs.loadFrom(new FileInputStream(props));
+      dbPrefs.loadFrom(props.openStream());
       String type = dbPrefs.getString("db.type");
       if (type == null)
       {

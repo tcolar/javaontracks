@@ -15,7 +15,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import java.util.logging.LogManager;
 import net.jot.JOTInitializer;
 import net.jot.db.JOTDBField;
 import net.jot.db.JOTDBJDBCSetup;

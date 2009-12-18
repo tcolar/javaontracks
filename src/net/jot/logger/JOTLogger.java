@@ -62,7 +62,7 @@ public final class JOTLogger
     private static PrintStream printer = null;
     // Until the logger is properly initialized, we log to a in memory buffer, once inited, the buffer is flushed to the log filed and cleared.
     private static ByteArrayOutputStream tmpStream = null;
-    private static Vector levels = null;
+    private static Vector levels = new Vector();
     private static String defaultCategory = "APP";
     private static Vector categories = null;
     public static final String CAT_MAIN = "JOT";

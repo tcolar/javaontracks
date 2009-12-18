@@ -156,6 +156,24 @@
         </javadoc>
     </target>
 
+    <!-- nb -->
+    <target name="jotdoc-netbeans" depends="jar">
+	<!-- had to remove org.openide.util.enum (enum is not allowed) -->
+	<!--<mkdir dir="/tmp/nbsources"/>
+	<copy todir="/tmp/nbsources">
+	    <fileset dir="../netbeans6.7/"/>
+		<include name="*/src/**"/>
+	    </fileset>
+	</copy>-->
+        <javadoc sourcepath="/tmp/nbsources" destdir="/tmp/jotdoc/netbeans" packagenames="*" doctitle="Netbeans 6.7" windowtitle="Netbeans 6.7" link="../jdk1.6/" splitindex="true" maxmemory="3048m">
+            <doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
+            <arg value="-linksource"/>
+            <classpath>
+                <pathelement path="${jotdoc.path}"/>
+            </classpath>
+        </javadoc>
+    </target>
+
     <target name="jotdoc-clean">
         <delete dir="/tmp/jotdoc/"/>
     </target>

@@ -9,11 +9,10 @@ http://www.javaontracks.net
 package net.jot.prefs;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import java.net.URL;
 import net.jot.logger.JOTLogger;
 import net.jot.utils.JOTUtilities;
 
@@ -26,7 +25,7 @@ public class JOTPreferences extends JOTPropertiesPreferences
 {
     // singleton
     private static JOTPreferences prefs = null;
-    private File prefsFile = null;
+    private URL prefsFile = null;
     // the web serverwill pass us that at start time.
     private static String webConfPath = null;
 
@@ -64,7 +63,7 @@ public class JOTPreferences extends JOTPropertiesPreferences
         {
             try
             {
-                setPrefsFile(f);
+                setPrefsFile(f.toURI().toURL());
             } catch (Exception e)
             {
                 JOTLogger.logException(JOTLogger.CAT_MAIN, JOTLogger.CRITICAL_LEVEL, this, "Failed to load Preference file: " + f.getAbsolutePath(), e);
@@ -73,14 +72,14 @@ public class JOTPreferences extends JOTPropertiesPreferences
     }
 
     /**
-     * Sets the InputStream to fetch taht conatins the preferences.
+     * Sets the InputStream to fetch that contains the preferences.
      * @param input
      */
-    public void setPrefsFile(File f) throws IOException
+    public void setPrefsFile(URL u) throws IOException
     {
-        InputStream input = new FileInputStream(f);
+        InputStream input = u.openStream();
         loadFrom(input);
-        prefsFile = f;
+        prefsFile = u;
     }
 
     /**
@@ -153,7 +152,11 @@ public class JOTPreferences extends JOTPropertiesPreferences
     {
         try
         {
-            saveTo(new FileOutputStream(prefsFile));
+			File f = new File(prefsFile.toURI());
+			if(f.exists() && f.canWrite())
+			{
+				saveTo(f);
+			}
         } catch (Exception e)
         {
         }
@@ -165,18 +168,21 @@ public class JOTPreferences extends JOTPropertiesPreferences
      * @param props
      * @return
      */
-    public File findAssociatedPropsFile(String props)
+    public URL findAssociatedPropsItem(String props)
     {
-        File f = null;
-        if (props.indexOf('/') != -1 || props.indexOf('\\') != -1)
+        URL u = null;
+        /*if (props.indexOf('/') != -1 || props.indexOf('\\') != -1)
         {
             // try an absolute path
-            f = new File(props);
-        } else
+            u = new File(props);
+        } else*/
         {
             // try a relative path
-            f = new File(prefsFile.getParent(), props);
+			try
+			{
+				u = prefsFile.toURI().resolve(props).toURL();
+			}catch(Exception e){e.printStackTrace();}
         }
-        return f;
+        return u;
     }
 }

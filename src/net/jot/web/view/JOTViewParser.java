@@ -101,7 +101,7 @@ public class JOTViewParser
      */
     public static String parse(JOTViewParserData view, String template, String templateRoot) throws Exception
     {
-		template=preProcess(template, view, templateRoot);
+	template=preProcess(template, view, templateRoot);
         template = doWidgets(template, view);
         template = doUrls(template, view);
         template = do1LineBlocks(template, view);
