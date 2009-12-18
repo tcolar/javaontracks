@@ -259,7 +259,7 @@ public final class JOTLogger
     public static synchronized void init(JOTPreferenceInterface prefs, String folder, String logFile)
     {
         //creating the folder if it does not exist yet
-        new File(folder).mkdirs();
+         new File(folder).mkdirs();
         folder = JOTUtilities.endWithSlash(folder);
         folder += logFile;
         String levelsString = prefs.getString("jot.logger.levels");

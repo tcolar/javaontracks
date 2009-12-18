@@ -24,23 +24,28 @@
             </folders>
             <ide-actions>
                 <action name="build">
+                    <script>nbproject/nbjdk.xml</script>
                     <target>jar</target>
                 </action>
                 <action name="clean">
+                    <script>nbproject/nbjdk.xml</script>
                     <target>clean</target>
                 </action>
                 <action name="javadoc">
+                    <script>nbproject/nbjdk.xml</script>
                     <target>javadoc</target>
                 </action>
                 <action name="test">
+                    <script>nbproject/nbjdk.xml</script>
                     <target>test</target>
                 </action>
                 <action name="rebuild">
+                    <script>nbproject/nbjdk.xml</script>
                     <target>clean</target>
                     <target>jar</target>
                 </action>
                 <action name="run.single">
-                    <script>nbproject/ide-file-targets.xml</script>
+                    <script>nbproject/nbjdk.xml</script>
                     <target>run-selected-file-in-src</target>
                     <context>
                         <property>run.class</property>
@@ -53,7 +58,7 @@
                     </context>
                 </action>
                 <action name="debug.single">
-                    <script>nbproject/ide-file-targets.xml</script>
+                    <script>nbproject/nbjdk.xml</script>
                     <target>debug-selected-file-in-src</target>
                     <context>
                         <property>debug.class</property>
@@ -66,13 +71,14 @@
                     </context>
                 </action>
                 <action name="debug">
-                    <script>nbproject/ide-targets.xml</script>
+                    <script>nbproject/nbjdk.xml</script>
                     <target>debug-nb</target>
                 </action>
             </ide-actions>
             <export>
                 <type>jar</type>
                 <location>dist/javaOnTracks.jar</location>
+                <script>nbproject/nbjdk.xml</script>
                 <build-target>jar</build-target>
             </export>
             <view>
@@ -99,7 +105,7 @@
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/1">
             <compilation-unit>
                 <package-root>src</package-root>
-                <classpath mode="compile">lib/servlet-api.jar:test_libs/hsqldb.jar:../../../../usr/lib/jvm/java-1.5.0-sun/lib/tools.jar:../../../../usr/lib/jvm/java-6-sun/lib/tools.jar</classpath>
+                <classpath mode="compile">lib/servlet-api.jar:test_libs/hsqldb.jar</classpath>
                 <built-to>dist/javaOnTracks.jar</built-to>
                 <source-level>1.4</source-level>
             </compilation-unit>

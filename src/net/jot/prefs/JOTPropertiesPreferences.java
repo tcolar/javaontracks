@@ -14,6 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Iterator;
 import java.util.Properties;
 
 /**
@@ -104,6 +105,12 @@ public class JOTPropertiesPreferences implements JOTPreferenceInterface
 	{
           props.clear();
           props.load(input);
+		  Iterator it = props.keySet().iterator();
+		  while(it.hasNext())
+		  {
+			  String k= (String)it.next();
+			  System.out.println("Loaded prop: "+k+" -> "+props.getProperty(k));
+		  }
 	}
         
         /**
