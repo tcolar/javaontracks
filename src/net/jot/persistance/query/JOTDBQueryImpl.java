@@ -163,7 +163,7 @@ public class JOTDBQueryImpl implements JOTQueryInterface
      */
     public String getColumnsDefinition(JOTModelMapping mapping)
     {
-        String columns = "" + mapping.getPrimaryKey() + " BIGINT";
+        String columns = "" + mapping.getPrimaryKey() + " BIGINT NOT NULL";
         Enumeration e = mapping.getFields().elements();
         while (e.hasMoreElements())
         {

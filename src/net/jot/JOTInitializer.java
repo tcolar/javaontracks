@@ -48,10 +48,8 @@ public class JOTInitializer
      */
     public void init() throws Exception
     {
-        // give time to debugger to start
-        //Thread.sleep(5000);        
         destroyed = false;
-        // Initializing the prefs (we need the prefs to initialized the logger)
+        // Initializing the prefs (we need the prefs to initialize the logger)
         JOTPreferenceInterface prefs = JOTPreferences.getInstance();
         // Initializing the Logger
         JOTLogger.init(prefs, "jot.log");

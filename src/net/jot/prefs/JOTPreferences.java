@@ -9,10 +9,11 @@ http://www.javaontracks.net
 package net.jot.prefs;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import java.net.URL;
 import net.jot.logger.JOTLogger;
 import net.jot.utils.JOTUtilities;
 
@@ -25,7 +26,7 @@ public class JOTPreferences extends JOTPropertiesPreferences
 {
     // singleton
     private static JOTPreferences prefs = null;
-    private URL prefsFile = null;
+    private File prefsFile = null;
     // the web serverwill pass us that at start time.
     private static String webConfPath = null;
 
@@ -37,14 +38,14 @@ public class JOTPreferences extends JOTPropertiesPreferences
         webConfPath = path;
     }
 
-    public final static JOTPreferences getInstance()
+    public static JOTPreferences getInstance()
     {
         if (prefs == null)
         {
             synchronized (JOTPreferences.class)
             {
-                    prefs = new JOTPreferences();
-                    prefs.initPrefs();
+                prefs = new JOTPreferences();
+                prefs.initPrefs();
             }
         }
         return prefs;
@@ -56,30 +57,30 @@ public class JOTPreferences extends JOTPropertiesPreferences
     public void initPrefs()
     {
         // log the used file wherever possible (system out)
-        String prefsFile = findPrefsFile();
-        JOTLogger.log(JOTLogger.CAT_MAIN, JOTLogger.INFO_LEVEL, this, "Using Pref file: " + prefsFile);
-        File f = new File(prefsFile);
-        if (f.exists())
+        prefsFile = new File(findPrefsFile());
+        //JOTLogger.log(JOTLogger.CAT_MAIN, JOTLogger.INFO_LEVEL, this, "Using Pref file: " + prefsFile);
+        if (prefsFile != null && prefsFile.exists())
         {
             try
             {
-                setPrefsFile(f.toURI().toURL());
+                setPrefsFile(prefsFile);
             } catch (Exception e)
             {
-                JOTLogger.logException(JOTLogger.CAT_MAIN, JOTLogger.CRITICAL_LEVEL, this, "Failed to load Preference file: " + f.getAbsolutePath(), e);
+                e.printStackTrace();
             }
         }
+
     }
 
     /**
-     * Sets the InputStream to fetch that contains the preferences.
+     * Sets the InputStream to fetch taht conatins the preferences.
      * @param input
      */
-    public void setPrefsFile(URL u) throws IOException
+    public void setPrefsFile(File f) throws IOException
     {
-        InputStream input = u.openStream();
+        InputStream input = new FileInputStream(f);
         loadFrom(input);
-        prefsFile = u;
+        prefsFile = f;
     }
 
     /**
@@ -152,11 +153,7 @@ public class JOTPreferences extends JOTPropertiesPreferences
     {
         try
         {
-			File f = new File(prefsFile.toURI());
-			if(f.exists() && f.canWrite())
-			{
-				saveTo(f);
-			}
+            saveTo(new FileOutputStream(prefsFile));
         } catch (Exception e)
         {
         }
@@ -168,21 +165,18 @@ public class JOTPreferences extends JOTPropertiesPreferences
      * @param props
      * @return
      */
-    public URL findAssociatedPropsItem(String props)
+    public File findAssociatedPropsFile(String props)
     {
-        URL u = null;
-        /*if (props.indexOf('/') != -1 || props.indexOf('\\') != -1)
+        File f = null;
+        if (props.indexOf('/') != -1 || props.indexOf('\\') != -1)
         {
             // try an absolute path
-            u = new File(props);
-        } else*/
+            f = new File(props);
+        } else
         {
             // try a relative path
-			try
-			{
-				u = prefsFile.toURI().resolve(props).toURL();
-			}catch(Exception e){e.printStackTrace();}
+            f = new File(prefsFile.getParent(), props);
         }
-        return u;
+        return f;
     }
 }

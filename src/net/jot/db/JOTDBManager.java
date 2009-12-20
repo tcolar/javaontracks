@@ -135,7 +135,7 @@ public class JOTDBManager
                     try
                     {
                         JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.INFO_LEVEL, this, "Creating jotcounters table.");
-                        update(con, "CREATE TABLE jotcounters(name varchar(40), val varchar(10))");
+                        update(con, "CREATE TABLE jotcounters(name varchar(40) NOT NULL, val varchar(10))");
                         update(con, "ALTER TABLE jotcounters ADD PRIMARY KEY (name)");
                     } catch (SQLException e)
                     {

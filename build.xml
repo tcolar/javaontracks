@@ -32,7 +32,7 @@
         <delete file="dist/javaOnTracks.jar"></delete>
         <jar destfile="dist/javaOnTracks.jar">
             <fileset dir="classes"/>
-            <fileset dir="resources"/>
+            <!--<fileset dir="resources"/>-->
         </jar>
     </target>
     

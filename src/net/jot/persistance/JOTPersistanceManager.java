@@ -121,7 +121,7 @@ public class JOTPersistanceManager
       for (int i = 0; i != dbs.length; i++)
       {
         String dbProps = dbs[i];
-        URL props = ((JOTPreferences) prefs).findAssociatedPropsItem(dbProps);
+        File props = ((JOTPreferences) prefs).findAssociatedPropsFile(dbProps);
         if (props != null)
         {
           loadDbs(props);
@@ -139,13 +139,13 @@ public class JOTPersistanceManager
          * Loads the databases according to the property file
          * @param props
          */
-  private void loadDbs(URL props) throws Exception
+  private void loadDbs(File props) throws Exception
   {
     String dbHandle = null;
     JOTPropertiesPreferences dbPrefs = new JOTPropertiesPreferences();
     try
     {
-      dbPrefs.loadFrom(props.openStream());
+      dbPrefs.loadFrom(new FileInputStream(props));
       String type = dbPrefs.getString("db.type");
       if (type == null)
       {

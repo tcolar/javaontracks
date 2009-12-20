@@ -23,127 +23,129 @@ import java.util.Properties;
  */
 public class JOTPropertiesPreferences implements JOTPreferenceInterface
 {
-	protected Properties props=new Properties();
-	
+
+	protected Properties props = new Properties();
+
 	public Boolean getBoolean(String key)
 	{
-		String val=getString(key);
-		return val==null?null:new Boolean(val.equalsIgnoreCase("true")||val.equalsIgnoreCase("CHECKED"));
+		String val = getString(key);
+		return val == null ? null : new Boolean(val.equalsIgnoreCase("true") || val.equalsIgnoreCase("CHECKED"));
 	}
 
 	public Boolean getDefaultedBoolean(String key, Boolean defaultValue)
 	{
-		Boolean b=getBoolean(key);
-		return b==null?defaultValue:b;
+		Boolean b = getBoolean(key);
+		return b == null ? defaultValue : b;
 	}
 
-    public Long getDefaultedLong(String key, Long defaultValue)
-    {
-		Long l=(Long)props.get(key);
-		return l==null?defaultValue:l;
-        
-    }
+	public Long getDefaultedLong(String key, Long defaultValue)
+	{
+		Long l = (Long) props.get(key);
+		return l == null ? defaultValue : l;
+
+	}
 
 	public String getDefaultedString(String key, String defaultValue)
 	{
-		String s=(String)props.get(key);
-		return s==null?defaultValue:s;
+		String s = (String) props.get(key);
+		return s == null ? defaultValue : s;
 	}
 
 	public String getString(String key)
 	{
-		return (String)props.get(key);
+		return (String) props.get(key);
 	}
 
 	public Integer getInt(String key)
 	{
-		return new Integer((String)props.get(key));
-	}
-	
-	public Integer getDefaultedInt(String key, Integer defaultValue)
-	{
-		Integer i=null;
-		try
-		{
-			i=getInt(key);
-		}
-		catch(Exception e){}
-		if(i==null)
-			i=defaultValue;
-		return i;
-	}
-	
-        /**
-         * load prefs from given props file.
-         * @param f
-         * @throws java.io.IOException
-         */
-	public void loadFrom(File f) throws IOException
-	{
-                IOException exception=null;
-                FileInputStream input=null;
-		input=new FileInputStream(f);
-		try
-                {
-                  loadFrom(input);
-                }
-                catch(IOException e)
-                {
-                  exception=e;
-                }
-                finally
-                {
-                  if(input!=null)
-                    input.close();
-                }
-                
-                if(exception!=null)
-                  throw(exception);
+		return new Integer((String) props.get(key));
 	}
 
-        public void loadFrom(InputStream input) throws IOException
+	public Integer getDefaultedInt(String key, Integer defaultValue)
 	{
-          props.clear();
-          props.load(input);
-		  Iterator it = props.keySet().iterator();
-		  while(it.hasNext())
-		  {
-			  String k= (String)it.next();
-			  System.out.println("Loaded prop: "+k+" -> "+props.getProperty(k));
-		  }
+		Integer i = null;
+		try
+		{
+			i = getInt(key);
+		} catch (Exception e)
+		{
+		}
+		if (i == null)
+		{
+			i = defaultValue;
+		}
+		return i;
 	}
-        
-        /**
-         * Save prefs to stream
-         * @param output
-         * @throws java.io.IOException
-         */
+
+	/**
+	 * load prefs from given props file.
+	 * @param f
+	 * @throws java.io.IOException
+	 */
+	public void loadFrom(File f) throws IOException
+	{
+		IOException exception = null;
+		FileInputStream input = null;
+		input = new FileInputStream(f);
+		try
+		{
+			loadFrom(input);
+		} catch (IOException e)
+		{
+			exception = e;
+		} finally
+		{
+			if (input != null)
+			{
+				input.close();
+			}
+		}
+
+		if (exception != null)
+		{
+			throw (exception);
+		}
+	}
+
+	public void loadFrom(InputStream input) throws IOException
+	{
+		props.clear();
+		props.load(input);
+	}
+
+	/**
+	 * Save prefs to stream
+	 * @param output
+	 * @throws java.io.IOException
+	 */
 	public void saveTo(OutputStream output) throws IOException
 	{
 		props.store(output, null);
 	}
 
-        public void saveTo(File f) throws IOException
+	public void saveTo(File f) throws IOException
 	{
-                IOException exception=null;
-                FileOutputStream output=null;
-		output=new FileOutputStream(f);
+		IOException exception = null;
+		FileOutputStream output = null;
+		output = new FileOutputStream(f);
 		try
-                {
-                  saveTo(output);
-                }
-                catch(IOException e)
-                {
-                  exception=e;
-                }
-                finally
-                {
-                  if(output!=null)
-                    output.close();
-                }
-                
-                if(exception!=null)
-                  throw(exception);
+		{
+			saveTo(output);
+		} catch (IOException e)
+		{
+			exception = e;
+		} finally
+		{
+			if (output != null)
+			{
+				output.close();
+			}
+		}
+
+		if (exception != null)
+		{
+			throw (exception);
+		}
 	}
 
 	public void setBoolean(String key, Boolean value)
@@ -155,6 +157,4 @@ public class JOTPropertiesPreferences implements JOTPreferenceInterface
 	{
 		props.setProperty(key, value);
 	}
-
-
 }
