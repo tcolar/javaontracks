@@ -224,6 +224,7 @@ public class JOTDBQueryImpl implements JOTQueryInterface
             JOTTaggedConnection con = getConnection(transaction, model.getMapping());
             try
             {
+				// Should be CPT in uppercase, but dont want breaking change
                 model.setId(JOTDBManager.getInstance().nextVal(con, model.getMapping().getTableName() + "_cpt"));
             } catch (SQLException e)
             {
