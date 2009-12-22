@@ -131,7 +131,6 @@ public abstract class JOTModel extends JOTModelAddons
         Hashtable fieldsHash = new Hashtable();
         String[] ignoredFields = mapping.getIgnoredFields();
         Hashtable mappedFields = mapping.getMappedFields();
-
         Field[] fields = getClass().getFields();
         for (int i = 0; i != fields.length; i++)
         {
