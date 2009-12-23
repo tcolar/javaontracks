@@ -118,9 +118,9 @@ public class JOTDBQueryImpl implements JOTQueryInterface
 		JOTTaggedConnection con = JOTDBManager.getInstance().getConnection(mapping.getDBName());
 		try
 		{
-			if ( ! JOTDBManager.getInstance().tableExists(mapping.getDBName(), mapping.getTableName()))
+			if ( ! (transaction != null && transaction.hasCreatedTable(mapping.getTableName())))
 			{
-				if (transaction == null || ! transaction.hasCreatedTable(mapping.getTableName()))
+				if ( ! JOTDBManager.getInstance().tableExists(mapping.getDBName(), mapping.getTableName()))
 				{
 					// we need to prevent creating the table twice when using a transaction.
 					if(transaction!=null)
