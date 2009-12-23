@@ -15,7 +15,6 @@ import net.jot.persistance.JOTModel;
 import net.jot.persistance.JOTModelMapping;
 import net.jot.persistance.JOTQueryResult;
 import net.jot.persistance.JOTSQLCondition;
-import net.jot.persistance.JOTTransaction;
 import net.jot.persistance.query.JOTQueryManager;
 import net.jot.utils.JOTUtilities;
 
@@ -25,9 +24,8 @@ import net.jot.utils.JOTUtilities;
 * @author tcolar
 */
 public class JOTSelectQuery extends JOTQueryBase{
-	private final JOTTransaction transaction;
     
-    protected JOTSelectQuery(JOTTransaction transaction){this.transaction=transaction;}
+    protected JOTSelectQuery(){}
     /**
      * Execute the query and return a Vector of "modelClass"(JOTModel).
      * Find all matches - ifno conditions -> all.
@@ -42,7 +40,7 @@ public class JOTSelectQuery extends JOTQueryBase{
         {
             pms = params.toArray();
         }
-        JOTQueryResult result = JOTQueryManager.executeSQL(transaction, modelClass, sql.toString(), pms, flags);
+        JOTQueryResult result = JOTQueryManager.executeSQL(null, modelClass, sql.toString(), pms, flags);
         return result;
     }
 
