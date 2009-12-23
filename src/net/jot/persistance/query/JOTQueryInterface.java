@@ -63,13 +63,13 @@ public interface JOTQueryInterface
          * @param mapping
          * @throws java.lang.Exception
          */
-	public void deleteTable(JOTModelMapping mapping) throws Exception;
+	public void deleteTable(JOTTransaction transaction, JOTModelMapping mapping) throws Exception;
         /**
          * Delete the WHOLE TABLE in backend
          * @param mapping
          * @throws java.lang.Exception
          */
-	public void createTable(JOTModelMapping mapping) throws Exception;
+	public void createTable(JOTTransaction transaction, JOTModelMapping mapping) throws Exception;
 
         /**
          * Delete record in backend
@@ -83,7 +83,7 @@ public interface JOTQueryInterface
          * The field must be defined in the DB Model.
          * @throws java.lang.Exception
          */
-        public void alterAddField(JOTModelMapping mapping, JOTDBField field, Object defaultValue) throws Exception;
+        public void alterAddField(JOTTransaction transaction, JOTModelMapping mapping, JOTDBField field, Object defaultValue) throws Exception;
         
   
 }

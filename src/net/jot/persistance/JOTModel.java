@@ -57,7 +57,7 @@ public abstract class JOTModel extends JOTModelAddons
      * @return
      * @throws Exception
      */
-    public final JOTModelMapping getMapping() throws Exception
+    public final JOTModelMapping getMapping(JOTTransaction transaction) throws Exception
     {
         if (mapping == null)
         {
@@ -70,8 +70,8 @@ public abstract class JOTModel extends JOTModelAddons
                 mapping.setQueryClassName(queryImplClass.getName());
                 loadFields(mapping);
                 customize(mapping);
-                createTableIfNecessary(mapping);
-                if (!JOTPersistanceManager.getInstance().isDBUpgradeRunning())
+                createTableIfNecessary(transaction, mapping);
+                if ( ! JOTPersistanceManager.getInstance().isDBUpgradeRunning())
                 {
                     // during an upgrade this would fail.
                     validateMetadata(mapping);
@@ -268,8 +268,8 @@ public abstract class JOTModel extends JOTModelAddons
      */
     public void delete(JOTTransaction transaction) throws Exception
     {
-        JOTSQLCondition cond=new JOTSQLCondition("id", JOTSQLCondition.IS_EQUAL, new Long(id));
-        JOTQueryBuilder.deleteQuery(getClass()).where(cond).delete();
+        JOTSQLCondition cond=new JOTSQLCondition("ID", JOTSQLCondition.IS_EQUAL, new Long(id));
+        JOTQueryBuilder.deleteQuery(transaction, getClass()).where(cond).delete();
     }
 
     public void delete() throws Exception
@@ -293,10 +293,10 @@ public abstract class JOTModel extends JOTModelAddons
     /**
      * Creates the table in the DB, if it doesn't exists yet
      */
-    private void createTableIfNecessary(JOTModelMapping mapping) throws Exception
+    private void createTableIfNecessary(JOTTransaction transaction, JOTModelMapping mapping) throws Exception
     {
         JOTQueryInterface impl = JOTQueryManager.getImplementation(mapping.getQueryClassName());
-        impl.createTable(mapping);
+        impl.createTable(transaction, mapping);
     }
 
     public boolean isNew()

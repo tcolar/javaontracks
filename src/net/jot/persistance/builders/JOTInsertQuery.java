@@ -16,12 +16,9 @@ import net.jot.persistance.query.JOTQueryManager;
  */
 public class JOTInsertQuery extends JOTQueryBase
 {
-    protected JOTInsertQuery(){}
+	private final JOTTransaction transaction;
+    protected JOTInsertQuery(JOTTransaction transaction){this.transaction=transaction;}
     
-    public void insert(String[] fields, String[] values) throws Exception
-    {
-        insert(null, fields, values);
-    }
     /**
      * Runs the insert
      * @param transaction
@@ -29,7 +26,7 @@ public class JOTInsertQuery extends JOTQueryBase
      * @param values
      * @throws java.lang.Exception
      */
-    public void insert(JOTTransaction transaction, String[] fields, String[] values) throws Exception
+    public void insert(String[] fields, String[] values) throws Exception
     {
         appendToSQL("(");
         for (int i = 0; i != fields.length; i++)

@@ -50,7 +50,7 @@ public abstract class JOTAuthUser extends JOTModel
     public static boolean isNewUser(Class implClass, String login) throws Exception
     {
         JOTSQLCondition cond=new JOTSQLCondition("login", JOTSQLCondition.IS_EQUAL, login);
-        return JOTQueryBuilder.selectQuery(implClass).where(cond).findOne()==null;
+        return JOTQueryBuilder.selectQuery(null, implClass).where(cond).findOne()==null;
     }
 
     /**
@@ -66,13 +66,13 @@ public abstract class JOTAuthUser extends JOTModel
     {
         JOTSQLCondition cond=new JOTSQLCondition("login", JOTSQLCondition.IS_EQUAL, login);
         JOTSQLCondition cond2=new JOTSQLCondition("password", JOTSQLCondition.IS_EQUAL, password);
-        return JOTQueryBuilder.selectQuery(implClass).where(cond).where(cond2).findOne()!=null;
+        return JOTQueryBuilder.selectQuery(null, implClass).where(cond).where(cond2).findOne()!=null;
     }
 
     public static JOTAuthUser getUserByLogin(Class implClass, String login) throws Exception
     {
         JOTSQLCondition cond=new JOTSQLCondition("login", JOTSQLCondition.IS_EQUAL, login);
-        return (JOTAuthUser)JOTQueryBuilder.selectQuery(implClass).where(cond).findOne();
+        return (JOTAuthUser)JOTQueryBuilder.selectQuery(null, implClass).where(cond).findOne();
     }
 
     /**
@@ -88,7 +88,7 @@ public abstract class JOTAuthUser extends JOTModel
             JOTSQLCondition cond2=new JOTSQLCondition("permission", JOTSQLCondition.IS_EQUAL, permission);
             try
             {
-                return JOTQueryBuilder.selectQuery(getClass()).where(cond).where(cond2).findOne()!=null;
+                return JOTQueryBuilder.selectQuery(null, getClass()).where(cond).where(cond2).findOne()!=null;
             } catch (Exception e)
             {
                 JOTLogger.logException(JOTLogger.ERROR_LEVEL, this, "error looking for prmission", e);

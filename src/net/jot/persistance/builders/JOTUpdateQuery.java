@@ -16,8 +16,9 @@ import net.jot.persistance.query.JOTQueryManager;
  * @author tcolar
  */
 public class JOTUpdateQuery extends JOTQueryBase{
+	private final JOTTransaction transaction;
     
-    protected JOTUpdateQuery(){}
+    protected JOTUpdateQuery(JOTTransaction transaction){this.transaction=transaction;}
     /**
      * set the fields and values to be updated.
      * @param fields
@@ -46,10 +47,6 @@ public class JOTUpdateQuery extends JOTQueryBase{
      * @throws java.lang.Exception
      */
     public void executeUpdate() throws Exception
-    {
-        executeUpdate(null);
-    }
-    public void executeUpdate(JOTTransaction transaction) throws Exception
     {
         JOTQueryManager.updateSQL(transaction, modelClass, sql.toString(), params.toArray(), flags);
     }

@@ -5,7 +5,6 @@
 
 package net.jot.persistance;
 
-import java.util.Vector;
 import net.jot.persistance.query.JOTQueryInterface;
 import net.jot.persistance.query.JOTQueryManager;
 
@@ -125,21 +124,21 @@ abstract class JOTModelAddons
         JOTQueryManager.dumpToCSV(out, modelClass, params);
     }
 */
-    public static void deleteWholeTable(Class modelClass) throws Exception
+    public static void deleteWholeTable(JOTTransaction transaction, Class modelClass) throws Exception
     {        
-        JOTModelMapping mapping = JOTQueryManager.getMapping(modelClass);
+        JOTModelMapping mapping = JOTQueryManager.getMapping(transaction, modelClass);
         JOTQueryInterface impl = JOTQueryManager.getImplementation(mapping.getQueryClassName());
-        impl.deleteTable(mapping);
+        impl.deleteTable(transaction, mapping);
     }
     
         /**
      * Creates the table in the DB, if it doesn't exists yet
      */
-    protected static void createTableIfNecessary(Class modelClass) throws Exception
+    protected static void createTableIfNecessary(JOTTransaction transaction, Class modelClass) throws Exception
     {
-        JOTModelMapping mapping = JOTQueryManager.getMapping(modelClass);
+        JOTModelMapping mapping = JOTQueryManager.getMapping(transaction, modelClass);
         JOTQueryInterface impl = JOTQueryManager.getImplementation(mapping.getQueryClassName());
-        impl.createTable(mapping);
+        impl.createTable(transaction, mapping);
     }
 
     

@@ -104,7 +104,7 @@ public abstract class JOTDBItemForm extends JOTGeneratedForm
                     {
                         good = true;
                         Class theClass = Class.forName(modelClass);
-                        model = JOTQueryBuilder.findByID(theClass, new Integer(id).intValue());
+                        model = JOTQueryBuilder.findByID(null, theClass, new Integer(id).intValue());
                     }
                 }
             }

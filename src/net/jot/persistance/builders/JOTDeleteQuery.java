@@ -15,18 +15,16 @@ import net.jot.persistance.query.JOTQueryManager;
  * @author tcolar
  */
 public class JOTDeleteQuery extends JOTQueryBase{
-    protected JOTDeleteQuery(){}
+	private final JOTTransaction transaction;
+	
+    protected JOTDeleteQuery(JOTTransaction transaction){this.transaction=transaction;}
     
-    public void delete() throws Exception
-    {
-        delete(null);
-    }
     /**
      * actually runs the delete action
      * @param transaction
      * @throws java.lang.Exception
      */
-    public void delete(JOTTransaction transaction) throws Exception
+    public void delete() throws Exception
     {
         Object[] pms = null;
         if (params.size() > 0)

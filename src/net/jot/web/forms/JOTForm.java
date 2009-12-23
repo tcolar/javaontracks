@@ -259,7 +259,7 @@ public abstract class JOTForm extends JOTViewTag
 				{
 					Object value = el.getValue();
 					Field f = getField(model, name);
-					if (model.getMapping().getFields().containsKey(name))
+					if (model.getMapping(null).getFields().containsKey(name))
 					{
 						boolean isTransient = f != null && Modifier.isTransient(f.getModifiers());
 						if (!isTransient && !name.startsWith("__"))

@@ -72,7 +72,7 @@ public class TestUser extends JOTModel
 //	 for testing purpose we want to reset the table before each run
     public void resetTable() throws Exception
     {
-        deleteWholeTable(TestUser.class);
+        deleteWholeTable(null, TestUser.class);
     }
 
     public String toString()

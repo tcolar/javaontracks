@@ -25,8 +25,9 @@ import net.jot.utils.JOTUtilities;
 * @author tcolar
 */
 public class JOTSelectQuery extends JOTQueryBase{
+	private final JOTTransaction transaction;
     
-    protected JOTSelectQuery(){}
+    protected JOTSelectQuery(JOTTransaction transaction){this.transaction=transaction;}
     /**
      * Execute the query and return a Vector of "modelClass"(JOTModel).
      * Find all matches - ifno conditions -> all.
@@ -35,11 +36,6 @@ public class JOTSelectQuery extends JOTQueryBase{
      * @throws java.lang.Exception
      */
     public JOTQueryResult find() throws Exception
-    {
-        return find(null);
-    }
-
-    public JOTQueryResult find(JOTTransaction transaction) throws Exception
     {
         Object[] pms = null;
         if (params.size() > 0)
@@ -52,20 +48,8 @@ public class JOTSelectQuery extends JOTQueryBase{
 
     public JOTModel findOne() throws Exception
     {
-        return findOne(null);
-    }
-
-    /**
-     * Return the first result only
-     * or null if no results
-     * @param transaction
-     * @return
-     * @throws java.lang.Exception
-     */
-    public JOTModel findOne(JOTTransaction transaction) throws Exception
-    {
         limit(1);
-        return find(transaction).getFirstResult();
+        return find().getFirstResult();
     }
 
     /**
@@ -74,9 +58,9 @@ public class JOTSelectQuery extends JOTQueryBase{
      * @return
      * @throws java.lang.Exception
      */
-    public JOTModel findOrCreateOne(JOTTransaction transaction) throws Exception
+    public JOTModel findOrCreateOne() throws Exception
     {
-        JOTModel model = findOne(transaction);
+        JOTModel model = findOne();
         if (model == null)
         {
             model = (JOTModel) modelClass.newInstance();
@@ -84,11 +68,7 @@ public class JOTSelectQuery extends JOTQueryBase{
         return model;
     }
 
-    public JOTModel findOrCreateOne() throws Exception
-    {
-        return findOrCreateOne(null);
-    }
-
+ 
 
     /**
      * add a "limit" to the number of returned results
@@ -114,11 +94,11 @@ public class JOTSelectQuery extends JOTQueryBase{
     {
         Vector results = find().getAllResults();
         PrintWriter p = new PrintWriter(out);
-        JOTModelMapping mapping = JOTQueryManager.getMapping(modelClass);
+        JOTModelMapping mapping = JOTQueryManager.getMapping(null, modelClass);
         // write the metadata on the first line
         Hashtable fields = mapping.getFields();
         Enumeration fieldNames = fields.keys();
-        String header = mapping.getPrimaryKey() + ",";
+        String header = "ID" + ",";
         while (fieldNames.hasMoreElements())
         {
             String name = ((JOTDBField) fields.get(fieldNames.nextElement())).getFieldName();

@@ -39,7 +39,7 @@ public final class JOTQueryManager
     }*/
     public static void save(JOTTransaction transaction, JOTModel model) throws Exception
     {
-        JOTModelMapping mapping = getMapping(model.getClass());
+        JOTModelMapping mapping = getMapping(transaction, model.getClass());
         JOTQueryInterface impl = JOTQueryManager.getImplementation(mapping.getQueryClassName());
         impl.save(transaction, model);
     }
@@ -50,9 +50,9 @@ public final class JOTQueryManager
      * @return
      * @throws java.lang.Exception
      */
-    public static JOTModelMapping getMapping(Class modelClass) throws Exception
+    public static JOTModelMapping getMapping(JOTTransaction transaction, Class modelClass) throws Exception
     {
-        return getMapping(modelClass, true, true);
+        return getMapping(transaction, modelClass, true, true);
     }
 
     /**
@@ -63,7 +63,7 @@ public final class JOTQueryManager
      * @return
      * @throws Exception
      */
-    public static JOTModelMapping getMapping(Class modelClass, boolean runValidation, boolean createMissingTables) throws Exception
+    public static JOTModelMapping getMapping(JOTTransaction transaction, Class modelClass, boolean runValidation, boolean createMissingTables) throws Exception
     {
         String className = modelClass.getName();
         if (!modelMappings.containsKey(className))
@@ -82,7 +82,7 @@ public final class JOTQueryManager
                         JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.DEBUG_LEVEL, JOTModelMapping.class, "Adding impl: " + impl.getName());
                         implementations.put(impl.getName(), (JOTQueryInterface) impl.newInstance());
                     }
-                    JOTModelMapping mapping = model.getMapping();
+                    JOTModelMapping mapping = model.getMapping(transaction);
                     JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.DEBUG_LEVEL, JOTModelMapping.class, "Adding mapping for : " + className);
                     modelMappings.put(className, mapping);
                 }
@@ -118,23 +118,23 @@ public final class JOTQueryManager
      */
     public static JOTQueryResult executeSQL(JOTTransaction transaction, Class modelClass, String sql, Object[] params, JOTStatementFlags flags) throws Exception
     {
-        JOTModelMapping mapping = getMapping(modelClass);
+        JOTModelMapping mapping = getMapping(transaction, modelClass);
         JOTQueryInterface impl = getImplementation(mapping.getQueryClassName());
         return impl.executeSQL(transaction,mapping, modelClass, sql, params, flags);
     }
     public static void updateSQL(JOTTransaction transaction, Class modelClass, String sql, Object[] params, JOTStatementFlags flags) throws Exception
     {
-        JOTModelMapping mapping = getMapping(modelClass);
+        JOTModelMapping mapping = getMapping(transaction, modelClass);
         JOTQueryInterface impl = getImplementation(mapping.getQueryClassName());
         impl.updateSQL(transaction,mapping, sql, params, flags);
     }
 
-    public static String getTableName(Class modelClass)
+    public static String getTableName(JOTTransaction transaction, Class modelClass)
     {
         String name=null;
         try
         {
-            JOTModelMapping mapping = getMapping(modelClass);
+            JOTModelMapping mapping = getMapping(transaction, modelClass);
             name=mapping.getTableName();
         }
         catch(Exception e)

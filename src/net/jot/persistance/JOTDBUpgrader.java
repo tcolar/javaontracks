@@ -61,10 +61,10 @@ public abstract class JOTDBUpgrader
          * The field must exists in the table model (JOTModel).
          * @throws java.lang.Exception
          */
-  public void addTableColumn(Class modelClass, String fieldName, Object defaultValue) throws Exception
+  public void addTableColumn(JOTTransaction transaction, Class modelClass, String fieldName, Object defaultValue) throws Exception
   {
     // skip validation since it would fail anyhow.
-    JOTModelMapping mapping=JOTQueryManager.getMapping(modelClass,false,true);
+    JOTModelMapping mapping=JOTQueryManager.getMapping(transaction, modelClass,false,true);
     JOTDBField field=(JOTDBField)mapping.getMappedFields().get(fieldName);
     if(field==null)
       field=(JOTDBField)mapping.getFields().get(fieldName);
@@ -74,7 +74,7 @@ public abstract class JOTDBUpgrader
     }
     JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.INFO_LEVEL, this, "Adding column:"+field.getFieldName()+" to Table: " + mapping.getTableName());
     JOTQueryInterface impl=JOTQueryManager.getImplementation(mapping.getQueryClassName());
-    impl.alterAddField(mapping, field, defaultValue);
+    impl.alterAddField(null, mapping, field, defaultValue);
     // if we get here , it went ok, updating the table metadata
     JOTModelMapping.writeMetaFile(mapping);
   }

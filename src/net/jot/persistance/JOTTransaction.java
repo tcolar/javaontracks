@@ -4,6 +4,7 @@
  */
 package net.jot.persistance;
 
+import java.util.Vector;
 import net.jot.exceptions.JOTTransactionCompletedException;
 import net.jot.db.JOTDBManager;
 import net.jot.db.JOTTaggedConnection;
@@ -21,6 +22,7 @@ public final class JOTTransaction
 
     private JOTTaggedConnection con;
     private boolean completed = false;
+	Vector createdTables = new Vector();
 
     // do not use
     private JOTTransaction()
@@ -135,4 +137,14 @@ public final class JOTTransaction
         terminate();
         super.finalize();
     }
+
+	public boolean hasCreatedTable(String tableName)
+	{
+		return createdTables.contains(tableName);
+	}
+
+	public void addCreatedTable(String tableName)
+	{
+		createdTables.add(tableName);
+	}
 }

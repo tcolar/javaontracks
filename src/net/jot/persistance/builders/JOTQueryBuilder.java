@@ -39,12 +39,12 @@ public class JOTQueryBuilder
      * @param modelClass
      * @return
      */
-    public static JOTSelectQuery selectQuery(Class modelClass)
+    public static JOTSelectQuery selectQuery(JOTTransaction transaction, Class modelClass)
     {
-        JOTSelectQuery builder = new JOTSelectQuery();
+        JOTSelectQuery builder = new JOTSelectQuery(transaction);
         builder.setModelClass(modelClass);
         builder.appendToSQL("SELECT * FROM");
-        builder.appendToSQL(JOTQueryManager.getTableName(modelClass));
+        builder.appendToSQL(JOTQueryManager.getTableName(transaction, modelClass));
         return builder;
     }
     /**
@@ -52,31 +52,31 @@ public class JOTQueryBuilder
      * @param modelClass
      * @return
      */
-    public static JOTInsertQuery insertQuery(Class modelClass)
+    public static JOTInsertQuery insertQuery(JOTTransaction transaction, Class modelClass)
     {
-        JOTInsertQuery builder = new JOTInsertQuery();
+        JOTInsertQuery builder = new JOTInsertQuery(transaction);
         builder.setModelClass(modelClass);
         builder.appendToSQL("INSERT INTO");
-        builder.appendToSQL(JOTQueryManager.getTableName(modelClass));
+        builder.appendToSQL(JOTQueryManager.getTableName(transaction, modelClass));
         return builder;
     }
 
-    public static JOTUpdateQuery updateQuery(Class modelClass)
+    public static JOTUpdateQuery updateQuery(JOTTransaction transaction, Class modelClass)
     {
-        JOTUpdateQuery builder = new JOTUpdateQuery();
+        JOTUpdateQuery builder = new JOTUpdateQuery(transaction);
         builder.setModelClass(modelClass);
         builder.appendToSQL("UPDATE");
-        builder.appendToSQL(JOTQueryManager.getTableName(modelClass));
+        builder.appendToSQL(JOTQueryManager.getTableName(transaction, modelClass));
         builder.appendToSQL("SET");
         return builder;
     }
 
-    public static JOTDeleteQuery deleteQuery(Class modelClass)
+    public static JOTDeleteQuery deleteQuery(JOTTransaction transaction, Class modelClass)
     {
-        JOTDeleteQuery builder = new JOTDeleteQuery();
+        JOTDeleteQuery builder = new JOTDeleteQuery(transaction);
         builder.setModelClass(modelClass);
         builder.appendToSQL("DELETE FROM");
-        builder.appendToSQL(JOTQueryManager.getTableName(modelClass));
+        builder.appendToSQL(JOTQueryManager.getTableName(transaction, modelClass));
         return builder;
     }
     /**
@@ -86,9 +86,9 @@ public class JOTQueryBuilder
      * @return
      * @throws java.lang.Exception
      */
-    public static JOTModel findByID(Class modelClass, long id) throws Exception
+    public static JOTModel findByID(JOTTransaction transaction, Class modelClass, long id) throws Exception
     {
-        JOTSelectQuery builder = selectQuery(modelClass);
+        JOTSelectQuery builder = selectQuery(transaction, modelClass);
         JOTSQLCondition cond = new JOTSQLCondition("id", JOTSQLCondition.IS_EQUAL, new Long(id));
         builder.where(cond);
         return builder.findOne();
@@ -99,9 +99,9 @@ public class JOTQueryBuilder
      * @param id
      * @throws java.lang.Exception
      */
-    public static void deleteByID(Class modelClass, long id) throws Exception
+    public static void deleteByID(JOTTransaction transaction, Class modelClass, long id) throws Exception
     {
-        JOTDeleteQuery builder = deleteQuery(modelClass);
+        JOTDeleteQuery builder = deleteQuery(transaction, modelClass);
         JOTSQLCondition cond = new JOTSQLCondition("id", JOTSQLCondition.IS_EQUAL, new Long(id));
         builder.where(cond);
         builder.delete();
@@ -111,9 +111,9 @@ public class JOTQueryBuilder
      * @param modelClass
      * @throws java.lang.Exception
      */
-    public static JOTQueryResult findAll(Class modelClass) throws Exception
+    public static JOTQueryResult findAll(JOTTransaction transaction, Class modelClass) throws Exception
     {
-        JOTSelectQuery builder = selectQuery(modelClass);
+        JOTSelectQuery builder = selectQuery(transaction, modelClass);
         return builder.find();
     }
 
@@ -125,6 +125,6 @@ public class JOTQueryBuilder
      */
     public static void dumpToCSV(OutputStream out, Class modelClass) throws Exception
     {
-        selectQuery(modelClass).dumpToCSV(out);
+        selectQuery(null, modelClass).dumpToCSV(out);
     }
 }
