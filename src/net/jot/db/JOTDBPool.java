@@ -58,7 +58,6 @@ public class JOTDBPool extends Thread
         status = new boolean[maxSize];
         lastAccess = new long[maxSize];
 
-        int initSize = 2;
         lastIndex = initSize;
         for (int i = 0; i != maxSize; i++)
         {
@@ -102,7 +101,7 @@ public class JOTDBPool extends Thread
                 // downsizing pool if possible
                 for (int i = lastIndex; i >= minSize && !done; i--)
                 {
-                    // cleaning connections unused fro over 5 hours
+                    // cleaning connections unused for over 5 hours
                     if (now - lastAccess[i] > 60000 * 60 * 5)
                     {
                         released++;
@@ -231,6 +230,7 @@ public class JOTDBPool extends Thread
         if (i >= maxSize)
         {
         	JOTLogger.log(JOTLogger.CAT_DB,JOTLogger.ERROR_LEVEL, this,name+": Reached max tries to get a connection to the db");
+			JOTLogger.logException(JOTLogger.CAT_DB, this, name, new Exception("Trace: "));
             return null;
         }
         if (i > lastIndex)
