@@ -120,7 +120,7 @@ public class JOTDBQueryImpl implements JOTQueryInterface
 		{
 			if ( ! (transaction != null && transaction.hasCreatedTable(mapping.getTableName())))
 			{
-				if ( ! JOTDBManager.getInstance().tableExists(mapping.getDBName(), mapping.getTableName()))
+				if ( ! JOTDBManager.getInstance().tableExists(mapping.getDBName(), mapping.getTableName(), false))
 				{
 					// we need to prevent creating the table twice when using a transaction.
 					if(transaction!=null)
@@ -154,8 +154,9 @@ public class JOTDBQueryImpl implements JOTQueryInterface
 		JOTTaggedConnection con = JOTDBManager.getInstance().getConnection(mapping.getDBName());
 		try
 		{
-			if (JOTDBManager.getInstance().tableExists(mapping.getDBName(), mapping.getTableName()))
+			if (JOTDBManager.getInstance().tableExists(mapping.getDBName(), mapping.getTableName(), false))
 			{
+				JOTDBManager.getInstance().unCacheExitingTable(mapping.getDBName(), mapping.getTableName());
 				JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.INFO_LEVEL, this, "Trying to delete the table in the DB)");
 				JOTDBManager.getInstance().update(con, "DROP TABLE " + mapping.getTableName());
 				JOTModelMapping.deleteMetaFile(mapping);

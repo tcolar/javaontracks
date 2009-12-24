@@ -9,13 +9,13 @@ http://www.javaontracks.net
 package net.jot.db;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Vector;
 
 import net.jot.logger.JOTLogger;
 import net.jot.persistance.JOTStatementFlags;
@@ -30,6 +30,7 @@ public class JOTDBManager
     // singleton
     private final static JOTDBManager dbManager = new JOTDBManager();
     private Hashtable dbs = new Hashtable();
+	private Vector existingTables = new Vector();
 
     /**
      *
@@ -39,7 +40,8 @@ public class JOTDBManager
     {
         return dbManager;
     }
-    private JOTDBManager(){}
+
+	private JOTDBManager(){}
     /**
      * returns a connection to the 'default' database
      * @return
@@ -130,7 +132,7 @@ public class JOTDBManager
                 JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.INFO_LEVEL, this, "Adding db in pool: " + name);
                 dbs.put(name, new JOTDBPool(name, setup));
                 JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.INFO_LEVEL, this, "Loaded the db driver succesfully: " + setup.getDriver());
-                if (!tableExists(name, "JOTCOUNTERS"))
+                if ( ! tableExists(name, "JOTCOUNTERS", false))
                 {
                     JOTTaggedConnection con = getConnection(name);
                     try
@@ -432,18 +434,25 @@ public class JOTDBManager
 
     /**
      * Checks wether a table already exists or not in a DB
+	 * unless forceCheck, if the table is found we wont check again
      * @param storageName
      * @param table
      * @return
      * @throws java.lang.Exception
      */
-    public boolean tableExists(String storageName, String table) throws Exception
+    public boolean tableExists(String storageName, String table, boolean forceCheck) throws Exception
     {
+		String key = storageName+"::"+table;
+		if(!forceCheck && existingTables.contains(key))
+			return true;
 		// New code, hopefully that works on all DB's
         JOTTaggedConnection con = getInstance().getConnection(storageName);
         ResultSet rs = con.getConnection().getMetaData().getTables(null, null, table, null);
 		if(rs.next())
+		{
+			existingTables.add(key);
 			return true;
+		}
 		return false;
 
 		/* Old code - Was kinda ugly to catch an exception
@@ -460,5 +469,11 @@ public class JOTDBManager
         }
         return result;*/
     }
+
+	public void unCacheExitingTable(String dBName, String tableName)
+	{
+		String key = dBName+"::"+tableName;
+		existingTables.remove(dbs);
+	}
 }
 
