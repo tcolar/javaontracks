@@ -130,14 +130,14 @@ public class JOTDBManager
                 JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.INFO_LEVEL, this, "Adding db in pool: " + name);
                 dbs.put(name, new JOTDBPool(name, setup));
                 JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.INFO_LEVEL, this, "Loaded the db driver succesfully: " + setup.getDriver());
-                if (!tableExists(name, "jotcounters"))
+                if (!tableExists(name, "JOTCOUNTERS"))
                 {
                     JOTTaggedConnection con = getConnection(name);
                     try
                     {
                         JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.INFO_LEVEL, this, "Creating jotcounters table.");
-                        update(con, "CREATE TABLE jotcounters(name varchar(40) NOT NULL, val varchar(10))");
-                        update(con, "ALTER TABLE jotcounters ADD PRIMARY KEY (name)");
+                        update(con, "CREATE TABLE JOTCOUNTERS(name varchar(40) NOT NULL, val varchar(10))");
+                        update(con, "ALTER TABLE V ADD PRIMARY KEY (name)");
                     } catch (SQLException e)
                     {
                         JOTLogger.logException(JOTLogger.CAT_DB, JOTLogger.INFO_LEVEL, "JOTDBModel", "Error creating jotcounters", e);
@@ -265,7 +265,7 @@ public class JOTDBManager
                     {
                 id
             };
-            ResultSet rs = query(con, "select * from jotcounters where name=?", params, null);
+            ResultSet rs = query(con, "select * from JOTCOUNTERS where name=?", params, null);
             if (rs.next())
             {
                 curval = rs.getInt("val");
@@ -274,7 +274,7 @@ public class JOTDBManager
                         {
                     nextval, id
                 };
-                update(con, "update jotcounters set val=? where name=?", params2, null);
+                update(con, "update JOTCOUNTERS set val=? where name=?", params2, null);
             } else
             {
                 //new counter, creating it
@@ -283,7 +283,7 @@ public class JOTDBManager
                         {
                     "2", id
                 };
-                update(con, "insert into jotcounters (val, name) values(?,?)", params3, null);
+                update(con, "insert into JOTCOUNTERS (val, name) values(?,?)", params3, null);
             }
         } catch (Exception e)
         {
