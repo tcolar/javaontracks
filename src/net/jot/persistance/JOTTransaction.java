@@ -43,6 +43,7 @@ public final class JOTTransaction
 
     public void rollBack() throws Exception
     {
+		JOTLogger.debug(this, "Rolling back transaction");
         if (completed)
         {
             throw new JOTTransactionCompletedException();
@@ -92,6 +93,7 @@ public final class JOTTransaction
 
     public void commit() throws Exception
     {
+		JOTLogger.debug(this, "Commiting transaction");
         if (completed)
         {
             throw new JOTTransactionCompletedException();
@@ -111,6 +113,7 @@ public final class JOTTransaction
     {
         if (!completed)
         {
+			JOTLogger.debug(this, "Terminating transaction");
             completed = true;
             try
             {

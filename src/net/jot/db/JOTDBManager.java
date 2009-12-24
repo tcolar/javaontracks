@@ -9,6 +9,7 @@ http://www.javaontracks.net
 package net.jot.db;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -438,9 +439,16 @@ public class JOTDBManager
      */
     public boolean tableExists(String storageName, String table) throws Exception
     {
+		// New code, hopefully that works on all DB's
         JOTTaggedConnection con = getInstance().getConnection(storageName);
-        boolean result = true;
-        try
+        ResultSet rs = con.getConnection().getMetaData().getTables(null, null, table, null);
+		if(rs.next())
+			return true;
+		return false;
+
+		/* Old code - Was kinda ugly to catch an exception
+        boolean result=false;
+		try
         {
             JOTDBManager.getInstance().query(con, "SELECT COUNT(0) from " + table, null);
         } catch (Exception e)
@@ -450,7 +458,7 @@ public class JOTDBManager
         {
             getInstance().releaseConnection(con);
         }
-        return result;
+        return result;*/
     }
 }
 
