@@ -41,9 +41,14 @@ public class JOTQueryBuilder
      */
     public static JOTSelectQuery selectQuery(JOTTransaction transaction, Class modelClass)
     {
+		return selectQuery(transaction, "*", modelClass);
+    }
+
+	public static JOTSelectQuery selectQuery(JOTTransaction transaction, String selectWhat, Class modelClass)
+    {
         JOTSelectQuery builder = new JOTSelectQuery();
         builder.setModelClass(modelClass);
-        builder.appendToSQL("SELECT * FROM");
+        builder.appendToSQL("SELECT "+selectWhat+" FROM");
         builder.appendToSQL(JOTQueryManager.getTableName(transaction, modelClass));
         return builder;
     }
