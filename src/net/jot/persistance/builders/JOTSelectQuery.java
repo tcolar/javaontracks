@@ -81,6 +81,11 @@ public class JOTSelectQuery extends JOTQueryBase{
         return this;
     }
 
+	public JOTSelectQuery distinct(String column)
+    {
+        return (JOTSelectQuery)JOTQueryBuilderHelper.orWhere(this,column);
+    }
+
      /**
      * Dump matching data into a stream(ie file) in CSV format with column names
      * @param out

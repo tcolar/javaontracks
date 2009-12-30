@@ -94,6 +94,11 @@ public final class JOTQueryBuilderHelper {
         return builder;
     }
 
+    public static JOTQueryBase distinct(JOTQueryBase builder, String column)
+    {
+        appendToSQL(builder,"DISTINCT " + column);
+        return builder;
+    }
         /**
      * Manually append whatever you like to the query.
      * @param where
