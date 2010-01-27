@@ -123,7 +123,7 @@ public abstract class JOTCRUDForm extends JOTForm implements JOTGeneratedFormInt
 		{
 			JOTLogger.logException(JOTLogger.ERROR_LEVEL, this, "error parsing generated form.", e);
 		}
-		html = getJavascript() + getCss() + "<form jotclass=\"" + getClass().getName() + "\" action=\"" + action + "\" method=\"post\">" + html;
+		html = getJavascript() + getCss() + "<form jotclass=\"" + getClass().getName() + "\" action=\"" + action + "\" method=\"post\" accept-charset=\"UTF-8\">" + html;
 		html += "</table></form>";
 		return html;
 	}
