@@ -587,7 +587,7 @@ public class JOTTester
 				}
 				if (arg.startsWith(OPTION_SOF))
 				{
-					String sof = arg.substring(OPTION_SELFTEST.length(), arg.length());
+					String sof = arg.substring(OPTION_SOF.length(), arg.length());
 					tester.setStopOnFailure(!sof.equalsIgnoreCase("false"));
 				}
 			}
