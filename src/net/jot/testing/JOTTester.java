@@ -609,6 +609,27 @@ public class JOTTester
 		}
 	}
 
+	/**
+	 * Runs a single Test class
+	 * @param test
+	 */
+	public static boolean singleTest(JOTTestable test, boolean stopOnFailure) throws Throwable
+	{
+		try
+		{
+			tester.setStopOnFailure(stopOnFailure);
+			tester.output("\n***** (I)" + test.getClass().getName() + " *****", OUTPUT_TYPE_NONE);
+			test.jotTest();
+			tester.output("\n##### TESTS RAN: " + tester.numberOfTests + " FAILURES:" + tester.numberOfFailures + " WARNINGS:" + tester.numberOfWarnings + " #####", OUTPUT_TYPE_NONE);
+			tester.output("##### All Tests Completed.#####", OUTPUT_TYPE_NONE);
+			JOTInitializer.getInstance().destroy();
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return tester.numberOfFailures == 0;
+	}
+
 	private void displayHelp()
 	{
 		System.out.println("JOTTester help: \n");
