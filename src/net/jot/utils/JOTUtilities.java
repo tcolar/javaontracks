@@ -102,6 +102,7 @@ public class JOTUtilities
     public static void copyFile(java.io.File dest, java.io.File src)
             throws FileNotFoundException, IOException
     {
+		byte buffer[] = new byte[1000000]; //1MB
         FileInputStream input = null;
         FileOutputStream output = null;
         try
@@ -115,11 +116,13 @@ public class JOTUtilities
             input = new FileInputStream(src);
             output = new FileOutputStream(dest);
 
-            int size = (int) src.length();
-            byte buffer[] = new byte[size];
-            input.read(buffer, 0, size);
-            output.write(buffer, 0, size);
-
+            int nbRead = 0;
+			while(nbRead>0)
+			{
+				nbRead = input.read(buffer);
+				if(nbRead>=0)
+					output.write(buffer, 0, nbRead);
+			}
         } finally
         {
             if (input != null)
