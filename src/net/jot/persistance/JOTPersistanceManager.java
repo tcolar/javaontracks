@@ -309,12 +309,12 @@ public class JOTPersistanceManager
           {
             //backup went ok, calling the upgrader impl.
             JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.INFO_LEVEL, "DBManager", "Backup complete, Starting DBUpgrader impl: " + up.getClass().getName());           
-            up.upgradeDb(oldVersion);
+            up.upgradeDb(dbName, oldVersion);
             JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.INFO_LEVEL, "DBManager", "Completed DBUpgrader impl (no errors): " + up.getClass().getName());           
           }
           catch (Exception e)
           {
-            JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.CRITICAL_LEVEL, "DBManager", "Upgdrading the DB threw an exception !!");           
+            JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.CRITICAL_LEVEL, "DBManager", "Upgrading the DB threw an exception !!");           
             JOTLogger.log(JOTLogger.CAT_DB, JOTLogger.CRITICAL_LEVEL, "DBManager", "Restoring db from latest known working backup: "+backupFolder);           
             // restoring latest good backup
             try
