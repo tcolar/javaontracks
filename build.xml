@@ -1,181 +1,172 @@
 
 <project name="JavaOnTracks" default="jar" basedir=".">
-    <description>build file for JavaOnTracks</description>
+	<description>build file for JavaOnTracks</description>
 
-    <path id="jotdoc.path">
-        <filelist dir="/usr/lib/jvm/java-1.5.0-sun/lib">
-            <file name="tools.jar"/>
-        </filelist>
-        <filelist dir="/usr/lib/jvm/java-6-sun/lib">
-            <file name="tools.jar"/>
-        </filelist>
-    </path>
+	<path id="jotdoc.path">
+		<filelist dir="/usr/lib/jvm/java-1.5.0-sun/lib">
+			<file name="tools.jar"/>
+		</filelist>
+		<filelist dir="/usr/lib/jvm/java-6-sun/lib">
+			<file name="tools.jar"/>
+		</filelist>
+		<filelist dir="lib">
+			<file name="servlet-api.jar"/>
+		</filelist>
+	</path>
 
-    <target name="clean">
-        <delete dir="classes"/>
-    </target>
-    
-    <target name="compile">
-        <mkdir dir="classes"/>
-        <javac encoding="ISO-8859-1" target="1.4" source="1.4" srcdir="src" destdir="classes" debug="true" debuglevel="lines,vars,source">
-        <!--<javac encoding="ISO-8859-1" target="1.3" source="1.3" srcdir="src" destdir="classes" debug="true" debuglevel="source">-->
-            <classpath>
-                <filelist dir="lib">
-                    <file name="servlet-api.jar"/>
-                </filelist>
-            </classpath>
-        </javac>
-    </target>
-    
-    <target name="jar" depends="clean,compile">
-        <mkdir dir="dist"/>
-        <delete file="dist/javaOnTracks.jar"></delete>
-        <jar destfile="dist/javaOnTracks.jar">
-            <fileset dir="classes"/>
-            <!--<fileset dir="resources"/>-->
-        </jar>
-    </target>
-    
-    <target name="dist" depends="javadoc,jar">
-        <zip destfile="dist/javaOnTracks.zip">
-            <fileset file="dist/javaOnTracks.jar"/>
-        </zip>
-        <zip destfile="dist/javaOnTracks-javadoc.zip">
-            <fileset dir="." includes="javadoc/**"/>
-        </zip>
-    </target>
-    
-    <target name="test" depends="jar">
-        <java classname="net.jot.testing.JOTTester">
-            <!--<classpath path="classes:/usr/share/java/postgresql-jdbc3-8.1.jar:lib/servlet-api.jar"/>-->
-            <classpath>
-                <pathelement path="${jotdoc.path}"/>
-                <pathelement path="classes:test_libs/hsqldb.jar:lib/servlet-api.jar"/>
-            </classpath>
-            
-            <arg value="classes"/>
-            <!--<arg value="-debug"/>-->
-            <arg value="-selfTest"/>
-            <!--<arg value="-outputTo=/tmp/jottest.html"/>-->
-        </java>
-    </target>
-    
-    <target name="javadoc">
-        <!--<delete dir="javadoc" quiet="true"/>-->
-        <mkdir dir="javadoc"/>
-        <javadoc sourcepath="src" destdir="javadoc" linksource="true" packagenames="*" verbose="true">
-            <classpath>
-                <filelist dir="lib">
-                    <file name="servlet-api.jar"/>
-                </filelist>
-            </classpath>
-        </javadoc>
-    </target>
-    
-    <target name="jotdoc-jdk" depends="jar">
-        <!--<delete dir="/tmp/jotdoc/" quiet="true"/>-->
-        <!-- "whole" jdk 1.6 -->
-        <javadoc overview="../jdk1.6/j2se/src/share/classes/overview-core.html" sourcepath="../jdk1.6/j2se/src/share/classes/" destdir="/tmp/jotdoc/jdk1.6" packagenames="java.*,javax.*,org.*" doctitle="JDK 1.6" windowtitle="JDK 1.6" maxmemory="1448m" link="http://java.sun.com/javase/6/docs/api/" splitindex="true">
-            <doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
-            <arg value="-linksource"/>
-            <classpath>
-                <pathelement path="${jotdoc.path}"/>
-            </classpath>
-        </javadoc>
-        <!-- nav for only java.* (except java.awt)-->
-        <javadoc overview="../jdk1.6/j2se/src/share/classes/overview-core.html" packagenames="java.*" excludepackagenames="java.awt.*" sourcepath="../jdk1.6/j2se/src/share/classes/" destdir="/tmp/jotdoc/jdk1.6" maxmemory="1448m">
-            <doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
-            <arg value="-navonly"/>
-            <classpath>
-                <pathelement path="${jotdoc.path}"/>
-            </classpath>
-        </javadoc>
-    </target>
-        <!-- Ant code : back linked to jdk-->
-    <target name="jotdoc-ant" depends="jar">
-        <javadoc sourcepath="../apache-ant-1.7.1/src/main/" destdir="/tmp/jotdoc/ant" packagenames="*" doctitle="Apache Ant 1.7.1" windowtitle="Apache Ant 1.7.1" link="../jdk1.6/" splitindex="true">
-            <doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
-            <arg value="-linksource"/>
-            <!--<arg value="-template"/>
-            <arg value="/tmp/mytpl/"/>-->
-            <classpath>
-                <pathelement path="${jotdoc.path}"/>
-            </classpath>
-        </javadoc>
-    </target>
+	<target name="clean">
+		<delete dir="classes"/>
+	</target>
 
-        <!-- JOT code : back linked to jdk-->
-    <target name="jotdoc-jot" depends="jar">
-        <javadoc overview="src/overview.html" sourcepath="src/" destdir="/tmp/jotdoc/javaontracks" packagenames="*" doctitle="JavaOnTracks 0.1.2" windowtitle="JavaOnTracks 0.1.2" link="../jdk1.6/" splitindex="true">
-            <doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
-            <arg value="-linksource"/>
-            <classpath>
-                <pathelement path="${jotdoc.path}"/>
-            </classpath>
-        </javadoc>
-    </target>
-    <!-- struts -->
-    <target name="jotdoc-struts" depends="jar">
-        <javadoc sourcepath="../struts1.3/" destdir="/tmp/jotdoc/struts" packagenames="*" doctitle="Struts 1.3" windowtitle="Struts 1.3" link="../jdk1.6/" splitindex="true">
-            <doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
-            <arg value="-linksource"/>
-            <classpath>
-                <pathelement path="${jotdoc.path}"/>
-            </classpath>
-        </javadoc>
-    </target>
-        <!-- sap/PCF code: ~ 2MB - zipped: 98k -->
-    <target name="jotdoc-crm" depends="jar">
-        <javadoc sourcepath="../sap_crm_java/src/;/home/thibautc/NetBeansProjects/pcf_java/src/" destdir="/tmp/jotdoc/crm2007/" packagenames="*" source="1.4" maxmemory="2048m" doctitle="SAP CRM 2007" windowtitle="SAP CRM 2007" splitindex="true">
-            <doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
-            <arg value="-linksource"/>
-            <link href="../jdk1.6/"/>
-            <link href=",../struts/"/>
-            <classpath>
-                <pathelement path="${jotdoc.path}"/>
-            </classpath>
-        </javadoc>
-        <!-- pcf code only nav -->
-        <javadoc sourcepath="../pcf_java/src/" destdir="/tmp/jotdoc/crm2007/" packagenames="*" source="1.4" maxmemory="2048m" doctitle="SAP CRM 2007" windowtitle="SAP CRM 2007" link="../jdk1.6/">
-            <doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
-            <arg value="-navonly"/>
-            <classpath>
-                <pathelement path="${jotdoc.path}"/>
-            </classpath>
-        </javadoc>
-    </target>
-    
-    <!-- sitemesh -->
-    <target name="jotdoc-sitemesh" depends="jar">
-        <javadoc sourcepath="../sitemesh2.3/src/java/" destdir="/tmp/jotdoc/sitemesh" packagenames="*" doctitle="Sitemesh 2.3" windowtitle="Sitemesh 2.3" link="../jdk1.6/" splitindex="true">
-            <doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
-            <arg value="-linksource"/>
-            <classpath>
-                <pathelement path="${jotdoc.path}"/>
-            </classpath>
-        </javadoc>
-    </target>
+	<target name="compile">
+		<mkdir dir="classes"/>
+		<javac encoding="ISO-8859-1" target="1.4" source="1.4" srcdir="src" destdir="classes" debug="true" debuglevel="lines,vars,source">
+			<!--<javac encoding="ISO-8859-1" target="1.3" source="1.3" srcdir="src" destdir="classes" debug="true" debuglevel="source">-->
+			<classpath>
+				<filelist dir="lib">
+					<file name="servlet-api.jar"/>
+				</filelist>
+			</classpath>
+		</javac>
+	</target>
 
-    <!-- nb -->
-    <target name="jotdoc-netbeans" depends="jar">
-	<!-- had to remove org.openide.util.enum (enum is not allowed) -->
+	<target name="jar" depends="clean,compile">
+		<mkdir dir="dist"/>
+		<delete file="dist/javaOnTracks.jar"></delete>
+		<jar destfile="dist/javaOnTracks.jar">
+			<fileset dir="classes"/>
+			<fileset dir="resources"/>
+		</jar>
+	</target>
+
+	<target name="dist" depends="jar, jotdoc-jot">
+		<zip destfile="dist/javaOnTracks.zip">
+			<fileset file="dist/javaOnTracks.jar"/>
+		</zip>
+		<zip destfile="dist/javaOnTracks-javadoc.zip">
+			<fileset dir="." includes="javadoc/**"/>
+		</zip>
+	</target>
+
+	<target name="test" depends="jar">
+		<java classname="net.jot.testing.JOTTester">
+			<!--<classpath path="classes:/usr/share/java/postgresql-jdbc3-8.1.jar:lib/servlet-api.jar"/>-->
+			<classpath>
+				<pathelement path="${jotdoc.path}"/>
+				<pathelement path="classes:test_libs/hsqldb.jar:lib/servlet-api.jar"/>
+			</classpath>
+
+			<arg value="classes"/>
+			<!--<arg value="-debug"/>-->
+			<arg value="-selfTest"/>
+			<!--<arg value="-outputTo=/tmp/jottest.html"/>-->
+		</java>
+	</target>
+
+	<target name="jotdoc-jdk" depends="jar">
+		<!--<delete dir="/tmp/jotdoc/" quiet="true"/>-->
+		<!-- "whole" jdk 1.6 -->
+		<javadoc overview="../jdk1.6/j2se/src/share/classes/overview-core.html" sourcepath="../jdk1.6/j2se/src/share/classes/" destdir="/tmp/jotdoc/jdk1.6" packagenames="java.*,javax.*,org.*" doctitle="JDK 1.6" windowtitle="JDK 1.6" maxmemory="1448m" link="http://java.sun.com/javase/6/docs/api/" splitindex="true">
+			<doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
+			<arg value="-linksource"/>
+			<classpath>
+				<pathelement path="${jotdoc.path}"/>
+			</classpath>
+		</javadoc>
+		<!-- nav for only java.* (except java.awt)-->
+		<javadoc overview="../jdk1.6/j2se/src/share/classes/overview-core.html" packagenames="java.*" excludepackagenames="java.awt.*" sourcepath="../jdk1.6/j2se/src/share/classes/" destdir="/tmp/jotdoc/jdk1.6" maxmemory="1448m">
+			<doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
+			<arg value="-navonly"/>
+			<classpath>
+				<pathelement path="${jotdoc.path}"/>
+			</classpath>
+		</javadoc>
+	</target>
+	<!-- Ant code : back linked to jdk-->
+	<target name="jotdoc-ant" depends="jar">
+		<javadoc sourcepath="../apache-ant-1.7.1/src/main/" destdir="/tmp/jotdoc/ant" packagenames="*" doctitle="Apache Ant 1.7.1" windowtitle="Apache Ant 1.7.1" link="../jdk1.6/" splitindex="true">
+			<doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
+			<arg value="-linksource"/>
+			<!--<arg value="-template"/>
+			<arg value="/tmp/mytpl/"/>-->
+			<classpath>
+				<pathelement path="${jotdoc.path}"/>
+			</classpath>
+		</javadoc>
+	</target>
+
+	<!-- JOT code : back linked to jdk-->
+	<target name="jotdoc-jot" depends="jar">
+		<javadoc overview="src/overview.html" sourcepath="src/" destdir="javadoc" packagenames="*" doctitle="JavaOnTracks 0.1.2" windowtitle="JavaOnTracks 0.1.2" link="http://java.sun.com/j2se/1.4.2/docs/api/" splitindex="true">
+			<doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
+			<arg value="-linksource"/>
+			<classpath>
+				<pathelement path="${jotdoc.path}"/>
+			</classpath>
+		</javadoc>
+	</target>
+	<!-- struts -->
+	<target name="jotdoc-struts" depends="jar">
+		<javadoc sourcepath="../struts1.3/" destdir="/tmp/jotdoc/struts" packagenames="*" doctitle="Struts 1.3" windowtitle="Struts 1.3" link="../jdk1.6/" splitindex="true">
+			<doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
+			<arg value="-linksource"/>
+			<classpath>
+				<pathelement path="${jotdoc.path}"/>
+			</classpath>
+		</javadoc>
+	</target>
+	<!-- sap/PCF code: ~ 2MB - zipped: 98k -->
+	<target name="jotdoc-crm" depends="jar">
+		<javadoc sourcepath="../sap_crm_java/src/;/home/thibautc/NetBeansProjects/pcf_java/src/" destdir="/tmp/jotdoc/crm2007/" packagenames="*" source="1.4" maxmemory="2048m" doctitle="SAP CRM 2007" windowtitle="SAP CRM 2007" splitindex="true">
+			<doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
+			<arg value="-linksource"/>
+			<link href="../jdk1.6/"/>
+			<link href=",../struts/"/>
+			<classpath>
+				<pathelement path="${jotdoc.path}"/>
+			</classpath>
+		</javadoc>
+		<!-- pcf code only nav -->
+		<javadoc sourcepath="../pcf_java/src/" destdir="/tmp/jotdoc/crm2007/" packagenames="*" source="1.4" maxmemory="2048m" doctitle="SAP CRM 2007" windowtitle="SAP CRM 2007" link="../jdk1.6/">
+			<doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
+			<arg value="-navonly"/>
+			<classpath>
+				<pathelement path="${jotdoc.path}"/>
+			</classpath>
+		</javadoc>
+	</target>
+
+	<!-- sitemesh -->
+	<target name="jotdoc-sitemesh" depends="jar">
+		<javadoc sourcepath="../sitemesh2.3/src/java/" destdir="/tmp/jotdoc/sitemesh" packagenames="*" doctitle="Sitemesh 2.3" windowtitle="Sitemesh 2.3" link="../jdk1.6/" splitindex="true">
+			<doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
+			<arg value="-linksource"/>
+			<classpath>
+				<pathelement path="${jotdoc.path}"/>
+			</classpath>
+		</javadoc>
+	</target>
+
+	<!-- nb -->
+	<target name="jotdoc-netbeans" depends="jar">
+		<!-- had to remove org.openide.util.enum (enum is not allowed) -->
 	<!--<mkdir dir="/tmp/nbsources"/>
 	<copy todir="/tmp/nbsources">
-	    <fileset dir="../netbeans6.7/"/>
+		<fileset dir="../netbeans6.7/"/>
 		<include name="*/src/**"/>
-	    </fileset>
+		</fileset>
 	</copy>-->
-        <javadoc sourcepath="/tmp/nbsources" destdir="/tmp/jotdoc/netbeans" packagenames="*" doctitle="Netbeans 6.7" windowtitle="Netbeans 6.7" link="../jdk1.6/" splitindex="true" maxmemory="3048m">
-            <doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
-            <arg value="-linksource"/>
-            <classpath>
-                <pathelement path="${jotdoc.path}"/>
-            </classpath>
-        </javadoc>
-    </target>
+		<javadoc sourcepath="/tmp/nbsources" destdir="/tmp/jotdoc/netbeans" packagenames="*" doctitle="Netbeans 6.7" windowtitle="Netbeans 6.7" link="../jdk1.6/" splitindex="true" maxmemory="3048m">
+			<doclet name="net.jot.doclet.JOTDoclet" path="dist/javaOnTracks.jar"/>
+			<arg value="-linksource"/>
+			<classpath>
+				<pathelement path="${jotdoc.path}"/>
+			</classpath>
+		</javadoc>
+	</target>
 
-    <target name="jotdoc-clean">
-        <delete dir="/tmp/jotdoc/"/>
-    </target>
-    <target name="jotdoc-all" depends="jotdoc-clean, jotdoc-ant, jotdoc-jdk, jotdoc-jot, jotdoc-sitemesh, jotdoc-struts, jotdoc-crm"/>
+	<target name="jotdoc-clean">
+		<delete dir="/tmp/jotdoc/"/>
+	</target>
+	<target name="jotdoc-all" depends="jotdoc-clean, jotdoc-ant, jotdoc-jdk, jotdoc-jot, jotdoc-sitemesh, jotdoc-struts, jotdoc-crm"/>
 </project>

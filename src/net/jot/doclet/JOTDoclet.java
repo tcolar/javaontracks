@@ -326,9 +326,10 @@ public class JOTDoclet extends AbstractDoclet
                             FileOutputStream out = new FileOutputStream(f);
                             InputStream input = jarFile.getInputStream(entry);
                             int n = 0;
-                            while ((n = input.read(buf, 0, 1024)) > -1)
+                            while ((n = input.read(buf)) > -1)
                             {
                                 out.write(buf, 0, n);
+								System.out.println("writing: " + n);
                             }
                             input.close();
                             out.close();
